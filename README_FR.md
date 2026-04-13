@@ -5,13 +5,21 @@
 Un espace de couleurs derive de
 [la Theorie de la Persistance](https://github.com/yan-senez/persistence-theory),
 un framework mathematique fonde sur la dynamique des ecarts entre nombres premiers.
+
 **Entree unique :** `s = 1/2`. **Zero parametres ajustables.**
+
 Un facteur de traduction (m_e = 0,511 MeV) convertit des unites naturelles
 du crible vers le SI ; tous les rapports et structures sont derives.
 
 **Nouveau (avril 2026) :** La formule SCS00 (CIEDE2000 + geodesique de Fisher-Bernoulli)
 **surpasse CIEDE2000** sur COMBVD (r = 0,893 vs 0,878, p < 0,0001).
 L'article est desormais autonome avec un appendice mathematique complet.
+
+## Demo interactive
+
+Explorez la geometrie et les applications de SCS de maniere interactive :
+
+- [Demo SCS en ligne sur GitHub Pages](https://igrekess.github.io/SimplexColorSpace/scs_demo.html)
 
 ## Installation
 

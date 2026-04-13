@@ -2232,7 +2232,8 @@ function updateMod1() {
     const bgA = Math.min(1, t * m1RefBg.alpha / 0.5);
     const piFg = piAtAlpha(m1RefFg.bdr, fgA);
     const piBg = piAtAlpha(m1RefBg.bdr, bgA);
-    drawScene(piToRgbExact(piBg, m1RefBg.Y), piToRgbExact(piFg, m1RefFg.Y));
+    // Use the display-oriented inverse so the simplex center stays visually neutral.
+    drawScene(piToRgb(piBg, m1RefBg.Y), piToRgb(piFg, m1RefFg.Y));
     const S = (scsSaturation(piFg) + scsSaturation(piBg)) / 2;
     const L = (scsEntropy(piFg) + scsEntropy(piBg)) / 2;
     document.getElementById('m1-s-fill').style.width = (S / LOG2_3 * 100) + '%';
