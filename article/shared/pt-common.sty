@@ -1,0 +1,341 @@
+% pt-common.sty -- Shared macros for PT standalone articles
+% Extracted from PT_MONOGRAPHY/preamble.tex
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{pt-common}[2026/04/04 Persistence Theory common macros v2]
+
+% ============================================================
+% Core packages
+% ============================================================
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[T1]{fontenc}
+\RequirePackage{lmodern}
+\RequirePackage[english]{babel}
+
+% Mathematics
+\RequirePackage{amsmath,amssymb,amsthm,mathtools}
+\RequirePackage{bm}
+\RequirePackage{bbm}
+\RequirePackage{dsfont}
+\RequirePackage{braket}
+
+% Graphics and figures
+\RequirePackage{tikz}
+\usetikzlibrary{arrows.meta, calc, positioning, decorations.markings,
+  decorations.pathreplacing, patterns, shapes.geometric, matrix,
+  intersections, fit, backgrounds, chains}
+\RequirePackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% Colored theorem boxes
+\RequirePackage[most]{tcolorbox}
+\tcbuselibrary{theorems, breakable, skins}
+
+% References
+\RequirePackage{hyperref}
+\RequirePackage[nameinlink]{cleveref}
+
+% Bibliography
+\RequirePackage[numbers,sort&compress]{natbib}
+
+% Tables
+\RequirePackage{booktabs}
+\RequirePackage{longtable}
+\RequirePackage{multirow}
+\RequirePackage{array}
+
+% Miscellaneous
+\RequirePackage{enumitem}
+\RequirePackage{xcolor}
+\RequirePackage{float}
+\RequirePackage{subcaption}
+\RequirePackage{microtype}
+\RequirePackage{xspace}
+\RequirePackage{needspace}
+\RequirePackage{colortbl}
+\RequirePackage{tabularx}
+\RequirePackage{pdflscape}
+\RequirePackage{listings}
+\lstset{basicstyle=\ttfamily\small,breaklines=true,frame=single}
+\RequirePackage{epigraph}
+\setlength{\epigraphwidth}{0.6\textwidth}
+\setlength{\epigraphrule}{0pt}
+\RequirePackage{graphicx}
+\RequirePackage{caption}
+\captionsetup{font=small,labelfont=bf}
+
+% ============================================================
+% Colors by proof type
+% ============================================================
+\definecolor{idgreen}{RGB}{46,139,87}
+\definecolor{thmblue}{RGB}{30,70,150}
+\definecolor{reccyan}{RGB}{0,150,180}
+\definecolor{derorange}{RGB}{210,120,20}
+\definecolor{deryellow}{RGB}{180,160,30}
+\definecolor{predred}{RGB}{180,30,30}
+\definecolor{dissgray}{RGB}{120,120,120}
+\definecolor{metapurple}{RGB}{120,60,160}
+\definecolor{derphysred}{RGB}{180,50,50}
+\definecolor{condorange}{RGB}{200,130,0}
+\definecolor{bridgepurple}{RGB}{130,50,170}
+\definecolor{valgray}{RGB}{100,100,100}
+\definecolor{closuregold}{RGB}{180,150,0}
+
+% Hyperref colors
+\hypersetup{
+  colorlinks=true,
+  linkcolor=thmblue,
+  citecolor=idgreen,
+  urlcolor=derorange
+}
+
+% ============================================================
+% Theorem-like environments (tcolorbox)
+% ============================================================
+\newcommand{\boxtag}[1]{\textnormal{\textsc{#1}}}
+
+\tcbset{ptbox/.style={
+  enhanced, breakable,
+  before={\needspace{5\baselineskip}},
+  before upper={\setlength{\parskip}{0.4em}},
+  fonttitle=\bfseries
+}}
+
+\newtcolorbox{identitybox}[1][]{
+  ptbox, colback=idgreen!5, colframe=idgreen,
+  title={\boxtag{[id]} #1}
+}
+\newtcolorbox{theorembox}[1][]{
+  ptbox, colback=thmblue!5, colframe=thmblue,
+  title={\boxtag{[thm]} #1}
+}
+\newtcolorbox{reconstructedbox}[1][]{
+  ptbox, colback=reccyan!5, colframe=reccyan,
+  title={\boxtag{[rec]} #1}
+}
+\newtcolorbox{derivedphysbox}[1][]{
+  ptbox, colback=derorange!5, colframe=derorange,
+  title={\boxtag{[der-phys]} #1}
+}
+\newtcolorbox{derivedbox}[1][]{
+  ptbox, colback=deryellow!5, colframe=deryellow!80!black,
+  title={\boxtag{[der]} #1}
+}
+\newtcolorbox{predictionbox}[1][]{
+  ptbox, colback=predred!5, colframe=predred,
+  title={\boxtag{[pred]} #1}
+}
+\newtcolorbox{dissolutionbox}[1][]{
+  ptbox, colback=dissgray!5, colframe=dissgray,
+  title={\boxtag{[diss]} #1}
+}
+\newtcolorbox{metabox}[1][]{
+  ptbox, colback=metapurple!5, colframe=metapurple,
+  title={\boxtag{[meta]} #1}
+}
+\newtcolorbox{tradbox}[1][]{
+  ptbox, colback=gray!5, colframe=gray!60,
+  title={\boxtag{[trad]} #1}
+}
+
+% Status box for sections
+\newtcolorbox{statusbox}{
+  ptbox, colback=gray!3, colframe=gray!40,
+  title={\boxtag{Status}}
+}
+
+% Ledger box for summaries
+\newtcolorbox{ledgerbox}{
+  ptbox, colback=thmblue!3, colframe=thmblue!40,
+  title={}
+}
+
+% Theorem box with proof (blue)
+\newtcolorbox{thmbox}[1][]{
+  ptbox, colback=thmblue!5, colframe=thmblue,
+  title={#1}
+}
+
+% Identity box (alternative name)
+\newtcolorbox{idbox}[1][]{
+  ptbox, colback=idgreen!5, colframe=idgreen,
+  title={\boxtag{[id]} #1}
+}
+
+% Closure box
+\newtcolorbox{closurebox}[1][]{
+  ptbox, colback=condorange!5, colframe=condorange,
+  title={\boxtag{[closure]} #1}
+}
+
+% Derived result box (monograph style)
+\newtcolorbox{derbox}[1][]{
+  ptbox, colback=derorange!5, colframe=derorange,
+  title={\boxtag{[der]} #1}
+}
+
+% Bridge box (arithmetic -> physics)
+\newtcolorbox{bridgebox}[1][]{
+  ptbox, colback=bridgepurple!5, colframe=bridgepurple,
+  title={\boxtag{[bridge]} #1}
+}
+
+% Conditional result box
+\newtcolorbox{condbox}[1][]{
+  ptbox, colback=condorange!5, colframe=condorange,
+  title={\boxtag{[cond]} #1}
+}
+
+% Validation box
+\newtcolorbox{valbox}[1][]{
+  ptbox, colback=valgray!5, colframe=valgray,
+  title={\boxtag{[val]} #1}
+}
+
+% Prediction box (alias for predictionbox)
+\newtcolorbox{predbox}[1][]{
+  ptbox, colback=predred!5, colframe=predred,
+  title={\boxtag{[pred]} #1}
+}
+
+% PT-Closure box (gold)
+\newtcolorbox{clbox}[1][]{
+  ptbox, colback=closuregold!5, colframe=closuregold,
+  title={\boxtag{[cl]} #1}
+}
+
+% ============================================================
+% Standard amsthm environments
+% ============================================================
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{hypothesis}[theorem]{Hypothesis}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+% ============================================================
+% Custom commands -- PT notation
+% ============================================================
+
+% Symmetry parameter
+\newcommand{\spt}{\ensuremath{s}}
+\newcommand{\mustar}{\ensuremath{{\mu^{*}}}}
+\newcommand{\qstat}{\ensuremath{q_{\mathrm{rel}}}}  % renamed March 2026: stat -> rel
+\newcommand{\qrel}{\ensuremath{q_{\mathrm{rel}}}}   % preferred name
+\newcommand{\qtherm}{\ensuremath{q_{\mathrm{therm}}}}
+
+% Sieve objects
+\newcommand{\gn}{\ensuremath{g_n}}
+\newcommand{\pn}{\ensuremath{p_n}}
+\newcommand{\rn}{\ensuremath{r_n}}
+\newcommand{\Tm}{\ensuremath{T_m}}
+\newcommand{\Zm}{\ensuremath{Z_m}}
+\newcommand{\Pact}{\ensuremath{P_{\mathrm{act}}}}
+\newcommand{\delp}[1]{\ensuremath{\delta_{#1}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+
+% Information quantities
+\newcommand{\DKL}{\ensuremath{D_{\mathrm{KL}}}}
+\newcommand{\Hent}{\ensuremath{H}}
+\newcommand{\MI}{\ensuremath{I}}
+
+% Angles and couplings
+\newcommand{\sinp}[1]{\ensuremath{\sin^2(\theta_{#1})}}
+\newcommand{\sinsp}[1]{\ensuremath{\sin^2\!\theta_{#1}}}
+\newcommand{\gamp}[1]{\ensuremath{\gamma_{#1}}}
+\newcommand{\alphaEM}{\ensuremath{\alpha_{\mathrm{EM}}}}
+\newcommand{\alphas}{\ensuremath{\alpha_{s}}}
+\newcommand{\sinW}{\ensuremath{\sin^2\theta_W}}
+\newcommand{\Fisher}{\ensuremath{g^F}}
+
+% Depth tag
+\newcommand{\depth}[1]{\ensuremath{d=#1}}
+
+% Status tags
+\newcommand{\THMTAG}{\boxtag{[thm]}}
+\newcommand{\IDTAG}{\boxtag{[id]}}
+\newcommand{\DERTAG}{\boxtag{[der]}}
+\newcommand{\BRIDGETAG}{\boxtag{[bridge]}}
+\newcommand{\CONDTAG}{\boxtag{[cond]}}
+\newcommand{\CLTAG}{\boxtag{[closure]}}
+\newcommand{\VALTAG}{\boxtag{[val]}}
+\newcommand{\PREDTAG}{\boxtag{[pred]}}
+\newcommand{\THMRECTAG}{\boxtag{[thm-rec]}}
+\newcommand{\OUVTAG}{\boxtag{[open]}}
+\newcommand{\RECTAG}{\boxtag{[rec]}}
+
+% Margin note stubs (no-ops in article mode, active in monograph)
+\newcommand{\mTHM}{}
+\newcommand{\mID}{}
+\newcommand{\mDER}{}
+\newcommand{\mCL}{}
+\newcommand{\mVAL}{}
+\newcommand{\mPRED}{}
+\newcommand{\mCOND}{}
+\newcommand{\mBR}{}
+
+% Particles
+\newcommand{\Nc}{\ensuremath{N_c}}
+\newcommand{\nf}{\ensuremath{n_f}}
+\newcommand{\CF}{\ensuremath{C_F}}
+
+% Physical constants
+\newcommand{\GN}{\ensuremath{G_N}}
+\newcommand{\GF}{\ensuremath{G_F}}
+\newcommand{\mpl}{\ensuremath{m_{\mathrm{Pl}}}}
+
+% Formatting
+\newcommand{\PT}{\textsc{pt}\xspace}
+\newcommand{\SM}{\textsc{sm}\xspace}
+\newcommand{\GFT}{\textsc{gft}\xspace}
+\newcommand{\DIC}{\textsc{dic}\xspace}
+\newcommand{\CD}{\textsc{cd}\xspace}
+
+% Dependency tags
+\newcommand{\depTz}{\textsuperscript{\tiny[T0]}}
+\newcommand{\depMu}{\textsuperscript{\tiny[$\mu$]}}
+
+% Status labels
+\newcommand{\ptREC}{\boxtag{[rec]}}
+\newcommand{\ptDISS}{\boxtag{[diss]}}
+\newcommand{\ptTRAD}{\boxtag{[trad]}}
+\newcommand{\ptMETA}{\boxtag{[meta]}}
+
+% Mod shorthand
+\newcommand{\smod}[1]{\;\mathrm{mod}\;#1}
+
+% Derivation chain macro
+\newcommand{\derchain}[2]{%
+  \ensuremath{#1 \;\xrightarrow{\mathrm{PT}}\; #2}}
+
+% Part intro (no-op in article mode)
+\newcommand{\partintro}[1]{}
+
+% Sref (monograph reference)
+\newcommand{\sref}[1]{S#1}
+
+% Error cell
+\newcommand{\errorcell}[1]{\textcolor{red}{#1}}
+
+% Physical shorthand
+\newcommand{\alphaphys}{\ensuremath{\alpha_{\mathrm{phys}}}}
+
+% Verified/caution labels
+\newcommand{\verifiedlabel}[1]{%
+  \par\smallskip\noindent
+  \textcolor{idgreen}{\rule{2pt}{1em}}\;\textit{#1}%
+  \par\smallskip}
+\newcommand{\cautionlabel}[1]{%
+  \par\smallskip\noindent
+  \textcolor{derorange}{\rule{2pt}{1em}}\;\textit{#1}%
+  \par\smallskip}
+
+\endinput

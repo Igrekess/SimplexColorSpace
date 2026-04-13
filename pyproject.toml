@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "scs"
+version = "0.2.0"
+description = "Sieve Color Space — a first-principles color space from the Sieve of Eratosthenes"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.9"
+authors = [
+    { name = "Yan Senez" },
+]
+keywords = ["color", "colorimetry", "color-difference", "persistence-theory", "fisher-metric", "sieve"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Multimedia :: Graphics",
+]
+dependencies = [
+    "numpy>=1.20",
+]
+
+[project.urls]
+Repository = "https://github.com/yansenez/scs"
+
+[tool.hatch.build.targets.wheel]
+packages = ["scs"]
