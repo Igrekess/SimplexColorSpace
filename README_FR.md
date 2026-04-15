@@ -10,7 +10,7 @@ Un facteur de traduction (m_e = 0,511 MeV) convertit des unites naturelles
 du crible vers le SI ; tous les rapports et structures sont derives.
 
 
-[**Pour une démonstration rapide : **](https://igrekess.github.io/SimplexColorSpace/demonstration/module01_read_a_color_in_scs.html)[ Cliquer ici](https://igrekess.github.io/SimplexColorSpace/demonstration/module01_read_a_color_in_scs.html)
+[**Pour une démonstration rapide : **](https://igrekess.github.io/SimplexColorSpace/demonstration/demo.html)[ Cliquer ici](https://igrekess.github.io/SimplexColorSpace/demonstration/demo.html)
 
 **Nouveau (avril 2026) :** La formule SCS00 (CIEDE2000 + geodesique de Fisher-Bernoulli)
 **surpasse CIEDE2000** sur COMBVD (r = 0,893 vs 0,878, p < 0,0001).

@@ -9,7 +9,7 @@ A first-principles color space derived from
 
 All ratios and structures are derived.
 
-[**For a quick online demo :**](https://igrekess.github.io/SimplexColorSpace/demonstration/module01_read_a_color_in_scs.html)[ Click here](https://igrekess.github.io/SimplexColorSpace/demonstration/module01_read_a_color_in_scs.html)
+[**For a quick online demo :**](https://igrekess.github.io/SimplexColorSpace/demonstration/demo.html)[ Click here](https://igrekess.github.io/SimplexColorSpace/demonstration/demo.html)
 
 **New (April 2026):** The SCS00 formula (CIEDE2000 + Fisher-Bernoulli geodesic)
 **surpasses CIEDE2000** on COMBVD (r = 0.893 vs 0.878, p < 0.0001).
