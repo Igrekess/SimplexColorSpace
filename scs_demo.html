@@ -805,7 +805,7 @@ details.theory-panel summary::-webkit-details-marker { display: none; }
     <span class="module-num">01</span>
     <h2 data-i18n="m1_title">The Color Budget</h2>
   </div>
-  <p class="module-desc" data-i18n="m1_desc">A sunset: orange sun on blue sky. Switch between HSL and SCS to see how each system handles saturation and luminance. In HSL, push luminosity to 100% — everything turns white. In SCS, the budget S + L = log₂3 keeps colors distinct.</p>
+  <p class="module-desc" data-i18n="m1_desc">A sunset: orange sun on blue sky. Raise only the brightness control in each system. In HSL, increasing luminosity washes the colors toward white. In SCS, increasing luminance with a fixed simplex keeps the blue sky and orange sun distinct much longer.</p>
 
   <!-- Color pickers + mode toggle -->
   <div style="display:flex; align-items:center; gap:1.2rem; flex-wrap:wrap; margin-bottom:1rem;">
@@ -830,28 +830,22 @@ details.theory-panel summary::-webkit-details-marker { display: none; }
   <!-- HSL controls -->
   <div class="panel" id="m1-panel-hsl" style="margin-top:1rem;">
     <div class="slider-group">
-      <label data-i18n="saturation">Saturation</label>
-      <div class="slider-row">
-        <input type="range" id="m1-hsl-s" min="0" max="100" value="100">
-        <span class="slider-val" id="m1-hsl-s-val">100%</span>
-      </div>
-    </div>
-    <div class="slider-group">
       <label data-i18n="luminosity">Luminosity</label>
       <div class="slider-row">
         <input type="range" id="m1-hsl-l" min="0" max="100" value="50">
         <span class="slider-val" id="m1-hsl-l-val">50%</span>
       </div>
     </div>
-    <p style="font-size:0.75rem; color:var(--text-dim); margin-top:0.5rem;" data-i18n="m1_no_constraint">No constraint — S and L are free</p>
+    <p style="font-size:0.75rem; color:var(--text-dim); margin-top:0.5rem;" data-i18n="m1_no_constraint">Only HSL luminosity varies here — each base color keeps its original hue and saturation.</p>
   </div>
 
   <!-- SCS controls -->
   <div class="panel" id="m1-panel-scs" style="margin-top:1rem; border-color:var(--gold-dim); display:none;">
     <div class="slider-group">
-      <label data-i18n="m1_budget">Budget position (saturated ← → luminous)</label>
+      <label data-i18n="m1_budget">Luminance ℓ</label>
       <div class="slider-row">
-        <input type="range" id="m1-scs-alpha" min="0" max="100" value="50">
+        <input type="range" id="m1-scs-alpha" min="8" max="95" value="35">
+        <span class="slider-val" id="m1-scs-alpha-val">35%</span>
       </div>
     </div>
     <div class="gauge-group" style="margin-top:0.5rem;">
@@ -861,14 +855,14 @@ details.theory-panel summary::-webkit-details-marker { display: none; }
         <span class="gauge-val" id="m1-s-val">0.79</span>
       </div>
       <div class="gauge">
-        <label>L</label>
+        <label>ℓ</label>
         <div class="gauge-bar"><div class="gauge-fill lum-fill" id="m1-l-fill"></div></div>
-        <span class="gauge-val" id="m1-l-val">0.79</span>
+        <span class="gauge-val" id="m1-l-val">35%</span>
       </div>
       <div class="gauge">
-        <label>S+L</label>
+        <label>π</label>
         <div class="gauge-bar"><div class="gauge-fill total-fill" id="m1-t-fill" style="width:100%"></div></div>
-        <span class="gauge-val">= log₂3</span>
+        <span class="gauge-val" id="m1-t-val">fixed</span>
       </div>
     </div>
   </div>
@@ -1783,12 +1777,12 @@ const I18N = {
     luminance_entropy: "Luminance",
     hue_angle: "Hue θ",
     m1_title: "The Color Budget",
-    m1_desc: "A sunset: orange sun on blue sky. In HSL, pushing luminosity to 100% turns everything white — the sunset vanishes. In SCS, the conservation law S + L = log₂3 keeps the color relationship coherent at every position.",
+    m1_desc: "A sunset: orange sun on blue sky. Raise only the brightness control in each system. In HSL, increasing luminosity washes the colors toward white. In SCS, increasing luminance with a fixed simplex keeps the blue sky and orange sun distinct much longer.",
     m1_hsl_title: "Classic (HSL)",
     m1_scs_title: "SCS (conservation)",
-    m1_budget: "Budget position (saturated ← → luminous)",
-    m1_no_constraint: "No constraint — S and L are free",
-    m1_theory: '<code>S + L = log₂3</code> — exact algebraic identity (GFT, D02). Saturation <code>S = D_KL(π‖u)</code> is the Kullback-Leibler divergence from white. Luminance <code>L = H(π)</code> is the Shannon entropy of the chromatic distribution. Their sum is constant for any color on the simplex. Increasing one <em>must</em> decrease the other. Analogy: free energy + heat = total energy (1st law of thermodynamics). CIE has no equivalent conservation law.',
+    m1_budget: "Luminance ℓ",
+    m1_no_constraint: "Only HSL luminosity varies here — each base color keeps its original hue and saturation.",
+    m1_theory: 'In HSL, changing <code>L</code> mixes the color toward white or black, so the apparent saturation collapses as brightness rises. In SCS, this first scene varies the physical luminance <code>ℓ</code> while keeping the simplex coordinates <code>π</code> fixed. The hue direction and chromatic structure are therefore preserved much longer, even when the image becomes brighter. This is exactly the separation SCS is designed to make: luminance is not the same thing as desaturation.',
     m2_title: "The Koide Point",
     m2_desc: "Which saturation level is the most pleasing? A real perceptual test: choose among N patches across multiple random hues, then compare your average to the Koide prediction.",
     m2_reveal: "Show prediction",
@@ -1952,12 +1946,12 @@ const I18N = {
     luminance_entropy: "Luminance",
     hue_angle: "Teinte θ",
     m1_title: "Le Budget Couleur",
-    m1_desc: "Un coucher de soleil : soleil orange sur ciel bleu. En HSL, pousser la luminosité à 100% rend tout blanc — le coucher de soleil disparaît. En SCS, la loi de conservation S + L = log₂3 maintient la relation entre les couleurs à chaque position.",
+    m1_desc: "Un coucher de soleil : soleil orange sur ciel bleu. Ici, on ne fait varier que la luminosité dans chaque système. En HSL, augmenter la luminosité délavera les couleurs vers le blanc. En SCS, augmenter la luminance avec un simplexe fixé conserve beaucoup plus longtemps la distinction entre le ciel bleu et le soleil orange.",
     m1_hsl_title: "Classique (HSL)",
     m1_scs_title: "SCS (conservation)",
-    m1_budget: "Position sur le budget (saturé ← → lumineux)",
-    m1_no_constraint: "Aucune contrainte — S et L sont libres",
-    m1_theory: '<code>S + L = log₂3</code> — identité algébrique exacte (GFT, D02). La saturation <code>S = D_KL(π‖u)</code> est la divergence de Kullback-Leibler depuis le blanc. La luminance <code>L = H(π)</code> est l\'entropie de Shannon de la distribution chromatique. Leur somme est constante pour toute couleur sur le simplexe. Augmenter l\'une <em>doit</em> diminuer l\'autre. Analogie : énergie libre + chaleur = énergie totale (1er principe de la thermodynamique). Le CIE n\'a pas de loi de conservation équivalente.',
+    m1_budget: "Luminance ℓ",
+    m1_no_constraint: "Ici, seule la luminosité HSL varie — chaque couleur de départ garde sa teinte et sa saturation d’origine.",
+    m1_theory: 'En HSL, modifier <code>L</code> mélange la couleur avec le blanc ou le noir, donc la saturation apparente s’effondre quand la luminosité monte. Dans cette première scène SCS, on fait varier la luminance physique <code>ℓ</code> tout en gardant fixes les coordonnées du simplexe <code>π</code>. La direction de teinte et la structure chromatique sont donc préservées beaucoup plus longtemps, même quand l’image s’éclaircit. C’est précisément la séparation que le SCS cherche à établir : la luminance n’est pas la désaturation.',
     m2_title: "Le Point de Koide",
     m2_desc: "Quel niveau de saturation est le plus agréable ? Un vrai test perceptif : choisissez parmi N patchs sur plusieurs teintes aléatoires, puis comparez votre moyenne à la prédiction de Koide.",
     m2_reveal: "Montrer la prédiction",
@@ -2207,29 +2201,25 @@ function drawScene(bgRgb, fgRgb) {
 }
 
 function updateMod1() {
-  document.getElementById('m1-hsl-s-val').textContent = document.getElementById('m1-hsl-s').value + '%';
   document.getElementById('m1-hsl-l-val').textContent = document.getElementById('m1-hsl-l').value + '%';
 
   if (m1Mode === 'hsl') {
-    const s = +document.getElementById('m1-hsl-s').value / 100;
     const l = +document.getElementById('m1-hsl-l').value / 100;
-    const [hFg] = rgbToHsl(...m1Fg);
-    const [hBg] = rgbToHsl(...m1Bg);
-    drawScene(hslToRgb(hBg, s, l), hslToRgb(hFg, s, l));
+    const [hFg, sFg] = rgbToHsl(...m1Fg);
+    const [hBg, sBg] = rgbToHsl(...m1Bg);
+    drawScene(hslToRgb(hBg, sBg, l), hslToRgb(hFg, sFg, l));
   } else {
-    const t = +document.getElementById('m1-scs-alpha').value / 100;
-    const fgA = Math.min(1, t * m1RefFg.alpha / 0.5);
-    const bgA = Math.min(1, t * m1RefBg.alpha / 0.5);
-    const piFg = piAtAlpha(m1RefFg.bdr, fgA);
-    const piBg = piAtAlpha(m1RefBg.bdr, bgA);
-    // Use the display-oriented inverse so the simplex center stays visually neutral.
-    drawScene(piToRgb(piBg, m1RefBg.Y), piToRgb(piFg, m1RefFg.Y));
+    const ell = +document.getElementById('m1-scs-alpha').value / 100;
+    const piFg = m1RefFg.pi;
+    const piBg = m1RefBg.pi;
+    drawScene(piToRgb(piBg, ell), piToRgb(piFg, ell));
     const S = (scsSaturation(piFg) + scsSaturation(piBg)) / 2;
-    const L = (scsEntropy(piFg) + scsEntropy(piBg)) / 2;
     document.getElementById('m1-s-fill').style.width = (S / LOG2_3 * 100) + '%';
-    document.getElementById('m1-l-fill').style.width = (L / LOG2_3 * 100) + '%';
+    document.getElementById('m1-l-fill').style.width = (ell * 100) + '%';
     document.getElementById('m1-s-val').textContent = S.toFixed(3);
-    document.getElementById('m1-l-val').textContent = L.toFixed(3);
+    document.getElementById('m1-l-val').textContent = (ell * 100).toFixed(0) + '%';
+    document.getElementById('m1-scs-alpha-val').textContent = (ell * 100).toFixed(0) + '%';
+    document.getElementById('m1-t-val').textContent = 'fixed';
   }
 }
 
@@ -2249,7 +2239,7 @@ document.getElementById('m1-pick-bg').addEventListener('input', m1UpdateColors);
 
 
 
-['m1-hsl-s', 'm1-hsl-l', 'm1-scs-alpha'].forEach(id => {
+['m1-hsl-l', 'm1-scs-alpha'].forEach(id => {
   document.getElementById(id).addEventListener('input', updateMod1);
 });
 
