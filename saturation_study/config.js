@@ -1,0 +1,82 @@
+window.STUDY_CONFIG = {
+  supabaseUrl: "https://quwedlhgnhdbwjeuwltj.supabase.co",
+  publishableKey: "sb_publishable_45eIcLVFct2lcG-XGDvB0w_Hydd1alU",
+  protocolName: "ideal_saturation_reference_color",
+  studyVersion: "ideal-saturation-v1",
+  defaultPatchCount: 5,
+  defaultSeriesCount: 25,
+  referenceSaturation: 0.55,
+  koide: 0.70710678,
+  families: [
+    { name_fr: "Bleu", name_en: "Blue", h: 220/360, l: 0.58 },
+    { name_fr: "Orange", name_en: "Orange", h: 28/360, l: 0.58 },
+    { name_fr: "Vert", name_en: "Green", h: 140/360, l: 0.52 },
+    { name_fr: "Violet", name_en: "Violet", h: 282/360, l: 0.56 },
+    { name_fr: "Peau claire", name_en: "Light skin", h: 24/360, l: 0.68 },
+    { name_fr: "Peau foncée", name_en: "Dark skin", h: 20/360, l: 0.42 }
+  ],
+  saturationGrid: {
+    3: [0.20, 0.55, 0.90],
+    5: [0.15, 0.35, 0.55, 0.75, 0.95],
+    7: [0.08, 0.22, 0.38, 0.56, 0.71, 0.86, 0.98]
+  }
+};
+
+window.I18N = {
+  fr: {
+    siteTitle: "Étude",
+    siteTagline: "Saturation idéale",
+    consentTitle: "Consentement et lancement",
+    consentBody: "Cette étude vous demande de choisir, pour plusieurs couleurs de référence, le niveau de saturation qui vous paraît le plus agréable. Les réponses sont enregistrées de manière anonyme.",
+    consentLabel: "J’accepte de participer à cette étude anonyme.",
+    patches: "Patches",
+    series: "Séries",
+    start: "Commencer",
+    connected: "Projet Supabase connecté",
+    instructionShort: "Consigne : cliquez sur la couleur dont la saturation vous paraît la plus agréable : ni trop faible, ni trop intense.",
+    mustConsent: "Vous devez accepter pour commencer.",
+    testTitle: "Test",
+    anonCode: "Code anonyme",
+    referenceTitle: "Couleur de référence",
+    fixedHL: "teinte fixe, luminance fixe",
+    instruction: "Cliquez sur la couleur dont la saturation vous paraît la plus agréable : ni trop faible, ni trop intense.",
+    trial: "Essai",
+    finalizing: "Finalisation…",
+    initError: "Erreur d’initialisation",
+    saveError: "Erreur d'enregistrement",
+    completeError: "Erreur de clôture",
+    thanksTitle: "Merci",
+    thanksTagline: "Session enregistrée",
+    thanksBody: "Votre session a bien été enregistrée.",
+    session: "Session",
+    backHome: "Revenir à l’accueil"
+  },
+  en: {
+    siteTitle: "Study",
+    siteTagline: "Ideal saturation",
+    consentTitle: "Consent and start",
+    consentBody: "This study asks you to choose, for several reference colors, the saturation level that feels the most pleasant. Responses are recorded anonymously.",
+    consentLabel: "I agree to participate in this anonymous study.",
+    patches: "Patches",
+    series: "Series",
+    start: "Start",
+    connected: "Supabase project connected",
+    instructionShort: "Instruction: click the color whose saturation feels the most pleasant: neither too weak nor too intense.",
+    mustConsent: "You must accept before starting.",
+    testTitle: "Test",
+    anonCode: "Anonymous code",
+    referenceTitle: "Reference color",
+    fixedHL: "fixed hue, fixed luminance",
+    instruction: "Click the color whose saturation feels the most pleasant: neither too weak nor too intense.",
+    trial: "Trial",
+    finalizing: "Finalizing…",
+    initError: "Initialization error",
+    saveError: "Save error",
+    completeError: "Completion error",
+    thanksTitle: "Thank you",
+    thanksTagline: "Session recorded",
+    thanksBody: "Your session has been successfully recorded.",
+    session: "Session",
+    backHome: "Back to home"
+  }
+};
