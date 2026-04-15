@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SCS — Demo Index</title>
+<style>
+:root{
+  --bg:#0a0a0a; --surface:#141414; --surface2:#1e1e1e; --border:#2a2a2a;
+  --text:#e0e0e0; --text-dim:#8a8a8a; --gold:#c8a84e; --gold-dim:#8a7234;
+  --radius:14px; --maxw:1180px; --blue:#6688bb; --green:#50c870;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; padding:0 16px 42px; background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+}
+header,main{max-width:var(--maxw);margin:0 auto}
+header{padding:28px 0 18px;border-bottom:1px solid var(--border)}
+.header-row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+h1{margin:0;font-size:2rem;letter-spacing:-0.02em}
+h1 span{color:var(--gold)}
+.tagline{margin:6px 0 0;color:var(--text-dim);line-height:1.55;max-width:850px}
+.lang-toggle{display:flex;gap:6px}
+.btn{
+  appearance:none;border:1px solid var(--border);cursor:pointer;background:var(--surface2);
+  color:var(--text);padding:10px 14px;font-weight:600;border-radius:10px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center
+}
+.btn:hover,.btn.active{border-color:var(--gold);color:#fff}
+.lang-btn{padding:8px 12px;font-size:.82rem}
+.lang-btn.active{color:var(--gold)}
+.section{margin-top:28px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.card{
+  background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:18px;
+  display:flex; flex-direction:column; gap:12px; min-height:220px;
+}
+.card.study{border-color:var(--gold-dim)}
+.card-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.badge{
+  display:inline-flex;align-items:center;justify-content:center;min-width:54px;padding:4px 10px;border-radius:999px;
+  background:rgba(200,168,78,.12);color:var(--gold);font-size:.74rem;font-weight:700;letter-spacing:.04em
+}
+.card h2{margin:0;font-size:1.15rem;line-height:1.3}
+.card p{margin:0;color:var(--text-dim);line-height:1.58;font-size:.92rem}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin-top:auto}
+.secondary{background:#101010;color:var(--text-dim)}
+.secondary:hover{color:#fff}
+.hero{
+  margin-top:24px;padding:20px;background:linear-gradient(180deg,#131313,#0d0d0d);border:1px solid var(--border);border-radius:18px
+}
+.hero .eyebrow{
+  font-size:.74rem;text-transform:uppercase;letter-spacing:.09em;color:var(--gold-dim);margin-bottom:10px
+}
+.hero p{margin:0;color:var(--text-dim);line-height:1.62;max-width:920px}
+.footer-note{margin-top:18px;color:var(--text-dim);font-size:.82rem}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--gold)}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-row">
+    <div>
+      <h1><span>SCS</span> — <span data-i18n="headerTitle">Demo Index</span></h1>
+      <p class="tagline" data-i18n="tagline">
+        This page gathers the SCS demonstration modules and the public saturation study in one place.
+      </p>
+    </div>
+    <div class="lang-toggle">
+      <button class="btn lang-btn" id="lang-fr">FR</button>
+      <button class="btn lang-btn" id="lang-en">EN</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="eyebrow" data-i18n="heroEyebrow">Navigation</div>
+    <p data-i18n="heroText">
+      Use this page as a simple entry point. The four modules are local HTML demos. The saturation study opens the public study page hosted online.
+    </p>
+  </section>
+
+  <section class="section">
+    <div class="grid">
+      <article class="card">
+        <div class="card-top">
+          <div>
+            <div class="badge">01</div>
+          </div>
+          <h2 data-i18n="m1Title">Read a Color in SCS</h2>
+        </div>
+        <p data-i18n="m1Desc">
+          Interactive reading of a color in ℓRGB / simplex terms, with luminance, chromatic direction, and saturation controls.
+        </p>
+        <div class="links">
+          <a class="btn" href="module01_read_a_color_in_scs.html" data-i18n="openModule">Open module</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-top">
+          <div>
+            <div class="badge">02</div>
+          </div>
+          <h2 data-i18n="m2Title">The Sunset Example</h2>
+        </div>
+        <p data-i18n="m2Desc">
+          Demonstration of a high-contrast sunset scene to compare HSL and SCS, with local structure and budget reading.
+        </p>
+        <div class="links">
+          <a class="btn" href="module02_the_sunset_example.html" data-i18n="openModule">Open module</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-top">
+          <div>
+            <div class="badge">03</div>
+          </div>
+          <h2 data-i18n="m3Title">Skin Tone Protection</h2>
+        </div>
+        <p data-i18n="m3Desc">
+          Comparison between HSL and geodesic SCS saturation boost, focused on preserving complexion and hue direction.
+        </p>
+        <div class="links">
+          <a class="btn" href="module03_skin_tone_protection.html" data-i18n="openModule">Open module</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-top">
+          <div>
+            <div class="badge">04</div>
+          </div>
+          <h2 data-i18n="m4Title">Equilibrium</h2>
+        </div>
+        <p data-i18n="m4Desc">
+          Load an image and move it along a global luminance / saturation balance axis, with optional protections for sensitive regions.
+        </p>
+        <div class="links">
+          <a class="btn" href="module04_equilibrium.html" data-i18n="openModule">Open module</a>
+        </div>
+      </article>
+
+      <article class="card study" style="grid-column:1 / -1">
+        <div class="card-top">
+          <div>
+            <div class="badge" style="background:rgba(80,200,112,.12);color:var(--green)">Study</div>
+          </div>
+          <h2 data-i18n="studyTitle">Saturation Study</h2>
+        </div>
+        <p data-i18n="studyDesc">
+          Open the online study to participate in the saturation experiment and access the dedicated study interface.
+        </p>
+        <div class="links">
+          <a class="btn" href="https://igrekess.github.io/SimplexColorSpace/saturation_study/index.html" target="_blank" rel="noopener noreferrer" data-i18n="participateStudy">Participate in the study</a>
+        </div>
+      </article>
+    </div>
+
+    <p class="footer-note" data-i18n-html="footerNote">
+      Expected local filenames: <code>module01_read_a_color_in_scs.html</code>, <code>module02_the_sunset_example.html</code>, <code>module03_skin_tone_protection.html</code>, <code>module04_equilibrium.html</code>.
+    </p>
+  </section>
+</main>
+
+<script>
+const I18N = {
+  fr: {
+    headerTitle: "Demo Index",
+    tagline: "Cette page rassemble les modules de démonstration SCS et l’étude publique de saturation en un seul endroit.",
+    heroEyebrow: "Navigation",
+    heroText: "Utilisez cette page comme point d’entrée simple. Les quatre modules sont des démos HTML locales. L’étude de saturation ouvre la page publique de l’étude, hébergée en ligne.",
+    m1Title: "Read a Color in SCS",
+    m1Desc: "Lecture interactive d’une couleur en termes de mode ℓRGB / simplexe, avec contrôles de luminance, direction chromatique et saturation.",
+    m2Title: "The Sunset Example",
+    m2Desc: "Démonstration d’une scène de coucher de soleil à fort contraste pour comparer HSL et SCS, avec lecture de structure locale et de budget.",
+    m3Title: "Skin Tone Protection",
+    m3Desc: "Comparaison entre boost de saturation HSL et boost géodésique SCS, centrée sur la préservation de la carnation et de la direction de teinte.",
+    m4Title: "Equilibrium",
+    m4Desc: "Chargez une image et déplacez-la le long d’un axe global d’équilibre luminance / saturation, avec protections optionnelles pour les zones sensibles.",
+    studyTitle: "Saturation Study",
+    studyDesc: "Ouvre l’étude en ligne pour participer à l’expérience sur la saturation et accéder à l’interface dédiée.",
+    openModule: "Ouvrir le module",
+    participateStudy: "Participer à l’étude",
+    footerNote: "Noms de fichiers locaux attendus : <code>module01_read_a_color_in_scs.html</code>, <code>module02_the_sunset_example.html</code>, <code>module03_skin_tone_protection.html</code>, <code>module04_equilibrium.html</code>."
+  },
+  en: {
+    headerTitle: "Demo Index",
+    tagline: "This page gathers the SCS demonstration modules and the public saturation study in one place.",
+    heroEyebrow: "Navigation",
+    heroText: "Use this page as a simple entry point. The four modules are local HTML demos. The saturation study opens the public study page hosted online.",
+    m1Title: "Read a Color in SCS",
+    m1Desc: "Interactive reading of a color in ℓRGB / simplex terms, with luminance, chromatic direction, and saturation controls.",
+    m2Title: "The Sunset Example",
+    m2Desc: "Demonstration of a high-contrast sunset scene to compare HSL and SCS, with local structure and budget reading.",
+    m3Title: "Skin Tone Protection",
+    m3Desc: "Comparison between HSL and geodesic SCS saturation boost, focused on preserving complexion and hue direction.",
+    m4Title: "Equilibrium",
+    m4Desc: "Load an image and move it along a global luminance / saturation balance axis, with optional protections for sensitive regions.",
+    studyTitle: "Saturation Study",
+    studyDesc: "Open the online study to participate in the saturation experiment and access the dedicated study interface.",
+    openModule: "Open module",
+    participateStudy: "Participate in the study",
+    footerNote: "Expected local filenames: <code>module01_read_a_color_in_scs.html</code>, <code>module02_the_sunset_example.html</code>, <code>module03_skin_tone_protection.html</code>, <code>module04_equilibrium.html</code>."
+  }
+};
+
+function detectLang(){
+  const saved = localStorage.getItem('demo_index_lang');
+  if(saved === 'fr' || saved === 'en') return saved;
+  return (navigator.language || '').toLowerCase().startsWith('fr') ? 'fr' : 'en';
+}
+let currentLang = detectLang();
+
+function applyLanguage(lang){
+  currentLang = lang;
+  localStorage.setItem('demo_index_lang', lang);
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (I18N[lang][key]) el.textContent = I18N[lang][key];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    if (I18N[lang][key]) el.innerHTML = I18N[lang][key];
+  });
+  document.getElementById('lang-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+}
+
+document.getElementById('lang-fr').addEventListener('click', () => applyLanguage('fr'));
+document.getElementById('lang-en').addEventListener('click', () => applyLanguage('en'));
+
+applyLanguage(currentLang);
+</script>
+</body>
+</html>
