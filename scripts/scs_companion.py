@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
-SCPT Companion Script — Persistence Chromatic System
-=====================================================
+SCS Companion Script — Sieve Color Space
+=========================================
 
 Computes all PT-derived color quantities at mu*=15 and generates
 publication-quality figures for the PT_COLOR article.
 
 Usage:
-    python scpt_companion.py              # Run all computations + generate figures
-    python scpt_companion.py --verify     # Run numerical verifications only
-    python scpt_companion.py --figures    # Generate figures only
+    python scs_companion.py              # Run all computations + generate figures
+    python scs_companion.py --verify     # Run numerical verifications only
+    python scs_companion.py --figures    # Generate figures only
 
 All figures saved to ../figures/ as PDF.
 
@@ -176,7 +176,7 @@ def fisher_metric(pi, gamma):
 def verify_all():
     """Run all numerical checks. Returns True if all pass."""
     print("=" * 60)
-    print("SCPT NUMERICAL VERIFICATION")
+    print("SCS NUMERICAL VERIFICATION")
     print("=" * 60)
 
     all_pass = True

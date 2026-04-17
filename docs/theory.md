@@ -87,12 +87,12 @@ s = 1/2                              (unique input, T0)
   -> Fisher metric on simplex         (Cencov uniqueness theorem)
   -> Bhattacharyya geodesic on D^2    (geodesic of Fisher metric)
   -> 3/4 luminance + 1/4 chroma       (N/(N+1) balance)
-  -> dE_SCT                          (color difference formula)
+  -> dE_SCS                          (color difference formula)
 ```
 
 Zero fitted parameters at every step.
 
 ## Reference
 
-Y. Senez, *"The Simplex Color Transform: A First-Principles Color Space
+Y. Senez, *"The Sieve Color Space: A First-Principles Color Space
 from the Sieve of Eratosthenes"* (2026). See `article/` directory.

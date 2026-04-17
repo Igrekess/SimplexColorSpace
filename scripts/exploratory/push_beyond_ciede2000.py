@@ -4,7 +4,7 @@ Push Beyond CIEDE2000 — Systematic exploration
 ================================================
 
 Current best: Model 20i at r = 0.8849 (ΔE₀₀ + d_lum + d_lum² + dark)
-Target: find the minimal SCT-derived model that CLEARLY surpasses CIEDE2000.
+Target: find the minimal SCS-derived model that CLEARLY surpasses CIEDE2000.
 
 Strategies:
   A. Fisher-LAB: replace CIELAB's t^{1/3} with t^{1/2} everywhere
@@ -12,7 +12,7 @@ Strategies:
   C. Per-channel Fisher geodesics on raw LMS (not simplex-normalized)
   D. Opponent channels in Fisher coordinates
   E. Polynomial / interaction features
-  F. Full SCT-native ΔE from scratch (no CIELAB dependency)
+  F. Full SCS-native ΔE from scratch (no CIELAB dependency)
 """
 
 import numpy as np
@@ -23,10 +23,10 @@ from sklearn.linear_model import Ridge
 from sklearn.preprocessing import StandardScaler, PolynomialFeatures
 from sklearn.model_selection import KFold
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from sct_ciede2000_analysis import ciede2000
-from delta_e_scpt import xyz_to_lms, lms_to_simplex, M_HPE
-from scpt_companion import gamma_p, MU_STAR, Q_REL, PRIMES
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from scs_ciede2000_analysis import ciede2000
+from delta_e_scs import xyz_to_lms, lms_to_simplex, M_HPE
+from scs_companion import gamma_p, MU_STAR, Q_REL, PRIMES
 
 GAMMAS = np.array([gamma_p(3), gamma_p(5), gamma_p(7)])
 G3, G5, G7 = GAMMAS
@@ -340,10 +340,10 @@ def main():
     print(f"  E3. (ΔE₀₀, dξ_L,M,S) deg-2:     r = {r_e3:.4f}  ({X_e3.shape[1]} feat)")
 
     # ════════════════════════════════════════════════════════════
-    # F. FULL SCT-NATIVE ΔE (NO CIELAB DEPENDENCY)
+    # F. FULL SCS-NATIVE ΔE (NO CIELAB DEPENDENCY)
     # ════════════════════════════════════════════════════════════
     print("\n" + "=" * 70)
-    print("F. FULL SCT-NATIVE (NO CIELAB)")
+    print("F. FULL SCS-NATIVE (NO CIELAB)")
     print("=" * 70)
 
     # Can we match CIEDE2000 without any CIELAB/CIEDE2000 input?
@@ -414,11 +414,11 @@ def main():
         for name, r, nf in sorted(beats, key=lambda x: -x[1]):
             print(f"    {name:<48s} r = {r:.4f} (+{r-r_00:.4f}), {nf} feat")
 
-    # Best SCT-only (no CIELAB)
-    sct_only = [(n, r, f) for n, r, f in results if 'no CIELAB' in n]
-    if sct_only:
-        print(f"\n  Best SCT-native (no CIELAB dependency):")
-        for name, r, nf in sorted(sct_only, key=lambda x: -x[1])[:3]:
+    # Best SCS-only (no CIELAB)
+    scs_only = [(n, r, f) for n, r, f in results if 'no CIELAB' in n]
+    if scs_only:
+        print(f"\n  Best SCS-native (no CIELAB dependency):")
+        for name, r, nf in sorted(scs_only, key=lambda x: -x[1])[:3]:
             print(f"    {name:<48s} r = {r:.4f}, {nf} feat")
 
 

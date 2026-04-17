@@ -99,6 +99,13 @@ pre{
     </div>
 
     <div class="row">
+      <label><input type="radio" name="protocol" value="classic" checked /> <span data-i18n="protocolClassic"></span></label>
+    </div>
+    <div class="row">
+      <label><input type="radio" name="protocol" value="staircase" /> <span data-i18n="protocolStaircase"></span></label>
+    </div>
+
+    <div class="row">
       <button class="primary" id="startBtn" data-i18n="start"></button>
       <span class="badge" data-i18n="connected"></span>
     </div>
@@ -129,18 +136,23 @@ document.getElementById('startBtn').addEventListener('click', async () => {
     return;
   }
 
+  const protocol = document.querySelector('input[name="protocol"]:checked').value;
+  const isStaircase = protocol === 'staircase';
+
   const setup = {
     consent_given: true,
     patch_count: Number(document.getElementById('patchCount').value),
     series_count: Number(document.getElementById('seriesCount').value),
-    test_instruction: t('instruction'),
-    protocol_name: window.STUDY_CONFIG.protocolName,
+    test_instruction: isStaircase ? t('staircaseInstruction') : t('instruction'),
+    protocol_name: isStaircase
+      ? window.STUDY_CONFIG.staircase.protocolName
+      : window.STUDY_CONFIG.protocolName,
     study_version: window.STUDY_CONFIG.studyVersion,
     session_seed: createSeed()
   };
 
   sessionStorage.setItem('study_setup', JSON.stringify(setup));
-  location.href = 'study.html';
+  location.href = isStaircase ? 'study_staircase.html' : 'study.html';
 });
 
 applyLang(detectLang());

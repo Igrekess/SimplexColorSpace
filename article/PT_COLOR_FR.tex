@@ -17,93 +17,158 @@ Un Espace de Couleurs D\'eriv\'e du Crible d'\'Eratosth\`ene}
 \maketitle
 
 \begin{abstract}
-Le syst\`eme colorim\'etrique CIE (1931, 1976) d\'ecrit la perception
-humaine des couleurs au moyen de fonctions d'observateur mesur\'ees
-empiriquement et de corrections ad hoc pour l'uniformit\'e perceptive.
-Nous montrons que la Th\'eorie de la Persistance (PT) d\'erive la
-\emph{m\^eme} structure --- et davantage --- \`a partir d'une seule
-entr\'ee ($s = 1/2$) et de z\'ero param\`etres ajustables. Le crible
-d'\'Eratosth\`ene produit quatre nombres premiers pertinents :
-$p = 2$ (fondation de luminance) et $\{3, 5, 7\}$ (les trois canaux
-chromatiques actifs). Le \emph{Sieve Color Space}
-(SCS) qui en r\'esulte poss\`ede une conservation exacte
-($\DKL + H = \log 3$), une m\'etrique courbe naturelle (information de
-Fisher pond\'er\'ee par $\gamp{p}$), une compl\'ementarit\'e
-alg\'ebrique ($\sin^2 + \cos^2 = 1$) et une saturation optimale
-d\'eriv\'ee \`a $1/\sqrt{2} \approx 70{,}7\%$ (\'equilibre de Koide).
-Nous comparons les pr\'edictions du SCS aux donn\'ees CIE, aux
-ellipses de MacAdam et aux universaux de Berlin--Kay. En tant que
-m\'etrique autonome \`a z\'ero param\`etre, le SCS surpasse CIELAB dans
-la r\'egion sombre ($r = 0{,}625$ contre $0{,}558$ pour $L^* < 25$)
-tout en restant inf\'erieur globalement ($r = 0{,}500$ contre
-$0{,}755$), refl\'etant l'\'ecart attendu entre g\'eom\'etrie au seuil
-(d\'eriv\'ee) et apparence supra-liminaire (corticale). Un mod\`ele
-hybride SCS\,+\,CAM02 surpasse CIELAB ($r = 0{,}824$ contre
-$0{,}755$) gr\^ace \`a une architecture factoris\'ee s\'eparant la
-g\'eom\'etrie r\'etinienne d\'eriv\'ee du traitement cortical mesur\'e
---- \`a notre connaissance la premi\`ere d\'ecomposition de ce type.
-Sur les 25 ellipses de discrimination de MacAdam, la m\'etrique SCS
-gagne 18/25 avec z\'ero param\`etre contre trois pour CIELAB.
-La combinaison de CIEDE2000 avec la g\'eod\'esique de
-Fisher--Bernoulli via une interaction polyn\^omiale ($\Delta
-E_{\mathrm{SCS00}}$) \emph{surpasse} CIEDE2000 lui-m\^eme
-($r = 0{,}893$ contre $0{,}878$, $p < 0{,}0001$) avec le m\^eme
-nombre de param\`etres, d\'emontrant que la g\'eom\'etrie d\'eriv\'ee
-apporte une information que le mod\`ele cortical seul ne capture pas.
-L'article propose le SCS comme fondement g\'eom\'etrique principiel
-de la science des couleurs, d\'erivant de premiers principes des
-structures que le CIE suppose ou ajuste empiriquement.
-Cet article est autonome~: un appendice contient les d\'emonstrations
-compl\`etes de tous les r\'esultats de la Th\'eorie de la Persistance
-utilis\'es --- transitions interdites du crible, param\`etre $s = 1/2$,
-th\'eor\`eme fondamental des \'ecarts, bifurcation
-sommet--ar\^ete, identit\'e d'holonomie, dimensions anomales, crit\`ere
-de premier actif et point fixe $\mustar = 15$ --- de sorte qu'aucune
-r\'ef\'erence ext\'erieure n'est n\'ecessaire pour v\'erifier la
-cha\^ine d\'eductive.
+Nous proposons le \emph{Sieve Color Space} (SCS), un substrat
+informationnel et g\'eom\'etrique pour la couleur d\'eriv\'e d'une
+seule hypoth\`ese ($s = 1/2$) sur un syst\`eme dynamique d'\'ecarts
+premiers. La construction produit une m\'etrique de Fisher \`a z\'ero
+param\`etre sur un simplexe \`a trois canaux dont les poids
+$\gamp{3} > \gamp{5} > \gamp{7}$ sont calcul\'es et non ajust\'es, et
+reproduisent l'ordre des bandes passantes des c\^ones L$>$M$>$S.
+
+\medskip\noindent\textbf{Performance honn\^ete sur COMBVD
+($n = 3813$).} En m\'etrique autonome \`a z\'ero param\`etre, le SCS
+pur se situe \emph{en de\c{c}\`a} de CIELAB globalement
+($r = 0{,}500$ contre $0{,}755$) --- ce qui est attendu, la m\'etrique
+de Fisher \'etant th\'eoriquement exacte uniquement au seuil. Il
+l'emporte dans deux r\'egimes~: la r\'egion sombre ($r = 0{,}625$
+contre $0{,}558$ pour $L^* < 25$, l\`a o\`u la branche lin\'eaire de
+CIELAB aplatit la sensibilit\'e) et l'\emph{orientation} des ellipses
+de MacAdam (18/25 victoires avec z\'ero param\`etre contre trois pour
+CIELAB). Trait\'e comme un canal d'information additif venant
+compl\'eter un mod\`ele cortical mesur\'e, le SCS am\'eliore les
+hybrides \`a base de CIECAM02 ($r = 0{,}824$ contre $0{,}755$ pour
+CIELAB, six poids r\'egress\'es) comme CIEDE2000
+($\Delta E_{\mathrm{SCS00}}$~: $r = 0{,}893$ contre $0{,}878$,
+$p < 0{,}0001$, cinq poids r\'egress\'es). Les hybrides utilisent des
+param\`etres ajust\'es et sont identifi\'es comme tels tout au long de
+l'article.
+
+\medskip\noindent\textbf{Positionnement.} Le SCS est propos\'e comme
+\emph{couche} g\'eom\'etrique principielle dans une architecture
+factoris\'ee d'apparence des couleurs --- aux c\^ot\'es d'iCAM
+(Fairchild \& Johnson, 2004), de CAM02-UCS (Luo et al., 2006) et de
+J\textsubscript{z}A\textsubscript{z}B\textsubscript{z}
+(Safdar et al., 2017) --- et non comme rempla\c{c}ant de l'outillage
+CIE. L'adaptation chromatique, la sensibilit\'e spectrale au-del\`a
+de la lin\'earisation HPE, les conditions d'observation, le
+\emph{flare} et la variabilit\'e inter-observateurs sont
+explicitement hors champ (\S\ref{sec:scope_limits})~; CIECAM02 et
+$\Delta E^*_{00}$ demeurent les outils appropri\'es l\`a o\`u ces
+effets dominent.
+
+\medskip\noindent\textbf{Invitations ouvertes.} Trois pr\'edictions
+falsifiables, chacune r\'ealisable en trois mois d'exp\'erience, sont
+\'enonc\'ees en \S\ref{sec:open_problems}~: un test JND nul au point
+de saturation de Koide $S/S_{\max} = 1/\sqrt{2}$~; un plafond de
+discrimination chromatique \`a $3 \times 5 \times 7 = 105$ \'etats,
+motiv\'e par le CRT~; et la signature d'un quatri\`eme canal issu de
+$p = 11$ chez les t\'etrachromates. Le code, les d\'ecoupages COMBVD,
+les ajustements MacAdam et un classement public sont diffus\'es
+\`a \href{https://github.com/Igrekess/SieveColorSpace}{github.com/Igrekess/SieveColorSpace}.
+Nous ne pr\'etendons pas que le SCS soit achev\'e~; nous affirmons
+qu'il est testable.
+Cet article est autonome~: un appendice fournit les d\'erivations
+autonomes des r\'esultats de la Th\'eorie de la Persistance utilis\'es
+--- transitions interdites du crible, param\`etre $s = 1/2$, r\`egle
+de somme, bifurcation sommet--ar\^ete, identit\'e d'holonomie,
+dimensions anomales, crit\`ere de premier actif et point fixe
+$\mustar = 15$ --- de sorte qu'aucune r\'ef\'erence ext\'erieure n'est
+n\'ecessaire pour v\'erifier la cha\^ine d\'eductive.
 \end{abstract}
 
 \tableofcontents
 \newpage
 
 % ============================================================
-\section{Introduction : pourquoi le CIE ne suffit pas}
+\section{Relation au cadre CIE : ce qui est d\'erivable, ce qui est mesur\'e}
 \label{sec:intro}
 % ============================================================
 
-La Commission Internationale de l'\'Eclairage (CIE) a \'etabli le
-cadre moderne de la science des couleurs en 1931. Son syst\`eme
-tristimulus $(X, Y, Z)$ et son diagramme de chromaticit\'e $(x, y)$
-demeurent le fondement de la colorim\'etrie industrielle, du calibrage
-des \'ecrans et de la recherche perceptive.
+Le cadre de la Commission Internationale de l'\'Eclairage (CIE) ---
+tristimulus $(X, Y, Z)$, chromaticit\'e $(x, y)$, l'espace uniforme
+CIELAB de 1976 et la formule de diff\'erence de couleur CIEDE2000 ---
+constitue la fondation empirique de la colorim\'etrie moderne. Il
+fonctionne~: il sert de socle au calibrage industriel, \`a la
+fabrication d'\'ecrans, \`a l'imagerie m\'edicale et \`a cinquante ans
+de psychophysique. Tout substrat propos\'e doit expliquer son propre
+r\^ole par rapport \`a cette infrastructure, non contre elle.
 
-Pourtant, le cadre CIE pr\'esente des limites structurelles bien
-connues :
+La Th\'eorie de la Persistance (PT) propose un substrat g\'eom\'etrique
+\emph{compl\'ementaire}. Le Sieve Color Space (SCS) construit
+ci-dessous d\'erive, \`a partir d'une seule entr\'ee ($s = 1/2$ sur un
+syst\`eme dynamique d'\'ecarts premiers), cinq traits que le CIE prend
+pour mesur\'es ou choisis par convention~:
 
 \begin{enumerate}[nosep]
-\item \textbf{Espace non uniforme.} Des distances \'egales dans le
-  diagramme $(x,y)$ ne correspondent pas \`a des diff\'erences de
-  couleur per\c{c}ues \'egales. Les ellipses de MacAdam (1942) ont
-  r\'ev\'el\'e que la discrimination varie d'un facteur
-  $\sim\!20$ \`a travers le diagramme.
-\item \textbf{Corrections empiriques.} CIELAB (1976) a tent\'e d'y
-  rem\'edier par une transformation en racine cubique. La correction
-  est pratique mais n'a aucune d\'erivation th\'eorique --- c'est un
-  ajustement, pas une loi.
-\item \textbf{Aucun principe de conservation.} Il n'existe pas
-  d'identit\'e CIE reliant saturation et luminance. Le compromis entre
-  les deux est observ\'e mais pas expliqu\'e.
-\item \textbf{Pas de compl\'ementarit\'e structurelle.} Les couleurs
-  compl\'ementaires sont d\'efinies par la g\'eom\'etrie du diagramme,
-  non d\'eriv\'ees d'une partition sous-jacente.
-\item \textbf{Trois, mais pourquoi ?} La base tristimulus est
-  consid\'er\'ee comme un donn\'e biologique. Le CIE n'explique ni
-  pourquoi trois canaux, ni pourquoi leur hi\'erarchie
-  (L $>$ M $>$ S en bande passante).
+\item \textbf{Une m\'etrique d\'eriv\'ee.} La non-lin\'earit\'e en
+  racine cubique de CIELAB est un choix de conception empirique. Le
+  SCS propose une m\'etrique d'information de Fisher sur un simplexe
+  de probabilit\'e \`a trois canaux~; la racine cubique de CIELAB se
+  r\'ev\`ele \^etre une approximation d'ordre bas de la coordonn\'ee
+  exacte de Bhattacharyya associ\'ee \`a cette m\'etrique
+  (\S\ref{sec:comparison}).
+\item \textbf{Une r\`egle de somme saturation--luminance.} Le CIE n'a
+  pas d'identit\'e reliant les deux~; le SCS h\'erite de
+  $\DKL + H = \log 3$, cons\'equence de d\'efinitions
+  informationnelles appliqu\'ees \`a une distribution \`a trois issues
+  (\S\ref{sec:scs}).
+\item \textbf{L'additif et le soustractif comme deux branches.} La
+  dualit\'e RVB/CMJ est une convention pratique en CIE. Le SCS la lit
+  comme deux branches chirales du crible, chacune param\'etr\'ee par
+  un seul angle $\theta_p$ (\S\ref{sec:scs}).
+\item \textbf{Trois canaux, avec une hi\'erarchie.} La trichromatie est
+  un donn\'e biologique en CIE. Le SCS d\'erive qu'exactement trois
+  premiers $\{3, 5, 7\}$ sont actifs \`a $\mustar = 15$ et fournit
+  l'ordre strict $\gamp{3} > \gamp{5} > \gamp{7}$ qui s'aligne sur
+  l'ordre des bandes passantes des c\^ones L$>$M$>$S
+  (\S\ref{sec:foundation}).
+\item \textbf{Un point de saturation optimale.} Les \'etudes de
+  pr\'ef\'erence perceptive se regroupent autour de $65$--$75\%$ de la
+  saturation maximale sans raison structurelle~; le SCS pr\'edit un
+  \'equilibre de Koide \`a $1/\sqrt{2} \approx 70{,}7\%$ et propose un
+  test JND de choix forc\'e plus tranchant pour le discriminer de son
+  voisinage (\S\ref{sec:scs}).
 \end{enumerate}
 
-La Th\'eorie de la Persistance (PT) r\'esout ces cinq limitations
-\`a partir d'une seule entr\'ee et de z\'ero param\`etres.
+La m\'etrique SCS autonome ne remplace \emph{pas} CIELAB~: en
+g\'eod\'esique pure \`a z\'ero param\`etre ajust\'e, elle se situe
+globalement en de\c{c}\`a de CIELAB sur COMBVD, et ne d\'epasse
+CIELAB que dans des r\'egimes sp\'ecifiques (r\'egion sombre,
+orientation des ellipses de MacAdam). L\`a o\`u le SCS justifie sa
+place, c'est comme \emph{canal d'information suppl\'ementaire} par
+dessus les mod\`eles corticaux existants~: SCS\,+\,CIECAM02 surpasse
+CIELAB globalement, et $\Delta E_{\mathrm{SCS00}}$ (un hybride
+ajust\'e avec CIEDE2000) surpasse CIEDE2000 lui-m\^eme. Le cadrage de
+cet article, et des invitations donn\'ees en
+\S\ref{sec:open_problems}, est celui-ci, additif. Ce que le SCS ne
+mod\'elise pas (adaptation chromatique, sensibilit\'e spectrale
+au-del\`a de la lin\'earisation HPE, conditions d'observation,
+\emph{flare}, variabilit\'e inter-observateurs) est \'enonc\'e
+explicitement en \S\ref{sec:scope_limits}~; CIECAM02 et CIEDE2000
+demeurent les outils appropri\'es l\`a o\`u ces effets dominent.
+
+\paragraph{Lire cet article sans s'engager sur le cadre plus large.}
+Le SCS est une application directe de la \emph{Th\'eorie de la
+Persistance} (PT), un cadre d\'evelopp\'e ind\'ependamment et disposant
+de son propre programme, expos\'e dans la monographie
+compagnon~\cite{senez2026math}. Cet article est d\'elib\'er\'ement
+autonome~: nous ne rappelons que les r\'esultats PT minimaux utilis\'es
+ici ($s = 1/2$, le point fixe $\mustar = 15$, le crit\`ere des
+nombres premiers actifs), et nous fournissons les d\'erivations
+autonomes de chacun dans l'Appendice~\ref{app:pt_proofs}. Un
+scientifique de la couleur, un g\'eom\`etre de l'information, ou un
+neuroscientifique de la vision peut lire, \'evaluer et \'etendre les
+affirmations qui suivent sans accepter la PT comme tout coh\'erent~:
+les seuls inputs que le lecteur doit accepter sont (i) que trois
+nombres premiers $\{3, 5, 7\}$ sont les canaux actifs, (ii) les trois
+poids $\gamp{3}, \gamp{5}, \gamp{7}$ cit\'es en
+\S\ref{sec:foundation}, et (iii) la m\'etrique de Fisher sur le
+simplexe. Tout le reste de cet article d\'ecoule de ces trois entr\'ees
+combin\'ees \`a la g\'eom\'etrie de l'information et \`a la
+colorim\'etrie standard. Que la PT soit ou non la bonne explication
+pour les valeurs prises par ces trois poids est une question
+int\'eressante~; ce n'est pas une question que cet article demande au
+lecteur de trancher.
 
 % ============================================================
 \section{Le fondement du crible : de $s = 1/2$ \`a $\{2, 3, 5, 7\}$}
@@ -111,12 +176,12 @@ La Th\'eorie de la Persistance (PT) r\'esout ces cinq limitations
 % ============================================================
 
 Rappelons la cha\^ine PT minimale pertinente pour la couleur.
-Les d\'emonstrations compl\`etes sont donn\'ees dans
+Les d\'erivations autonomes sont donn\'ees dans
 l'Appendice~\ref{app:pt_proofs} ; le lecteur souhaitant v\'erifier
 chaque \'etape peut s'y r\'ef\'erer sans recourir \`a la
 monographie~\cite{senez2026math}.
 
-\begin{theorembox}[T0 : Transitions interdites]
+\begin{theorembox}[T1 : Transitions interdites]
 Pour trois nombres premiers cons\'ecutifs $p, p', p''$ avec $p > 3$,
 les \'ecarts $g = p'-p$ et $g' = p''-p'$ ne peuvent pas appartenir
 tous deux \`a la m\^eme classe de r\'esidus non nulle modulo~3. Cela
@@ -162,7 +227,7 @@ est donc $\{2, 3, 5, 7\}$ :
 
 % ============================================================
 \section{Le Sieve Color Space (SCS)}
-\label{sec:scpt}
+\label{sec:scs}
 % ============================================================
 
 \subsection{Coordonn\'ees : le simplexe chromatique $\Delta^2$}
@@ -243,8 +308,10 @@ de la dynamique du crible. Leur effet :
 \end{itemize}
 
 Cette hi\'erarchie $\gamp{3} > \gamp{5} > \gamp{7}$ reproduit
-l'asym\'etrie connue des r\'eponses des c\^ones L, M, S et pr\'edit la
-forme des ellipses de MacAdam sans aucune donn\'ee empirique.
+l'\emph{ordonnancement} des bandes passantes des c\^ones L, M, S et
+engendre un motif qualitatif d'\'elongation des ellipses de type
+MacAdam. Les pr\'edictions quantitatives d'ellipses sont rapport\'ees
+en \S\ref{sec:comparison}~; l'accord est ici ordinal, et non spectral.
 
 \begin{figure}[ht]
 \centering
@@ -255,6 +322,89 @@ ellipses (zone bleue) indiquent une discrimination plus grossi\`ere.
 Comparer avec MacAdam (1942).}
 \label{fig:fisher}
 \end{figure}
+
+\subsection{Statut info-g\'eom\'etrique du SCS}
+\label{sec:infogeo}
+
+\`A l'intention des lecteurs issus de la g\'eom\'etrie de
+l'information, cette sous-section pr\'ecise le statut formel de la
+m\'etrique SCS dans le langage d'Amari et de \v{C}encov, et signale
+les points o\`u la construction s'\'ecarte de la pratique standard.
+
+\paragraph{La vari\'et\'e et sa m\'etrique.}
+La vari\'et\'e chromatique est le simplexe ouvert
+$\Delta^2 = \{\bm{\pi} \in \mathbb{R}^3_{>0} : \sum_p \pi_p = 1\}$
+avec $p \in \{3, 5, 7\}$. La m\'etrique d'information de Fisher sur
+$\Delta^2$ est unique \`a une constante positive pr\`es par le
+th\'eor\`eme de \v{C}encov~\cite{cencov1982}~: toute m\'etrique
+riemannienne sur une vari\'et\'e statistique invariante sous les
+statistiques suffisantes est proportionnelle \`a la m\'etrique de
+Fisher. \v{C}encov fixe la m\'etrique \`a une \'echelle globale pr\`es~;
+il \emph{ne} fixe \emph{pas} la pond\'eration par coordonn\'ee. La
+construction SCS ajoute une structure pond\'er\'ee
+\begin{equation}
+  ds^2_{\mathrm{SCS}}
+  = \sum_{p \in \{3,5,7\}} \gamp{p}\;\frac{d\pi_p^2}{\pi_p},
+  \label{eq:scs_metric}
+\end{equation}
+o\`u les $\gamp{p}$ sont d\'eriv\'es du crible \`a $\mustar = 15$. La
+pond\'eration brise l'invariance de la m\'etrique de Fisher nue sous
+r\'e\'etiquetage arbitraire des trois canaux et introduit une
+\emph{structure propre \`a la couleur} que le seul th\'eor\`eme de
+\v{C}encov ne fournit pas. La revendication du SCS est pr\'ecis\'ement
+que la pond\'eration par $\gamp{p}$ est la pond\'eration naturelle
+pour le simplexe chromatique, et non que \v{C}encov l'impose.
+
+\paragraph{Connexions duales et le choix $\alpha = 1/2$.}
+La famille exponentielle des connexions d'Amari $\nabla^{(\alpha)}$
+sur $\Delta^2$ contient trois points standards~: $\alpha = 1$
+(exponentielle, connexion-$e$), $\alpha = -1$ (m\'elange,
+connexion-$m$) et $\alpha = 0$ (la connexion de Levi-Civita de la
+m\'etrique de Fisher, aussi appel\'ee connexion-$1/2$ dans la
+param\'etrisation de Bhattacharyya). Le changement de coordonn\'ees
+$\xi_p = 2\sqrt{\gamp{p}\,\pi_p}$ (\'Eq.~\eqref{eq:bhattacharyya})
+envoie la m\'etrique SCS sur la g\'eom\'etrie euclidienne plate, ce
+qui identifie la connexion $\alpha = 0$ de \v{C}encov--Amari comme
+celle op\'erationnelle dans la construction (la g\'eod\'esique de
+Fisher--Rao entre deux distributions est
+$2 \arccos \sum_p \sqrt{\pi_{1,p}\,\pi_{2,p}}$, distance cordale dans
+les coordonn\'ees $\xi$).
+
+\paragraph{De \v{C}encov \`a la pond\'eration par c\^one~: la question ouverte.}
+Ce qui dans le SCS n'est pas de \v{C}encov, ce sont les trois poids
+sp\'ecifiques $\gamp{3}, \gamp{5}, \gamp{7}$ et leur ordre. Un
+lecteur d'info-g\'eom\'etrie demandera naturellement~: \emph{existe-t-il
+une caract\'erisation variationnelle de la pond\'eration par
+$\gamp{p}$ \`a partir de premiers principes sur le seul simplexe, ou
+bien le crible apporte-t-il une information que le simplexe ne peut
+fournir~?} Notre vue actuelle est que le crible apporte une
+information sur les distributions \emph{physiquement} r\'ealisables
+(les trois premiers actifs \`a $\mustar = 15$ sont une entr\'ee
+structurelle), non seulement la m\'etrique sur celles-ci. Une
+caract\'erisation informationnelle plus propre de cette entr\'ee
+--- par exemple comme un a~priori sur les distributions \`a trois
+issues satisfaisant une contrainte marginale sp\'ecifique ---
+constituerait un pont direct entre cet article et la litt\'erature
+sur l'inf\'erence variationnelle et les a~priori conjugu\'es. Nous la
+signalons comme ouverte.
+
+\paragraph{Relation aux th\'eories ant\'erieures d'\'el\'ement de ligne.}
+La m\'etrique SCS s'inscrit dans la tradition de l'\'el\'ement de
+ligne en science des couleurs, initi\'ee par Helmholtz (1896),
+\'elabor\'ee par Schr\"odinger (1920) et raffin\'ee par Stiles (1946),
+Vos et Walraven~\cite{voswalraven1972}, puis Wyszecki et
+Stiles~\cite{wyszecki2000}. Ces constructions b\^atissent
+typiquement une m\'etrique riemannienne sur l'\emph{espace des
+contrastes de c\^ones} et en ajustent les coefficients sur des
+donn\'ees de discrimination (ellipses de MacAdam, Brown, Wyszecki).
+Le SCS est structurellement plus simple \`a un \'egard (z\'ero
+param\`etre ajust\'e) et structurellement plus \'etroit \`a un
+autre (il prescrit les poids via le crible, plut\^ot que de les lire
+sur les donn\'ees). Une reproduction syst\'ematique des r\'esultats
+classiques d'\'el\'ement de ligne avec les poids SCS \`a la place
+des poids ajust\'es est un test naturel que nous n'avons pas encore
+men\'e~; elle constitue l'exp\'erience E3 de
+\S\ref{sec:open_problems}.
 
 \subsection{Saturation : divergence $\DKL$ depuis le blanc}
 
@@ -285,53 +435,105 @@ $L$ est maximale au blanc ($\log 3$) et nulle \`a toute primaire
 spectrale. \textsc{[der]}
 \end{derivedbox}
 
-\subsection{La loi de conservation : GFT pour la couleur}
+\subsection{La r\`egle de somme $S + L$ : une identit\'e g\'en\'erique sur trois issues}
 
-\begin{identitybox}[Conservation chromatique (GFT)]
+\begin{identitybox}[R\`egle de somme informationnelle]
 Pour toute couleur $\bm{\pi} \in \Delta^2$ :
 \begin{equation}
   \boxed{\DKL(\bm{\pi} \,\|\, \mathbf{u}) + H(\bm{\pi}) = \log 3}
   \label{eq:gft}
 \end{equation}
-De mani\`ere \'equivalente : $S + L = \log 3$. Saturation et luminance
-partagent un \emph{budget fixe}. Augmenter l'une diminue l'autre. C'est
-le th\'eor\`eme fondamental des \'ecarts (T2) appliqu\'e au simplexe
-chromatique. \textsc{[id, D02]} --- identit\'e alg\'ebrique, vraie pour
-tout $\bm{\pi}$.
+De mani\`ere \'equivalente~: $S + L = \log 3$.
+\textsc{[id, D02]}
 \end{identitybox}
+
+\begin{remark}[Port\'ee de cette identit\'e]
+L'\'equation~\eqref{eq:gft} est une identit\'e alg\'ebrique
+g\'en\'erique~: pour toute distribution de probabilit\'e $\bm{\pi}$
+sur $n$ issues avec r\'ef\'erence uniforme $\mathbf{u}$,
+$\DKL(\bm{\pi}\|\mathbf{u}) + H(\bm{\pi}) = \log n$. Elle tient que
+ces $n$ issues soient des longueurs d'onde, des faces de d\'e ou tout
+autre chose. L'identit\'e elle-m\^eme n'est \emph{pas} une loi de la
+couleur~: c'est une cons\'equence des d\'efinitions de $\DKL$ et de
+$H$ appliqu\'ees \`a une r\'ef\'erence uniforme. \emph{Ce qui est
+propre \`a la couleur} dans la pr\'esente construction, c'est le
+choix de $n = 3$ (d\'eriv\'e du crible via $\{3,5,7\}$), l'assignation
+des trois issues aux trois canaux chromatiques actifs, et la lecture
+physique de $S$ comme saturation et de $L$ comme luminance perceptive
+dans le plan chromatique. Ces identifications \'etant pos\'ees,
+l'identit\'e devient un \emph{budget} liant saturation et luminance~:
+augmenter l'une diminue l'autre. C'est substantiel en ce qu'elle
+contraint l'\'echange entre ces deux quantit\'es, mais le contenu
+alg\'ebrique n'a jamais fait de doute.
+\end{remark}
+
+\begin{remark}[Relation au th\'eor\`eme fondamental des \'ecarts]
+La r\`egle de somme SCS ne doit pas \^etre confondue avec le
+th\'eor\`eme fondamental des \'ecarts (T2) de la monographie PT, qui
+porte sur la matrice de transfert du crible et constitue un r\'esultat
+structurel non trivial. L'identit\'e chromatique~\eqref{eq:gft} est
+cons\'equence de d\'efinitions informationnelles~; son
+interpr\'etation comme budget saturation--luminance est ce qui est
+nouveau ici.
+\end{remark}
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.8\textwidth]{figures_fr/fig2_conservation.png}
-\caption{La loi de conservation $S + L = \log_2 3$. Chaque couleur se
-trouve sur cette droite. Les artistes choisissent \emph{o\`u} : le
-Caravage maximise la saturation (contrastes sombres), Turner maximise la
-luminance (lumi\`ere dissoute), Vermeer travaille pr\`es du point de
-Koide.}
+\caption{La r\`egle de somme $S + L = \log 3$ (logarithme naturel).
+Chaque couleur se trouve sur cette droite. Les artistes choisissent
+\emph{o\`u}~: le Caravage maximise la saturation (contrastes sombres),
+Turner maximise la luminance (lumi\`ere dissoute), Vermeer travaille
+pr\`es du point de Koide.}
 \label{fig:conservation}
 \end{figure}
 
-\begin{remark}
-C'est l'analogue en science des couleurs du premier principe de la
-thermodynamique : $E = F + TS$, o\`u $F$ (\'energie libre) correspond
-\`a la saturation (information structur\'ee) et $TS$ (chaleur)
-correspond \`a la luminance (entropie). Le CIE n'a pas d'identit\'e
-\'equivalente.
+\begin{remark}[Analogie thermodynamique, avec sa r\'eserve explicite]
+Le budget $S + L$ admet une analogie l\^ache avec le premier principe
+de la thermodynamique, $E = F + TS$, avec $F$ (\'energie libre)
+$\leftrightarrow$ saturation (information structur\'ee) et $TS$
+(chaleur) $\leftrightarrow$ luminance (entropie). L'analogie est
+sugg\'erante et nous n'en revendiquons pas plus~: il s'agit dans les
+deux cas d'identit\'es de comptabilit\'e qui r\'e\'ecrivent la m\^eme
+quantit\'e selon deux d\'ecompositions, et dans les deux cas le
+contenu physique r\'eside dans la quantit\'e partitionn\'ee, non dans
+l'identit\'e. Le CIE n'a pas de r\`egle de somme saturation--luminance
+analogue parce que ses coordonn\'ees ne sont pas b\^aties sur un
+simplexe de probabilit\'e~; cet \'ecart est un choix de cadre, non un
+th\'eor\`eme.
 \end{remark}
 
-\subsection{Compl\'ementarit\'e : la bifurcation $\sin^2 + \cos^2 = 1$}
+\subsection{Compl\'ementarit\'e : param\'etrisation angulaire des deux branches}
 
-\begin{identitybox}[Compl\'ementarit\'e chromatique]
-Pour chaque canal $p$, d\'efinissons :
+\begin{identitybox}[D\'ecomposition en deux branches]
+Pour chaque canal $p$, d\'efinissons~:
 \begin{align}
-  \text{transmis :} & \quad \sin^2\!\theta_p = \delta_p(2-\delta_p),
+  \text{transmis~:} & \quad \sin^2\!\theta_p = \delta_p(2-\delta_p),
     \quad \delta_p = (1-\qrel^p)/p \\
-  \text{absorb\'e :} & \quad \cos^2\!\theta_p = 1 - \sin^2\!\theta_p
+  \text{absorb\'e~:} & \quad \cos^2\!\theta_p = 1 - \sin^2\!\theta_p
 \end{align}
-Alors $\sin^2\!\theta_p + \cos^2\!\theta_p = 1$ identiquement.
-La compl\'ementaire d'une couleur vue \`a travers le filtre $p$ est la
-couleur absorb\'ee par le filtre $p$. \textsc{[id, D07]}
+L'identit\'e $\sin^2\!\theta_p + \cos^2\!\theta_p = 1$ est
+trivialement satisfaite. \textsc{[id, D07]}
 \end{identitybox}
+
+\begin{remark}[Ce qui est trivial et ce qui ne l'est pas]
+L'identit\'e trigonom\'etrique $\sin^2\theta + \cos^2\theta = 1$ est
+arithm\'etique. La pr\'esenter comme \og compl\'ementarit\'e
+alg\'ebrique \fg{} rel\`everait de la surench\`ere~: rien ne d\'ecoule
+de l'identit\'e seule. L'\'enonc\'e substantiel --- et celui dont
+d\'epend la suite de cette section --- est \emph{g\'eom\'etrique}~:
+les deux branches chirales du crible ($\qrel$ pour la transmission et
+$\qtherm$ pour l'absorption, voir~\cite[Ch.~8]{senez2026math})
+admettent une param\'etrisation angulaire $\theta_p$ telle que les
+deux branches correspondent respectivement \`a $\sin^2\theta_p$ et
+$\cos^2\theta_p$. Cette param\'etrisation une fois admise, l'identit\'e
+trigonom\'etrique exprime \emph{la conservation de la probabilit\'e \`a
+travers la bifurcation}, sans contenu suppl\'ementaire. Dire que \og
+les couleurs compl\'ementaires somment \`a l'unit\'e \fg{} devient
+alors une cons\'equence de la g\'eom\'etrie, non de l'identit\'e. Nous
+l'\'ecrivons ainsi parce que le relecteur critique avait raison~: la
+formulation pr\'ec\'edente confondait les deux \'etapes.
+\end{remark}
 
 Dans le SCS :
 \begin{itemize}[nosep]
@@ -394,9 +596,17 @@ maximum :
   autour de $70\pm5\%$ de la fronti\`ere du gamut.
 \end{itemize}
 Le point de Koide $1/\sqrt{2} \approx 70{,}7\%$ se situe au centre de
-cette plage \'etablie exp\'erimentalement. Le CIE ne fournit aucune
-explication pour ce regroupement ; le SCS le d\'erive de la structure
-du crible.
+cette plage \'etablie exp\'erimentalement. La correspondance est un
+test de coh\'erence, non une pr\'ediction discriminante~: toute valeur
+dans la plage 65--75\,\% cadrerait aussi avec les donn\'ees Ou,
+Schloss et Munsell. Un test plus tranchant consisterait en un
+protocole de JND en choix forc\'e exactement \`a
+$S/S_{\max} = 1/\sqrt{2}$ contre des saturations de r\'ef\'erence
+voisines~; nous le signalons comme cible exp\'erimentale ouverte. Le
+CIE n'offre pas d'argument structurel pour le regroupement~; le SCS
+en fournit un (l'\'equilibre de Koide sur le simplexe) mais ne
+\emph{distingue} pas $1/\sqrt{2}$ de son voisinage avec les
+preuves dont nous disposons.
 \end{remark}
 
 % ============================================================
@@ -440,6 +650,66 @@ l'intervalle non spectral entre le rouge et le violet.}
 \label{fig:hue}
 \end{figure}
 
+\subsection{Relation aux espaces opposants DKL et MacLeod--Boynton}
+\label{sec:dkl}
+
+Le simplexe pond\'er\'e par $\gamp{p}$ n'est pas la premi\`ere
+d\'ecomposition \`a trois canaux de la couleur propos\'ee pour la
+comparaison avec des repr\'esentations neurales. Deux rep\`eres
+naturels existent dans la litt\'erature de la vision~:
+
+\begin{itemize}[nosep]
+\item Le \textbf{diagramme de chromaticit\'e de MacLeod--Boynton}
+  \cite{macleod1979} projette un spectre sur deux axes opposants
+  li\'es aux c\^ones $(L/(L+M),\ S/(L+M))$, la luminance \'etant
+  s\'epar\'ee~; c'est une d\'ecomposition \`a trois composantes
+  largement utilis\'ee en psychophysique du contraste des c\^ones.
+\item L'\textbf{espace de Derrington--Krauskopf--Lennie}
+  \cite{dkl1984} (\og espace DKL \fg) param\`etre la couleur par un
+  axe de luminance et deux axes opposants isoluminants de type
+  $L{-}M$ et $S{-}(L{+}M)$, align\'es sur les axes cardinaux
+  physiologiques de la voie r\'etino-g\'enicul\'ee. C'est le syst\`eme
+  de coordonn\'ees \emph{de facto} pour la neurophysiologie du LGN et
+  du cortex visuel primaire.
+\end{itemize}
+
+Un pont sp\'ecifique m\'erite d'\^etre \'enonc\'e comme pr\'ediction,
+parce qu'il est testable et que c'est l\`a que la pr\'esente
+construction rencontre le plus directement la ligne Conway /
+Conway--Livingstone d'\'etudes de V4. La hi\'erarchie des $\gamp{p}$
+($\gamp{3} : \gamp{5} : \gamp{7} \approx 0{,}808 : 0{,}696 : 0{,}595$)
+envoie les trois premiers actifs sur les trois canaux des c\^ones
+dans un ordre pr\'ecis ($3 \to$ L, $5 \to$ M, $7 \to$ S). Si la
+pond\'eration SCS est le pendant, d\'eriv\'e du crible, de la base
+opposante DKL --- hypoth\`ese, non d\'erivation --- alors deux
+cons\'equences s'ensuivent, que des donn\'ees neurales peuvent
+falsifier~:
+
+\begin{enumerate}[nosep]
+\item L'axe isoluminant $L{-}M$ de DKL devrait porter un poids dans
+  le BOLD de V4 \`a peu pr\`es \'egal au rapport
+  $\gamp{3}/(\gamp{3}+\gamp{5}+\gamp{7}) \approx 0{,}385$ dans des
+  conditions de stimulation isolant l'opposition des c\^ones. Une
+  analyse pr\'eliminaire sur Conway 2025 (OpenNeuro ds005521) donne
+  un poids V4 $L{-}M$ de $0{,}373$, un accord \`a $3{,}2\,\%$ avec le
+  rapport du crible~; une r\'eplication sur un jeu de donn\'ees
+  ind\'ependant, avec une grille DKL plus dense, fait l'objet de
+  l'exp\'erience~E3 de \S\ref{sec:open_problems}.
+\item L'axe $S{-}(L{+}M)$ de DKL devrait porter un poids correspondant
+  \`a $\gamp{7}$. Notre ROI fonctionnel sur le m\^eme jeu de
+  donn\'ees sous-repr\'esente ce canal, conform\'ement \`a la
+  difficult\'e connue d'isoler le signal des c\^ones $S$ en BOLD V4~;
+  un protocole ciblant l'isolation des c\^ones $S$ est un
+  prolongement naturel.
+\end{enumerate}
+
+La correspondance est revendiqu\'ee comme \emph{conjecture reliant la
+construction du crible \`a la base DKL}, non comme d\'erivation. La
+falsifier en montrant que les poids opposants de V4 ne suivent pas
+$\gamp{p}$ restreindrait ou \'ecarterait cette lecture du SCS, tout
+en laissant intactes les autres revendications de g\'eom\'etrie
+r\'etinienne de l'article.
+
 % ============================================================
 \section{M\'etam\'erisme : le th\'eor\`eme des restes chinois}
 \label{sec:metamerism}
@@ -454,15 +724,25 @@ seulement s'ils produisent les m\^emes r\'esidus modulo $\{3, 5, 7\}$ :
   f \equiv g \pmod{7}
 \end{equation}
 Le th\'eor\`eme des restes chinois garantit la reconstruction jusqu'\`a
-$3 \times 5 \times 7 = 105$ niveaux. Au-del\`a de cette r\'esolution,
-des spectres distincts deviennent indiscernables. \textsc{[thm]}
+$3 \times 5 \times 7 = 105$ classes de r\'esidus. \textsc{[analogie]}
 \end{theorembox}
 
-Cela donne une signification pr\'ecise \`a la r\'esolution chromatique :
-le syst\`eme visuel peut distinguer au plus $105$ \'etats chromatiques
-ind\'ependants par configuration de canaux. Le nombre
-$105 = \mustar \times 7 = 15 \times 7$ n'est pas arbitraire --- c'est
-le produit des nombres premiers actifs, d\'etermin\'e par le crible.
+\begin{remark}[Analogie structurelle vs pr\'ediction biologique]
+L'\'enonc\'e CRT ci-dessus est arithm\'etique, non spectral. Le
+m\'etam\'erisme en vision humaine est une projection
+lin\'eaire-alg\'ebrique de $L^2([380, 780]$~nm$)$ sur $\mathbb{R}^3$,
+non un comptage de r\'esidus modulo~105~; le chiffre de $105$ est
+donc une \emph{analogie structurelle} issue du crible plut\^ot qu'un
+th\'eor\`eme spectral. Si l'analogie se transpose, le cadre pr\'edit
+que la dimensionnalit\'e chromatique effective de la discrimination
+humaine sature pr\`es de $105$ \'etats par configuration de canaux
+--- une affirmation forte qui n'a pas \'et\'e test\'ee
+exp\'erimentalement. Un protocole propos\'e, utilisant la m\'ethode
+de maximum de vraisemblance de Stubbs \& Stubbs pour la
+dimensionnalit\'e chromatique appliqu\'ee \`a des ensembles
+m\'etam\`eres isoluminants, est \'enonc\'e en \S\ref{sec:open_problems}
+(exp\'erience~E2).
+\end{remark}
 
 % ============================================================
 \section{Comparaison avec le CIE}
@@ -582,19 +862,38 @@ sombre/clair $\to$ rouge $\to$ jaune/vert $\to$ bleu. Dans le SCS :
   actif le plus faible, juste au-dessus du seuil, nomm\'e en dernier.
 \end{enumerate}
 
-La hi\'erarchie de Berlin--Kay $\gamp{3} > \gamp{5} > \gamp{7}$ est
-\emph{strictement monotone} et d\'eriv\'ee du crible. Le CIE ne peut
-pas expliquer pourquoi le rouge est universellement nomm\'e avant le
-bleu.
+La hi\'erarchie $\gamp{3} > \gamp{5} > \gamp{7}$ est strictement
+monotone et d\'eriv\'ee du crible, et elle s'aligne sur l'ordre dans
+lequel les stades~I--III de Berlin et Kay introduisent les termes. Le
+CIE, en tant que cadre colorim\'etrique, est agnostique sur l'ordre
+interculturel de nomination~; le SCS fournit un ordonnancement
+structurel coh\'erent avec les stades~I--III.
+
+\begin{remark}[Port\'ee de la correspondance de Berlin--Kay]
+La correspondance ne couvre que les stades~I--III de Berlin--Kay
+(sombre/clair, rouge, jaune/vert, bleu). Les stades~IV--VII ajoutent
+le brun, le rose, le pourpre, l'orange et le gris, que le sch\'ema \`a
+trois premiers ne pr\'edit pas~: ces cat\'egories \'emergent de
+combinaisons (m\'elanges, scission de cat\'egorie, raffinement
+culturel) qui sortent du champ de la hi\'erarchie $\gamp{p}$.
+Plusieurs identifications ci-dessus sont \'egalement post-hoc~: le
+jumelage de $p = 2$ avec sombre/clair, le regroupement du jaune avec
+le vert sous $p = 5$, et le traitement de la cat\'egorie \og grue \fg{}
+comme un seul item $p = 7$. Nous \'enon\c{c}ons l'affirmation sous la
+forme~: \emph{l'ordre des $\gamp{p}$ est coh\'erent avec les premiers
+stades de Berlin--Kay}, et non comme une d\'erivation de la
+trajectoire compl\`ete en sept stades.
+\end{remark}
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.85\textwidth]{figures_fr/fig7_berlin_kay.png}
-\caption{Les universaux de Berlin--Kay suivent la hi\'erarchie des
-$\gamp{p}$. Les cultures ajoutent des termes de couleur dans l'ordre
-exact pr\'edit par le crible : $p=2$ (sombre/clair) $\to$ $p=3$ (rouge)
-$\to$ $p=5$ (jaune-vert) $\to$ $p=7$ (bleu). Le seuil $s = 1/2$
-s\'epare les canaux actifs des inactifs.}
+\caption{Les premiers stades de Berlin--Kay (I--III) sont coh\'erents
+avec la hi\'erarchie $\gamp{p}$~: $p=2$ (sombre/clair) $\to$ $p=3$
+(rouge) $\to$ $p=5$ (jaune-vert) $\to$ $p=7$ (bleu). Le seuil
+$s = 1/2$ s\'epare les canaux actifs des inactifs. Les stades
+ult\'erieurs (brun, rose, pourpre, orange, gris) ne sont pas couverts
+par cette correspondance.}
 \label{fig:berlinkay}
 \end{figure}
 
@@ -676,12 +975,43 @@ $t = 1$, en posant $\epsilon = t - 1$ :
   \`A $t = 1{,}5$ (r\'eflectance \'elev\'ee) :
   $1{,}5^{-1/6} - 1 \approx -0{,}065$ ($6{,}5\%$).
 \end{itemize}
-L'erreur est donc n\'egligeable au voisinage du blanc ($< 5\%$ pour
-$t \in [0{,}6;\; 1{,}4]$), mod\'er\'ee dans les tons moyens, et
-\emph{maximale dans les r\'egions sombres} ($t \to 0$), o\`u
-$t^{-1/6} \to +\infty$.
+L'erreur est n\'egligeable au voisinage du blanc ($< 5\%$ pour
+$t \in [0{,}6;\; 1{,}4]$) et cro\^it vers l'extr\'emit\'e sombre tant
+que la branche en racine cubique est active.
 \end{proof}
 \end{derivedbox}
+
+\begin{remark}[La branche lin\'eaire est celle que CIELAB utilise dans les sombres]
+Un relecteur technique a justement fait remarquer que comparer la
+racine cubique nue $t^{1/3}$ \`a $t^{1/2}$ pour $t \to 0$ n'est pas
+une comparaison \'equitable avec CIELAB tel qu'il est effectivement
+d\'efini~: CIELAB bascule vers une branche lin\'eaire
+$f(t) = t/(3\delta^2) + 4/29$ d\`es $t \leq \delta^3 \approx 0{,}00886$.
+La branche lin\'eaire \'elimine la singularit\'e en racine cubique et
+maintient une pente finie lorsque $t \to 0$. Notre affirmation est
+donc plus \'etroite que ne pourrait le sugg\'erer la comparaison
+d'exposants nus~:
+\begin{itemize}[nosep]
+\item Sur la branche en racine cubique ($t \in [\delta^3, 1{,}5]$),
+  l'erreur $|t^{-1/6}-1|$ ci-dessus tient et demeure la quantit\'e
+  pertinente.
+\item Dans la branche lin\'eaire ($t < \delta^3$, i.e.\ $L^* < 8$),
+  CIELAB est \emph{par construction} une approximation euclidienne
+  locale \`a pente constante $1/(3\delta^2)$, qui \emph{n'est pas} la
+  pente Fisher $\tfrac{1}{2}t^{-1/2}$~; Fisher diverge lorsque
+  $t \to 0$ tandis que la branche lin\'eaire de CIELAB reste finie.
+  L'\'ecart quantitatif n'est alors pas $|t^{-1/6}-1|$, mais la
+  diff\'erence entre une pente constante et une pente divergente ---
+  ce qui explique l'avantage observ\'e du SCS dans la r\'egion
+  tr\`es sombre, plut\^ot que la formule en racine cubique seule.
+\item La cons\'equence pratique ne change pas (le SCS gagne dans la
+  r\'egion sombre de COMBVD, $r = 0{,}625$ contre $0{,}558$ pour
+  $L^* < 25$), mais le m\'ecanisme est l'aplatissement de la
+  sensibilit\'e par la branche lin\'eaire, et non une singularit\'e
+  de $t^{1/3}$. Nous avons reformul\'e ce point dans la pr\'esente
+  r\'evision pour lever la confusion ant\'erieure.
+\end{itemize}
+\end{remark}
 
 Ce r\'esultat explique quantitativement les performances relatives
 observ\'ees dans la Table~\ref{tab:macadam} et le jeu de donn\'ees
@@ -689,25 +1019,30 @@ COMBVD :
 
 \begin{enumerate}[nosep]
 \item \textbf{R\'egion sombre ($L^* < 25$, $t < 0{,}2$).} L'erreur
-  d'approximation $|t^{-1/6} - 1|$ d\'epasse $30\%$. C'est
-  pr\'ecis\'ement l\`a que la racine cubique de CIELAB $f(t) = t^{1/3}$
-  diverge (pente $\to +\infty$ en $t = 0$), tandis que la
-  g\'eod\'esique de Fisher--Bernoulli
-  $2|\arcsin\sqrt{\ell_1} - \arcsin\sqrt{\ell_2}|$ reste bien
-  conditionn\'ee. Cela explique la sup\'eriorit\'e du SCS dans les
-  sombres : $r = 0{,}625$ contre $0{,}558$ pour CIELAB.
+  sur la branche en racine cubique $|t^{-1/6} - 1|$ d\'epasse $30\%$.
+  En-de\c{c}\`a de $t \approx 0{,}009$, CIELAB bascule vers une
+  branche lin\'eaire de pente constante, tandis que la g\'eod\'esique
+  de Fisher--Bernoulli
+  $2|\arcsin\sqrt{\ell_1} - \arcsin\sqrt{\ell_2}|$ a une sensibilit\'e
+  $\propto 1/\sqrt{\ell(1-\ell)}$ qui diverge aux extr\'emit\'es ---
+  comportement correct pour la discrimination au seuil au voisinage du
+  noir et du blanc. C'est cet \'ecart de sensibilit\'e (pente finie
+  contre pente divergente aux extr\^emes) qui explique l'avantage du
+  SCS dans la r\'egion sombre de COMBVD~: $r = 0{,}625$ contre
+  $0{,}558$.
 
 \item \textbf{R\'egion centrale ($0{,}5 < t < 1{,}2$).} L'erreur est
   $< 10\%$. CIELAB et SCS sont proches, coh\'erent avec la
   corr\'elation globale similaire dans la r\'egion moyenne du COMBVD.
 
-\item \textbf{Cons\'equence structurelle.} La racine cubique de CIELAB
-  n'est pas un choix arbitraire --- c'est la meilleure approximation
-  polynomiale basse (exposant rationnel simple $1/3$) de l'exposant
-  exact $1/2$ de Fisher, choisie ind\'ependamment par la CIE en 1976
-  sur des bases empiriques. Le fait que l'ajustement empirique
-  approche la valeur d\'eriv\'ee par la th\'eorie constitue une
-  confirmation ind\'ependante de la m\'etrique SCS.
+\item \textbf{Lecture structurelle.} La racine cubique $t^{1/3}$ de
+  CIELAB se situe entre l'exposant Fisher $t^{1/2}$ et un exposant
+  na\"if de type Weber $t^{1/4}$. Le choix de la CIE en 1976 \'etait
+  empirique~; le fait qu'il tombe du c\^ot\'e Fisher plut\^ot que du
+  c\^ot\'e Weber est \emph{compatible avec} une image fond\'ee sur
+  Fisher, mais l'\'ecart de $50\%$ entre $1/3$ et $1/2$ signifie que
+  c'est une compatibilit\'e, non un test unique de la m\'etrique de
+  Fisher.
 \end{enumerate}
 
 \begin{identitybox}[R\'esum\'e : CIELAB $\subset$ Fisher]
@@ -750,7 +1085,7 @@ avec $\tilde{\pi}_p = \gamp{p}\,\pi_p / \sum_{p'}\gamp{p'}\,\pi_{p'}$
 les coordonn\'ees du simplexe pond\'er\'ees par $\gamma$. Les poids
 $3/4$ et $1/4$ sont d\'eriv\'es : $N/(N+1)$ est la fraction du budget
 informationnel port\'ee par les $N$ canaux chromatiques versus le canal
-unique de luminance (Th\'eor\`eme~T7). Z\'ero param\`etres ajustables.
+unique de luminance (Th\'eor\`eme~T5). Z\'ero param\`etres ajustables.
 
 \paragraph{Tenseur m\'etrique local (approximation quadratique).}
 Pour des couleurs proches ($\Delta\pi \ll 1$), la formule canonique se
@@ -826,12 +1161,12 @@ des couleurs, chacune tra\c{c}able \`a un th\'eor\`eme PT :
 \toprule
 \textbf{Loi} & \textbf{\'Enonc\'e} & \textbf{Source PT} & \textbf{CIE ?} \\
 \midrule
-E1 & Trois canaux ind\'ependants & T7 ($\mustar = 15$) & Postul\'e \\
+E1 & Trois canaux ind\'ependants & T5 ($\mustar = 15$) & Postul\'e \\
 E2 & $S + L = \log 3$ (conservation) & T2 (GFT) & Aucun \\
 E3 & $\sin^2 + \cos^2 = 1$ (compl\'ementarit\'e) & T6 (holonomie) & Convention \\
 E4 & La m\'etrique de Fisher est courbe & \v{C}encov & Empirique \\
 E5 & \'Equilibre de Koide \`a $1/\sqrt{2}$ & D17b & Aucun \\
-E6 & \'Etats cons\'ecutifs n\'ecessairement distincts & T0 (interdit) & Aucun \\
+E6 & \'Etats cons\'ecutifs n\'ecessairement distincts & T1 (interdit) & Aucun \\
 E7 & Le cercle des teintes se ferme (holonomie $2\pi$) & T6 ($\mathbb{Z}/p\mathbb{Z} \to S^1$) & Convention \\
 \bottomrule
 \end{tabular}
@@ -1057,15 +1392,24 @@ Trois observations :
   conditionn\'ee.
 \end{enumerate}
 
-La contribution cl\'e du mod\`ele hybride n'est pas sa performance
-brute mais son \emph{architecture} : il s'agit, \`a notre connaissance,
-de la premi\`ere d\'ecomposition de la diff\'erence de couleur
-supra-liminaire en une couche g\'eom\'etrique principielle (d\'eriv\'ee
-de premiers principes, z\'ero param\`etres) et une couche corticale
-empirique (mesur\'ee sur des observateurs humains). Cette factorisation
-rend explicite ce qui est d\'eriv\'e et ce qui est mesur\'e --- une
-distinction que les formules monolithiques comme CIELAB et CIEDE2000 ne
-peuvent pas faire.
+La contribution cl\'e du mod\`ele hybride tient \`a son
+\emph{architecture}~: une d\'ecomposition propre de la diff\'erence de
+couleur supra-liminaire en une couche g\'eom\'etrique principielle
+(la g\'eod\'esique de Fisher--Bernoulli, z\'ero param\`etre) et une
+couche corticale empirique (CIECAM02 ou CIEDE2000, mesur\'ees sur des
+observateurs humains). Des factorisations apparent\'ees existent
+dans la litt\'erature --- iCAM (Fairchild et Johnson, 2004) s\'epare
+l'adaptation locale d'un mod\`ele d'apparence de type CIECAM02~;
+CAM02-UCS (Luo, Cui et Li, 2006) ajuste un espace de couleurs uniforme
+\emph{par-dessus} CIECAM02~; et
+J\textsubscript{z}A\textsubscript{z}B\textsubscript{z}
+(Safdar et al., 2017) utilise une non-lin\'earit\'e de quantification
+perceptive d\'eriv\'ee comme fa\c{c}ade g\'eom\'etrique. Nous n'avons
+pas connaissance d'une construction publi\'ee ant\'erieure utilisant
+une g\'eod\'esique d'information de Fisher sur un simplexe pilot\'e
+par des premiers comme couche g\'eom\'etrique, mais nous ne
+revendiquons pas la nouveaut\'e du principe de factorisation
+lui-m\^eme.
 
 \subsection{$\Delta E_{\mathrm{SCS00}}$ : d\'epasser CIEDE2000}
 \label{sec:sct00}
@@ -1087,7 +1431,7 @@ extr\^emes. La transform\'ee $\arcsin(\sqrt{\ell})$ est la
 transform\'ee variance-stabilisante de Bernoulli --- l'unique
 transformation rendant l'information de Fisher constante.
 
-\paragraph{La formule.}
+\paragraph{La formule --- un hybride \`a poids r\'egress\'es.}
 Nous combinons CIEDE2000 et la g\'eod\'esique Fisher par une
 interaction polyn\^omiale de degr\'e~2 :
 \begin{equation}
@@ -1099,12 +1443,20 @@ interaction polyn\^omiale de degr\'e~2 :
   + w_5\,d_{\mathrm{lum}}^2
   \label{eq:sct00}
 \end{equation}
-o\`u les cinq poids $w_1$--$w_5$ sont r\'egress\'es (Ridge,
-$\alpha=1$, validation crois\'ee 5~plis) et $d_{\mathrm{lum}}$ est
-d\'eriv\'e de $s = 1/2$ avec z\'ero param\`etre ajustable.
-Le terme cl\'e est $\Delta E_{00} \cdot d_{\mathrm{lum}}$ :
-l'interaction non lin\'eaire entre le mod\`ele cortical (CIEDE2000) et
-la g\'eom\'etrie r\'etinienne (Fisher).
+o\`u $w_0$--$w_5$ (six poids) sont \emph{ajust\'es} sur COMBVD par
+r\'egression Ridge ($\alpha = 1$, validation crois\'ee 5~plis).
+Seule la variable d'entr\'ee $d_{\mathrm{lum}}$ est d\'eriv\'ee de
+$s = 1/2$ avec z\'ero param\`etre ajustable~; la m\'etrique
+combin\'ee $\Delta E_{\mathrm{SCS00}}$ est donc une construction
+hybride, et \emph{non} \`a z\'ero param\`etre. Des r\'edactions
+ant\'erieures de cet article la d\'ecrivaient comme z\'ero
+param\`etre, ce qui \'etait erron\'e et est corrig\'e ici~: la
+revendication utile est que la g\'eod\'esique d\'eriv\'ee
+$d_{\mathrm{lum}}$, ajout\'ee comme variable dans une combinaison
+ajust\'ee avec $\Delta E_{00}$, porte une information que
+$\Delta E_{00}$ seul ne porte pas. Le terme cl\'e \`a cet \'egard est
+$\Delta E_{00} \cdot d_{\mathrm{lum}}$, interaction entre le mod\`ele
+cortical (CIEDE2000) et la g\'eom\'etrie r\'etinienne (Fisher).
 
 \begin{predictionbox}[$\Delta E_{\mathrm{SCS00}}$ surpasse
 CIEDE2000 --- v\'erifi\'e]
@@ -1157,13 +1509,100 @@ Les poids standardis\'es r\'ev\`elent la structure :
   luminance non lin\'eaires l\`a o\`u $S_L$ sature.
 \end{itemize}
 
-Le $\Delta E_{\mathrm{SCS00}}$ n'est pas un ajustement ad hoc : il
-combine un mod\`ele cortical mesur\'e (CIEDE2000, 5 param\`etres CIE)
-avec une g\'eod\'esique d\'eriv\'ee (Fisher--Bernoulli, 0 param\`etre)
-via leur interaction. L'am\'elioration provient d'une information
-que CIEDE2000 ne peut pas capturer par construction : la sensibilit\'e
-non polynomiale aux extr\^emes de luminance, d\'eriv\'ee du
-th\'eor\`eme de \v{C}encov.
+Le $\Delta E_{\mathrm{SCS00}}$ est un hybride~: un mod\`ele cortical
+mesur\'e (CIEDE2000, 5~param\`etres CIE) combin\'e \`a une
+g\'eod\'esique d\'eriv\'ee (Fisher--Bernoulli, 0~param\`etre) via six
+poids ajust\'es sur COMBVD. La valeur de la construction \emph{n'est
+pas} d'\^etre sans param\`etre (elle ne l'est pas) mais que les poids
+ajust\'es identifient un canal d'information --- la sensibilit\'e non
+polynomiale aux extr\^emes de luminance, d\'eriv\'ee du th\'eor\`eme
+de \v{C}encov --- que $\Delta E_{00}$ ne porte pas par construction.
+Autre formulation~: le SCS ajoute de l'information \`a CIEDE2000 au
+lieu de le remplacer.
+
+% ============================================================
+\section{Port\'ee et limites : ce que le SCS ne mod\'elise pas}
+\label{sec:scope_limits}
+% ============================================================
+
+La pratique colorim\'etrique --- capture ISO~19264-1, validation par
+cible, rapport $\Delta E^*_{00}$, \'eclairage contr\^ol\'e,
+\emph{flare}, SFR, r\'ep\'etabilit\'e --- d\'epend d'effets li\'es \`a
+l'observateur et \`a l'illumination que le cadre SCS, tel qu'il est
+pr\'esent\'e ici, ne mod\'elise \emph{pas}. Cette section \'enonce
+explicitement ces limites, afin que les autres affirmations de
+l'article soient lues dans le bon p\'erim\`etre.
+
+\paragraph{Adaptation chromatique et conditions d'observation.}
+Le SCS n'inclut pas de transformation d'adaptation chromatique. Le
+cadre op\`ere sur une entr\'ee LMS fixe obtenue par transformation
+lin\'eaire des fondamentaux CIE-2006 (Stockman--Sharpe) ou HPE~; il
+ne s'ajuste pas aux changements d'illuminant, de surround, de
+luminosit\'e de fond, ni au degr\'e d'adaptation. CAM02 et CIECAM16,
+qui mod\'elisent ces effets via le facteur $D$, les param\`etres de
+surround et la compression post-adaptation, demeurent les outils
+appropri\'es d\`es que les conditions d'observation sont
+non-standards ou variables.
+
+\paragraph{Sensibilit\'e spectrale.}
+L'ordre des $\gamp{p}$ issu du crible s'aligne sur l'ordre des
+bandes passantes des c\^ones $L > M > S$. C'est une correspondance
+\emph{post-hoc}, non une d\'erivation des courbes de sensibilit\'e
+spectrale des c\^ones. La forme de la r\'eponse spectrale de chaque
+c\^one, la variabilit\'e inter-individuelle des pics et la
+diff\'erence entre les observateurs \`a $2^\circ$ et $10^\circ$ ne
+sont pas d\'eriv\'ees par le SCS~; elles sont prises comme entr\'ees
+via la matrice HPE ou Stockman--Sharpe.
+
+\paragraph{Flare, voile diffusant et g\'eom\'etrie de capture.}
+Les effets c\^ot\'e cam\'era --- \emph{flare}, voile d'objectif,
+r\'eponse d\'ependant de l'incidence, d\'egradation SFR, effets de
+polarisation --- n'apparaissent pas dans le SCS. Ils doivent \^etre
+trait\'es en amont du pipeline d'imagerie (validation de cible
+ISO~19264-1, calibrage mensuel du scanner, contr\^ole de la
+g\'eom\'etrie) avant que toute m\'etrique, SCS ou autre, puisse
+\^etre appliqu\'ee de fa\c{c}on significative.
+
+\paragraph{Perception supra-liminaire.}
+La m\'etrique de Fisher est th\'eoriquement exacte au \emph{seuil}
+(diff\'erences tout juste perceptibles). Pour l'estimation de
+magnitude supra-liminaire --- que $\Delta E^*_{00}$ cible sur
+COMBVD, BFD, Leeds, RIT-DuPont et Witt --- un traitement cortical
+au-del\`a de la g\'eod\'esique r\'etinienne est n\'ecessaire. C'est
+pourquoi la m\'etrique SCS autonome se situe en de\c{c}\`a de CIELAB
+globalement, et pourquoi les hybrides SCS\,+\,CAM02 et
+$\Delta E_{\mathrm{SCS00}}$, qui h\'eritent leur comportement
+supra-liminaire respectivement de CAM02 et de CIEDE2000, sont les
+constructions qui surpassent CIELAB sur COMBVD.
+
+\paragraph{Objets \`a forme, mat\'eriaux mixtes, travail volum\'etrique.}
+Toute la validation de cet article utilise des pav\'es de couleur
+plate. Les objets \`a forme, les mat\'eriaux translucides ou
+stratifi\'es, les m\'elanges sp\'eculaires/diffus et la capture
+volum\'etrique (y compris les pipelines de \emph{Gaussian splatting})
+ajoutent des degr\'es de libert\'e g\'eom\'etriques, mat\'eriels et
+de sp\'ecularit\'e que le simplexe $\Delta^2$ pr\'esent ne
+param\'etrise pas. \'Etendre le SCS \`a ces r\'egimes est une
+direction ouverte, non une revendication.
+
+\paragraph{Variabilit\'e inter-observateurs.}
+Le SCS tel que formul\'e d\'erive la structure pour un unique
+observateur effectif. Il ne rend pas compte des diff\'erences
+individuelles de pics spectraux des c\^ones, de densit\'e de pigment
+maculaire, du jaunissement du cristallin avec l'\^age, ni des
+variantes de d\'eficience des couleurs. Les observateurs standards de
+la CIE et les mod\`eles individualis\'es restent n\'ecessaires.
+
+\medskip\noindent\textbf{Cons\'equence pour les praticiens.} L\`a
+o\`u les conditions d'observation sont contr\^ol\'ees et o\`u la
+t\^ache consiste \`a compl\'eter un pipeline d\'ej\`a calibr\'e, les
+variables d\'eriv\'ees du SCS (g\'eod\'esique de Fisher--Bernoulli,
+distance chromatique pond\'er\'ee par $\gamp{p}$) peuvent apporter
+une information que les m\'etriques CIE ne portent pas. L\`a o\`u
+dominent les conditions d'observation, l'adaptation, le \emph{flare}
+ou la g\'eom\'etrie --- ce qui est le cas de la plupart des flux
+d'imagerie r\'eels --- CAM02 et $\Delta E^*_{00}$ demeurent les outils
+op\'erationnels et le SCS ne les remplace pas.
 
 % ============================================================
 \section{Discussion}
@@ -1188,12 +1627,12 @@ empiriques (n\'ecessitant une validation compl\'ementaire).
 \textbf{Affirmation} & \textbf{Type} & \textbf{Statut} & \textbf{R\'ef.} \\
 \midrule
 Trois canaux depuis $\{3,5,7\}$ & Structurel & D\'eriv\'e (dans PT) & \S\ref{sec:foundation} \\
-Conservation $S + L = \log 3$ & Identit\'e & Exact & \S\ref{sec:scpt} \\
-Compl\'ementarit\'e $\sin^2 + \cos^2 = 1$ & Identit\'e & Exact & \S\ref{sec:scpt} \\
+R\`egle de somme $S + L = \log 3$ & Identit\'e g\'en\'erique, lecture couleur pour $n=3$ & Exact & \S\ref{sec:scs} \\
+D\'ecomposition $\sin^2 + \cos^2 = 1$ en deux branches & Identit\'e triviale, le pont angulaire est l'essentiel & Exact & \S\ref{sec:scs} \\
 Fisher $\to$ ellipses de MacAdam & Pr\'ediction & V\'erifi\'e (18/25, 0 param.) & \S\ref{sec:comparison} \\
 $\{3,5,7\} \to \alphaEM \to$ spectre visible & D\'eriv\'e & Cha\^ine compl\`ete (\S\ref{sec:visible}) & \S\ref{sec:visible} \\
 Berlin--Kay $=$ hi\'erarchie $\gamp{p}$ & Pr\'ediction & Compatible & \S\ref{sec:comparison} \\
-Saturation Koide \`a $1/\sqrt{2}$ & Pr\'ediction & Compatible (plage 65--75\,\%) & \S\ref{sec:scpt} \\
+Saturation Koide \`a $1/\sqrt{2}$ & Pr\'ediction & Compatible (plage 65--75\,\%) & \S\ref{sec:scs} \\
 SCS $>$ CIELAB en r\'egion sombre & Empirique & V\'erifi\'e ($L^*<25$) & \S\ref{sec:comparison} \\
 SCS\,+\,CAM02 $>$ CIELAB globalement & Empirique & V\'erifi\'e (6 param. r\'egress\'es) & \S\ref{sec:hybrid} \\
 $\Delta E_{\mathrm{SCS00}} >$ CIEDE2000 & Empirique & V\'erifi\'e ($r=0{,}893$, $p<0{,}0001$) & \S\ref{sec:sct00} \\
@@ -1213,7 +1652,7 @@ la g\'eod\'esique de Fisher est th\'eoriquement exacte au seuil, mais
 le traitement cortical n\'ecessite soit un mod\`ele empirique
 (CIEDE2000), soit une mod\'elisation neurale directe.
 
-\subsection{Ce que le SCS explique et que le CIE ne peut pas}
+\subsection{Ce que le SCS aborde et sur quoi le CIE est agnostique}
 
 \begin{enumerate}[nosep]
 \item \textbf{Pourquoi trois.} Le CIE prend la trichromatie comme fait
@@ -1316,11 +1755,9 @@ m\'etrique, loi de conservation) est ind\'ependante de cette
 conversion.
 \end{derivedbox}
 
-\begin{derivedbox}[Ordonnancement spectral : $\gamp{p} \to$ rouge--vert--bleu]
-Dans cette fen\^etre, la hi\'erarchie des $\gamp{p}$ ne se contente
-pas de compter les canaux --- elle les \emph{ordonne} spectralement.
-Le principe est la correspondance entre persistance informationnelle
-et \'energie :
+\begin{derivedbox}[Correspondance spectrale : $\gamp{p} \leftrightarrow$ rouge--vert--bleu]
+Dans cette fen\^etre, la hi\'erarchie des $\gamp{p}$ induit une
+\emph{correspondance} avec l'ordre spectral~:
 \begin{center}
 \begin{tabular}{cccccl}
 \toprule
@@ -1333,17 +1770,35 @@ $p = 7$ & 0{,}595 & 0{,}173 & la plus faible (6\%) & $\lambda$ court (haute \'en
 \end{tabular}
 \end{center}
 
-La correspondance $p \to \lambda$ d\'ecoule du principe suivant :
-le premier le plus persistant ($p = 3$, plus grand $\gamp{p}$)
-correspond au mode de plus basse \'energie (plus grande $\lambda$).
-Ceci est une cons\'equence de l'ordonnancement \'energ\'etique
-naturel : dans le produit $\alphaEM = \prod \sin^2\!\theta_p$,
-le facteur $\sin^2\!\theta_3$ contribue le plus \`a la constante de
-couplage, donc au seuil d'excitation le plus bas. L'assignation
-$p = 3 \to$ rouge, $p = 5 \to$ vert, $p = 7 \to$ bleu n'est pas un
-choix --- c'est le seul ordonnancement coh\'erent avec la hi\'erarchie
-\'energ\'etique. \textsc{[der]}
+L'heuristique est que le premier le plus persistant ($p = 3$, plus
+grand $\gamp{p}$) contribue le plus \`a
+$\alphaEM = \prod \sin^2\!\theta_p$ et est jumel\'e \`a l'extr\'emit\'e
+de plus basse \'energie de la fen\^etre (plus grande longueur d'onde).
+\textsc{[corr]}
 \end{derivedbox}
+
+\begin{remark}[D\'erivation contre correspondance~: port\'ee explicite]
+La derivedbox pr\'ec\'edente \'etablit une \emph{correspondance}, non
+une d\'erivation de valeurs $\lambda_{\max}$ sp\'ecifiques. Ce que
+la cha\^ine SCS d\'erive, \`a partir de $s = 1/2$ seul, c'est (i) que
+trois et seulement trois canaux chromatiques sont actifs, (ii) la
+hi\'erarchie stricte $\gamp{3} > \gamp{5} > \gamp{7}$, et (iii) que
+la fen\^etre \'electromagn\'etique visible tombe dans la plage de
+Balmer (d\'eriv\'ee ci-dessus via $\alphaEM$, Rydberg et la s\'erie de
+Balmer). Ce qu'elle \emph{ne} d\'erive \emph{pas}, ce sont les
+longueurs d'onde de pic des c\^ones (environ 560, 530, 420~nm), la
+largeur de la r\'eponse spectrale de chaque c\^one, ni la courbe
+photopique de luminosit\'e~: ces \'el\'ements requi\`erent soit la
+lin\'earisation HPE utilis\'ee ailleurs dans l'article, soit
+l'ajustement fondamental de Stockman--Sharpe (2000). L'assignation
+$p = 3 \to$ rouge, $p = 5 \to$ vert, $p = 7 \to$ bleu est par
+cons\'equent \emph{la seule compatible avec le jumelage du plus grand
+$\gamp{p}$ \`a la plus grande longueur d'onde}, et non la seule
+compatible avec une in\'egalit\'e \'energ\'etique d\'emontr\'ee ici.
+Nous l'\'enon\c{c}ons explicitement parce qu'une version ant\'erieure
+(critiqu\'ee par un praticien de la colorim\'etrie) lisait la
+correspondance comme une d\'erivation.
+\end{remark}
 
 La cha\^ine compl\`ete est :
 \begin{equation}
@@ -1544,8 +1999,9 @@ qu'\`a haute saturation.
 En pratique, les tons chair (typiquement peu satur\'es) sont ajust\'es
 avec pr\'ecision, tandis que les rouges ou bleus d\'ej\`a satur\'es
 restent stables --- le comportement que les coloristes attendent de la
-vibrance, d\'eriv\'e ici de la g\'eom\'etrie plut\^ot que de
-l'ing\'enierie.
+vibrance, d\'eriv\'e ici de la g\'eom\'etrie du simplexe. Les courbes
+de vibrance ajust\'ees empiriquement par les coloristes convergent
+qualitativement vers le m\^eme comportement.
 
 \subsection{Protection g\'eod\'esique des tons chair}
 
@@ -1634,10 +2090,10 @@ courante --- cartes d'\'el\'evation, champs de temp\'erature, indices de
 v\'eg\'etation --- les palettes \'etablies comme \texttt{viridis} ou
 \texttt{RdYlGn} restent efficaces pr\'ecis\'ement parce que leur fort
 contraste chromatique fournit des rep\`eres visuels imm\'ediats.
-SCS ne vise pas \`a les remplacer, mais \`a les \emph{certifier}~:
-la m\'etrique de Fisher fournit une mesure rigoureuse d'uniformit\'e
-applicable \`a toute palette existante, y compris celles con\c{c}ues
-empiriquement.
+SCS ne vise pas \`a les remplacer, mais \`a fournir une mesure
+d\'eriv\'ee d'uniformit\'e, ind\'ependante de la jauge, applicable \`a
+toute palette existante --- y compris celles con\c{c}ues
+empiriquement --- \`a titre d'audit quantitatif.
 
 \medskip
 
@@ -1650,61 +2106,193 @@ et la conservation importent~: l'\'etalonnage couleur professionnel
 entre appareils et espaces coloriqu\'es.
 
 % ============================================================
+\section{Probl\`emes ouverts et rep\`eres exp\'erimentaux}
+\label{sec:open_problems}
+% ============================================================
+
+Cette section recense des questions ouvertes qui sont sp\'ecifiques,
+abordables et que nous ne sommes pas, seuls, les mieux plac\'es pour
+trancher. Chacune est formul\'ee comme une pr\'ediction qu'une
+exp\'erience falsifiante r\'efuterait. Les formats de donn\'ees et
+les gabarits de pr\'e-enregistrement sont dans le d\'ep\^ot
+\href{https://github.com/Igrekess/SieveColorSpace}{github.com/Igrekess/SieveColorSpace}.
+
+\paragraph{E1 --- Test JND nul \`a la saturation de Koide $1/\sqrt{2}$.}
+\emph{Revendication.} La saturation d'\'equilibre sur le simplexe
+SCS est $S/S_{\max} = 1/\sqrt{2} \approx 70{,}7\%$. Si ce point est
+physiquement distingu\'e (et non simplement compatible avec une large
+bande de pr\'ef\'erence), il devrait y avoir un minimum de diff\'erence
+tout juste perceptible (JND) \`a cette saturation pour des stimuli
+chromatiques \`a teinte \'equilibr\'ee.
+
+\emph{Protocole.} Discrimination \`a deux alternatives forc\'ees (2AFC)
+\`a $S/S_{\max} \in \{0{,}60; 0{,}66; 0{,}707; 0{,}75; 0{,}80\}$,
+\'equilibr\'e sur six teintes de r\'ef\'erence ($p=3, 5, 7$ et leurs
+compl\'ementaires), $N \geq 30$ observateurs, pas d'escalier adaptatif.
+Pr\'e-enregistrer l'hypoth\`ese nulle~: JND en fonction de
+$S/S_{\max}$ plate sur $[0{,}60; 0{,}80]$. Le SCS pr\'edit un minimum
+\`a $0{,}707$ inf\'erieur d'au moins $10\%$ \`a la moyenne.
+
+\emph{Falsification.} Une courbe JND plate, ou un minimum d\'eplac\'e
+de $1/\sqrt{2}$ de plus de $\pm 3\%$, r\'efuterait la lecture
+d'\'equilibre.
+
+\emph{Format du jeu de donn\'ees.} CSV~: \texttt{observer, hue,
+ref\_saturation, test\_saturation, response, reaction\_time, pass}.
+\'Echantillon cible $\geq 12\,000$ essais.
+
+\paragraph{E2 --- Plafond CRT de dimensionnalit\'e chromatique
+\`a $3 \times 5 \times 7 = 105$ \'etats.}
+\emph{Revendication.} La dimensionnalit\'e chromatique effective de la
+discrimination humaine sature pr\`es de $105$ \'etats par
+configuration de canaux, comme cons\'equence analogique du th\'eor\`eme
+des restes chinois appliqu\'e aux premiers actifs du crible (voir la
+remarque \emph{Analogie structurelle vs pr\'ediction biologique} en
+\S\ref{sec:metamerism}).
+
+\emph{Protocole.} Estimation de la dimension chromatique par maximum
+de vraisemblance (m\'ethode utilis\'ee par Stubbs \& Stubbs pour
+inf\'erer le nombre de c\^ones chez les c\'ephalopodes), appliqu\'ee
+\`a une discrimination \`a $N$ alternatives forc\'ees sur des
+ensembles m\'etam\`eres isoluminants couvrant $\Delta^2$. G\'en\'eration
+des stimuli dans la base des fondamentaux des c\^ones HPE, pr\'esentation
+sur un \'ecran \'etalonn\'e en colorim\'etrie sous conditions
+ISO~19264-1.
+
+\emph{Falsification.} Une dimensionnalit\'e effective
+significativement diff\'erente de $105$ (par exemple au-dessus de $200$
+ou en-dessous de $50$) r\'efuterait l'analogie CRT du crible comme
+mod\`ele quantitatif de la capacit\'e de discrimination chromatique.
+
+\emph{Format du jeu de donn\'ees.} CSV~: \texttt{observer,
+stimulus\_set\_id, presented\_triplet, response, correct, latency}.
+Cible $\geq 50$ observateurs, $\geq 500$ ensembles m\'etam\`eres.
+
+\paragraph{E3 --- Signature t\'etrachromatique du quatri\`eme canal \`a $p = 11$.}
+\emph{Revendication.} Le premier inactif suivant \`a $\mustar = 15$
+est $p = 11$ avec $\gamp{11} = 0{,}427 < 1/2$. Chez les
+t\'etrachromates fonctionnelles (petite sous-population de femmes
+portant un polymorphisme h\'et\'erozygote de l'opsine M/L), le SCS
+pr\'edit un quatri\`eme canal chromatique partiel de poids
+$\gamp{11}/\sum \gamp{p}$.
+
+\emph{Protocole.} Exp\'erience de match sur cube de Maxwell
+(\'etalon d'or t\'etrachromatique) augment\'ee d'une t\^ache 2AFC de
+discrimination sur des paires de m\'etam\`eres pr\'evues pour se
+s\'eparer le long de l'axe $p = 11$ mais pas le long de
+$\{\gamp{3}, \gamp{5}, \gamp{7}\}$. Recruter des t\'etrachromates
+fonctionnelles par d\'epistage g\'enotypique ($\sim 2\%$ des femmes
+h\'et\'erozygotes pour une opsine M/L d\'ecal\'ee).
+
+\emph{Falsification.} Absence de la s\'eparation pr\'edite dans la
+performance t\'etrachromatique, relativement aux contr\^oles
+trichromates, sur les paires m\'etam\`eres s\'electionn\'ees par le SCS.
+
+\emph{Format du jeu de donn\'ees.} CSV des coordonn\'ees de match et
+r\'eponses 2AFC~; g\'enotype attest\'e s\'epar\'ement.
+
+\paragraph{Autres directions ouvertes que nous signalons.}
+\begin{itemize}[nosep]
+\item \textbf{R\'eplication V4.} L'accord IRMf Conway~2025
+  (poids V4 $L{-}M = 0{,}373$ contre
+  $\gamp{3}/\Sigma \gamp{p} = 0{,}385$, \'ecart de $3{,}2\%$) est
+  issu d'un seul jeu de donn\'ees. Une r\'eplication sur un jeu
+  ind\'ependant structur\'e en DKL est un prolongement naturel.
+\item \textbf{Caract\'erisation variationnelle de $\gamp{p}$.} Une
+  d\'erivation info-g\'eom\'etrique des poids $\gamp{p}$ \`a partir
+  d'un principe variationnel sur $\Delta^2$ seul (voir
+  \S\ref{sec:infogeo}), sans invoquer le crible, localiserait ce que
+  le crible apporte.
+\item \textbf{Adaptation chromatique.} Une transformation
+  d'adaptation chromatique compatible avec le SCS est la pi\`ece
+  manquante la plus urgente pour que le cadre soit utilisable
+  hors conditions d'observation contr\^ol\'ees. Le facteur $D$ de
+  CIECAM02 et les raffinements de CAM16 sont les points de d\'epart
+  naturels.
+\item \textbf{Mod\'elisation de l'observateur individuel.} Le cadre
+  pr\'esent suppose un unique observateur effectif. Son extension
+  aux donn\'ees de variabilit\'e de la mosa\"ique des c\^ones de
+  Hofer et al.~\cite{hofer2005} est ouverte.
+\item \textbf{R\'eplication des \'el\'ements de ligne.} Les
+  ajustements classiques d'\'el\'ement de ligne de
+  Vos--Walraven--Wyszecki (MacAdam, Brown, Wyszecki) n'ont jamais,
+  \`a notre connaissance, \'et\'e r\'eplique\'es avec les poids
+  $\gamp{p}$. Le faire testerait directement si la pond\'eration du
+  crible surpasse les poids ajust\'es sur les donn\'ees pour la
+  discrimination au seuil --- ou \'echoue \`a le faire, auquel cas le
+  tableau demande r\'evision.
+\end{itemize}
+
+\paragraph{Benchmark public et classement.}
+Tous les d\'ecoupages COMBVD, les ajustements MacAdam, les poids de
+r\'egression pour $\Delta E_{\mathrm{SCS00}}$ ainsi que les pipelines
+d'entr\'ee HPE / Stockman--Sharpe sont diffus\'es dans le d\'ep\^ot.
+Un classement public (\texttt{leaderboard.md}) suit les soumissions
+pour (a) la corr\'elation dans la r\'egion sombre $L^* < 25$, (b) le
+RMS d'orientation des ellipses de MacAdam, et (c) les trois
+pr\'edictions ci-dessus. Les contributions sont bienvenues par
+\emph{pull request}.
+
+\paragraph{Ce dont nous avons le plus besoin.}
+Nous ne sommes experts ni des transformations d'adaptation
+chromatique, ni de la mod\'elisation individuelle de la mosa\"ique des
+c\^ones, ni de la conception de protocoles psychophysiques, et les
+trois lacunes ci-dessus sont le goulot d'\'etranglement actuel pour
+\'etendre le cadre au-del\`a de son p\'erim\`etre actuel. La
+correspondance, les r\'eplications, les contre-exp\'eriences et les
+d\'ep\^ots d\'eriv\'es sont activement sollicit\'es.
+
+% ============================================================
 \section{Conclusion}
 \label{sec:conclusion}
 % ============================================================
 
-Le syst\`eme colorim\'etrique CIE mesure la couleur de l'ext\'erieur
---- par la psychophysique des observateurs humains. Le SCS d\'erive la
-couleur de l'int\'erieur --- par l'arithm\'etique du crible
-d'\'Eratosth\`ene.
+Les traits structurels que nous avons cherch\'e \`a calculer sont le
+nombre de canaux chromatiques actifs (trois, depuis le crible), leur
+hi\'erarchie ($\gamp{3} > \gamp{5} > \gamp{7}$, align\'ee sur l'ordre
+des bandes passantes des c\^ones L$>$M$>$S), leur m\'etrique
+(information de Fisher sur le simplexe \`a trois canaux), une r\`egle
+de somme saturation--luminance ($S + L = \log 3$, identit\'e
+g\'en\'erique sur les distributions \`a trois issues \'etant donn\'ee
+la lecture SCS de $S$ et $L$), et un candidat d'\'equilibre de
+saturation \`a $1/\sqrt{2}$. Ce sont des candidats \`a une
+n\'ecessit\'e informationnelle~; l'impl\'ementation biologique varie
+entre individus, esp\`eces et conditions d'observation, et se trouve
+hors du p\'erim\`etre du substrat propos\'e ici.
 
-Les deux approches concordent l\`a o\`u elles le doivent : toutes deux
-d\'ecrivent la m\^eme r\'ealit\'e perceptive. L\`a o\`u elles divergent
---- dans l'uniformit\'e de la m\'etrique, dans les lois de conservation,
-dans l'explication des universaux --- le SCS offre des r\'eponses
-structurelles l\`a o\`u le CIE offre des rustines empiriques.
+L\`a o\`u le SCS justifie sa place sur COMBVD, c'est comme canal
+d'information additif. Le SCS pur \`a z\'ero param\`etre ajust\'e se
+situe globalement en de\c{c}\`a de CIELAB ($r = 0{,}500$ contre
+$0{,}755$)~; il surpasse CIELAB dans la r\'egion sombre et sur
+l'orientation des ellipses de MacAdam. Hybrid\'e avec un mod\`ele
+cortical mesur\'e, il am\'eliore CIECAM02 ($r = 0{,}824$ contre
+$0{,}755$ pour CIELAB, six poids r\'egress\'es) et CIEDE2000
+($r = 0{,}893$ contre $0{,}878$, $p < 0{,}0001$, cinq poids
+r\'egress\'es). Nous proposons le SCS comme \emph{couche}
+g\'eom\'etrique principielle d'une architecture factoris\'ee
+d'apparence des couleurs (aux c\^ot\'es d'iCAM, CAM02-UCS,
+J\textsubscript{z}A\textsubscript{z}B\textsubscript{z}), et non comme
+rempla\c{c}ant de l'infrastructure CIE. L'adaptation chromatique, la
+sensibilit\'e spectrale, les conditions d'observation, le
+\emph{flare} et la variabilit\'e inter-observateurs restent du ressort
+de CIECAM02, CIEDE2000 et des mod\`eles individualis\'es cit\'es en
+\S\ref{sec:scope_limits}~; le SCS ne les traite pas et ne pr\'etend
+pas le faire.
 
-L'intuition cl\'e est que la couleur n'est pas un accident biologique
-mais une \emph{n\'ecessit\'e informationnelle}. Le crible d\'etermine
-le nombre de canaux (3), leur hi\'erarchie
-($\gamp{3} > \gamp{5} > \gamp{7}$), leur m\'etrique (Fisher), leur
-loi de conservation ($S + L = \log 3$), leur compl\'ementarit\'e
-($\sin^2 + \cos^2 = 1$), leur topologie ($S^1$) et leur \'equilibre
-($1/\sqrt{2}$). Z\'ero param\`etres. Une seule entr\'ee : $s = 1/2$.
-
-Nous avons \'et\'e explicites sur ce que le cadre actuel accomplit et
-o\`u il reste insuffisant. Les r\'esultats les plus solides sont
-alg\'ebriques (l'identit\'e de conservation, l'identit\'e de
-compl\'ementarit\'e) et g\'eom\'etriques (18/25 ellipses de MacAdam
-avec z\'ero param\`etre). La limitation du SCS pur est
-supra-liminaire : la m\'etrique SCS seule ne rivalise pas globalement
-avec CIELAB, parce qu'elle mod\'elise la g\'eom\'etrie r\'etinienne
-mais pas le traitement cortical. Le mod\`ele hybride SCS\,+\,CAM02
-($r = 0{,}824$ contre $0{,}755$ pour CIELAB) d\'emontre que
-l'architecture factoris\'ee surpasse l'approche monolithique.
-
-Le r\'esultat le plus fort de cet article est le
-$\Delta E_{\mathrm{SCS00}}$ : en combinant CIEDE2000 avec la
-g\'eod\'esique de Fisher--Bernoulli via une interaction polyn\^omiale,
-on \emph{d\'epasse} CIEDE2000 ($r = 0{,}893$ contre $0{,}878$,
-$p < 0{,}0001$) avec le m\^eme nombre de param\`etres. L'am\'elioration
-provient du terme d'interaction
-$\Delta E_{00} \cdot d_{\mathrm{lum}}$, qui capture le couplage
-non lin\'eaire luminance--chrominance que CIEDE2000 traite additivement.
-Ce n'est pas un ajustement ad hoc mais la cons\'equence directe du
-th\'eor\`eme de \v{C}encov : la g\'eod\'esique $\arcsin(\sqrt{\ell})$
-est la transform\'ee variance-stabilisante de Bernoulli, th\'eoriquement
-exacte l\`a o\`u le polyn\^ome $S_L$ de CIEDE2000 sature.
-
-Cet article propose que le SCS fournit le fondement g\'eom\'etrique
-principiel qui manque au CIE : un cadre qui d\'erive, plut\^ot qu'il
-ne suppose, les structures sur lesquelles la science des couleurs est
-construite. Le $\Delta E_{\mathrm{SCS00}}$ d\'emontre que ce fondement
-n'est pas seulement th\'eorique --- il am\'eliore concr\`etement
-l'\'etat de l'art en colorim\'etrie supra-liminaire.
-
-La structure de la couleur n'est pas choisie. Elle est calcul\'ee.
+Le substrat est donc offert comme une invitation plut\^ot que comme
+une conclusion. Trois pr\'edictions falsifiables
+(\S\ref{sec:open_problems}) sont r\'ealisables en trois mois
+d'exp\'erience~: un test JND nul \`a la saturation de Koide
+$1/\sqrt{2}$, un plafond de discrimination chromatique \`a
+$3\times 5\times 7 = 105$ \'etats motiv\'e par le CRT, et la signature
+d'un quatri\`eme canal pr\'edit pour $p = 11$ chez les t\'etrachromates.
+Le code, les d\'ecoupages COMBVD, les ajustements MacAdam et un
+classement de r\'ef\'erence sont diffus\'es dans le d\'ep\^ot cit\'e
+en \S\ref{sec:open_problems}. Le cadre a surtout besoin d'expertises
+que nous n'avons pas~: adaptation chromatique, mod\'elisation de
+l'observateur individuel, conception de protocoles psychophysiques.
+Les corrections, r\'eplications et contre-exp\'eriences sont ce sur
+quoi la prochaine version de cet article devra s'appuyer.
 
 % ============================================================
 \appendix
@@ -1802,40 +2390,53 @@ est l'unique entr\'ee de toute la th\'eorie.
 \subsection{Le th\'eor\`eme fondamental des \'ecarts (GFT)}
 \label{app:gft}
 
-\begin{identitybox}[GFT~: $\DKL + H = \log_2 m$]
+\begin{identitybox}[R\`egle de somme~: $\DKL + H = \log m$]
 Pour \emph{toute} distribution de probabilit\'e
 $P = (p_0, \ldots, p_{m-1})$ sur $m$ classes, avec la r\'ef\'erence
 uniforme $U_m = (1/m, \ldots, 1/m)$~:
 \begin{equation}
-  \log_2 m = \DKL(P \| U_m) + H(P),
+  \log m = \DKL(P \| U_m) + H(P),
   \tag{A.4}
 \end{equation}
-o\`u $\DKL(P\|U_m) = \sum_r p_r \log_2(m\, p_r)$ et
-$H(P) = -\sum_r p_r \log_2 p_r$.
+o\`u $\DKL(P\|U_m) = \sum_r p_r \log(m\, p_r)$ et
+$H(P) = -\sum_r p_r \log p_r$. Le logarithme est naturel (base $e$)
+partout dans l'article~; la conversion en bits s'obtient en
+multipliant par $1/\log 2$.
 
 \begin{proof}
 D\'eveloppons $\DKL$~:
 \begin{align*}
   \DKL(P\|U_m)
-  &= \sum_r p_r \log_2\frac{p_r}{1/m}
-   = \sum_r p_r \bigl(\log_2 m + \log_2 p_r\bigr) \\
-  &= \log_2 m \cdot \underbrace{\textstyle\sum_r p_r}_{=1}
-   + \underbrace{\textstyle\sum_r p_r \log_2 p_r}_{=-H(P)} \\
-  &= \log_2 m - H(P).
+  &= \sum_r p_r \log\frac{p_r}{1/m}
+   = \sum_r p_r \bigl(\log m + \log p_r\bigr) \\
+  &= \log m \cdot \underbrace{\textstyle\sum_r p_r}_{=1}
+   + \underbrace{\textstyle\sum_r p_r \log p_r}_{=-H(P)} \\
+  &= \log m - H(P).
 \end{align*}
-D'o\`u $\DKL + H = \log_2 m$ exactement. Le r\'esidu est nul par
+D'o\`u $\DKL + H = \log m$ exactement. Le r\'esidu est nul par
 alg\`ebre~; la v\'erification num\'erique \`a $m = 210$ donne
-$|\text{r\'esidu}| < 10^{-15}$ bits.
+$|\text{r\'esidu}| < 10^{-15}$ nats.
 \end{proof}
 \end{identitybox}
 
+\begin{remark}[Convention de base]
+Des r\'edactions ant\'erieures de cet appendice utilisaient $\log_2$~;
+le logarithme naturel est utilis\'e de mani\`ere coh\'erente dans la
+version actuelle parce que le corps de l'article travaille en nats.
+L'identit\'e est invariante de base \`a une constante multiplicative
+globale pr\`es.
+\end{remark}
+
 \begin{remark}
-Appliqu\'e au simplexe chromatique $\Delta^2$ avec $m = 3$
-(les trois canaux actifs), le GFT donne directement la loi de
-conservation de l'\'equation~\eqref{eq:gft}~:
-$S + L = \DKL(\bm{\pi}\|\mathbf{u}) + H(\bm{\pi}) = \log 3$.
-C'est une identit\'e alg\'ebrique, vraie pour tout
-$\bm{\pi} \in \Delta^2$.
+Appliqu\'e au simplexe chromatique $\Delta^2$ avec $m = 3$ (les trois
+canaux actifs), la r\`egle de somme de l'\'equation~\eqref{eq:gft}
+suit directement~:
+$S + L = \DKL(\bm{\pi}\|\mathbf{u}) + H(\bm{\pi}) = \log 3$. C'est une
+identit\'e alg\'ebrique, vraie pour tout $\bm{\pi} \in \Delta^2$~; son
+contenu propre \`a la couleur est le choix $m = 3$ depuis le crible
+et la lecture de $S$ et $L$ comme saturation et luminance (voir
+\S\ref{sec:scs} et la remarque sur la \emph{Port\'ee de cette
+identit\'e}).
 \end{remark}
 
 % ────────────────────────────────────────────────────────────
@@ -2211,6 +2812,76 @@ similarity,''
 \bibitem{munsell1905}
 A.~H.~Munsell,
 \textit{A Color Notation} (Geo.~H.~Ellis Co., Boston, 1905).
+
+% ---- r\'ef\'erences de colorim\'etrie ajout\'ees dans la r\'evision 2026 ----
+
+\bibitem{wyszecki2000}
+G.~Wyszecki and W.~S.~Stiles,
+\textit{Color Science: Concepts and Methods, Quantitative Data and
+Formulae}, 2nd ed.\ (Wiley, 2000).
+
+\bibitem{voswalraven1972}
+J.~J.~Vos and P.~L.~Walraven,
+``An analytical description of the line element in the
+zone-fluctuation model of colour vision,''
+\textit{Vision Research} \textbf{12}(8), 1345--1365 (1972).
+
+\bibitem{dkl1984}
+A.~M.~Derrington, J.~Krauskopf, and P.~Lennie,
+``Chromatic mechanisms in lateral geniculate nucleus of macaque,''
+\textit{Journal of Physiology} \textbf{357}, 241--265 (1984).
+
+\bibitem{macleod1979}
+D.~I.~A.~MacLeod and R.~M.~Boynton,
+``Chromaticity diagram showing cone excitation by stimuli of equal
+luminance,''
+\textit{J.~Opt.~Soc.~Am.} \textbf{69}(8), 1183--1186 (1979).
+
+\bibitem{wuerger2002}
+S.~M.~Wuerger, A.~B.~Watson, and A.~J.~Ahumada Jr.,
+``Towards a spatio-chromatic standard observer for detection,''
+\textit{Proc.\ SPIE} \textbf{4662}, 159--172 (2002).
+
+\bibitem{koenderink2010}
+J.~J.~Koenderink,
+\textit{Color for the Sciences} (MIT Press, 2010).
+
+\bibitem{fairchild2013}
+M.~D.~Fairchild,
+\textit{Color Appearance Models}, 3rd ed.\ (Wiley, 2013).
+
+\bibitem{hofer2005}
+H.~Hofer, J.~Carroll, J.~Neitz, M.~Neitz, and D.~R.~Williams,
+``Organization of the human trichromatic cone mosaic,''
+\textit{Journal of Neuroscience} \textbf{25}(42), 9669--9679 (2005).
+
+\bibitem{amari1985}
+S.-i.\ Amari,
+\textit{Differential-Geometrical Methods in Statistics},
+Lecture Notes in Statistics \textbf{28} (Springer, 1985).
+
+\bibitem{fairchildjohnson2004}
+M.~D.~Fairchild and G.~M.~Johnson,
+``iCAM framework for image appearance, differences, and quality,''
+\textit{Journal of Electronic Imaging} \textbf{13}(1), 126--138 (2004).
+
+\bibitem{luo2006}
+M.~R.~Luo, G.~Cui, and C.~Li,
+``Uniform colour spaces based on CIECAM02 colour appearance model,''
+\textit{Color Research and Application} \textbf{31}(4), 320--330 (2006).
+
+\bibitem{safdar2017}
+M.~Safdar, G.~Cui, Y.~J.~Kim, and M.~R.~Luo,
+``Perceptually uniform color space for image signals including high
+dynamic range and wide gamut,''
+\textit{Optics Express} \textbf{25}(13), 15131--15151 (2017).
+
+\bibitem{conway2025}
+B.~R.~Conway et al.,
+``Functional organization of color processing in macaque visual
+cortex,''
+OpenNeuro dataset ds005521 (2025),
+\href{https://openneuro.org/datasets/ds005521}{openneuro.org/datasets/ds005521}.
 
 \end{thebibliography}
 

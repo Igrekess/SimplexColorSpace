@@ -23,8 +23,8 @@ Usage:
 import numpy as np
 import sys, os
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from scpt_companion import (gamma_p, sin2_theta, delta_p, fisher_metric,
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from scs_companion import (gamma_p, sin2_theta, delta_p, fisher_metric,
                              MU_STAR, Q_REL, Q_THERM, PRIMES)
 
 # ============================================================

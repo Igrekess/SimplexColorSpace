@@ -38,7 +38,7 @@ Usage:
     de = delta_e_scs00(Lab1, Lab2, xyz1, xyz2, model)
 
 References:
-    - PT_COLOR.tex, Section 8 (CIEDE2000 + SCT)
+    - PT_COLOR.tex, Section 8 (CIEDE2000 + SCS)
     - CIE Technical Report 142-2001 (CIEDE2000)
     - Čencov (1982), Fisher metric uniqueness
 """
@@ -188,8 +188,13 @@ def fit_scs00(combvd_path=None):
     from scipy import stats
 
     if combvd_path is None:
-        combvd_path = os.path.join(
-            os.path.dirname(__file__), 'datasets', 'COMBVD_3813.csv')
+        # Datasets live under the repo root, not under scripts/
+        _here = os.path.dirname(os.path.abspath(__file__))
+        _repo = os.path.dirname(_here)
+        combvd_path = os.path.join(_repo, 'datasets', 'COMBVD_3813.csv')
+        if not os.path.exists(combvd_path):
+            # fallback to scripts/datasets (legacy layout) for backward compat
+            combvd_path = os.path.join(_here, 'datasets', 'COMBVD_3813.csv')
 
     df = pd.read_csv(combvd_path)
     N = len(df)
@@ -272,8 +277,11 @@ def validate(verbose=True):
     from sklearn.preprocessing import StandardScaler
     from sklearn.model_selection import KFold
 
-    data_path = os.path.join(
-        os.path.dirname(__file__), 'datasets', 'COMBVD_3813.csv')
+    _here = os.path.dirname(os.path.abspath(__file__))
+    _repo = os.path.dirname(_here)
+    data_path = os.path.join(_repo, 'datasets', 'COMBVD_3813.csv')
+    if not os.path.exists(data_path):
+        data_path = os.path.join(_here, 'datasets', 'COMBVD_3813.csv')
     df = pd.read_csv(data_path)
     N = len(df)
     dv = df['DV'].values

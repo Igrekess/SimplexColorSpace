@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-MacAdam Ellipse Test — SCPT vs CIELAB
-======================================
+MacAdam Ellipse Test — SCS vs CIELAB
+=====================================
 
 Compares the Fisher metric (weighted by gamma_p, 0 parameters)
 against CIELAB's cube-root approximation (3 empirical parameters)
@@ -31,7 +31,9 @@ import sys
 
 # Add parent scripts dir for imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from scpt_companion import gamma_p, fisher_metric, MU_STAR, Q_REL, PRIMES
+from scs_companion import gamma_p, fisher_metric, MU_STAR, Q_REL, PRIMES
+# Combined metric (Fisher + Fubini-Study + bifurcation) for the paper's 18/25 claim
+from delta_e_scs import scs_metric
 
 FIG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'figures_en')
 
@@ -75,7 +77,7 @@ MACADAM_DATA = [
 
 def xy_to_simplex(x, y):
     """
-    Convert CIE (x, y) chromaticity to SCPT simplex coordinates (pi3, pi5, pi7).
+    Convert CIE (x, y) chromaticity to SCS simplex coordinates (pi3, pi5, pi7).
 
     Approximate mapping: CIE XYZ → LMS cone space → normalized proportions.
     We use the Hunt-Pointer-Estevez matrix for XYZ→LMS, then normalize.
@@ -107,16 +109,27 @@ def xy_to_simplex(x, y):
     return np.array([wL/total, wM/total, wS/total])
 
 
-def fisher_ellipse_at(x, y):
+def fisher_ellipse_at(x, y, use_combined=True):
     """
-    Compute the Fisher metric ellipse at CIE chromaticity (x, y).
+    Compute the SCS metric ellipse at CIE chromaticity (x, y).
+
     Returns (semi_a, semi_b, theta_deg) — the predicted discrimination ellipse.
+
+    When ``use_combined=True`` (default), uses the full combined metric
+    reported in the paper: Fisher + Fubini-Study phase correction +
+    bifurcation rotation (all three layers derived from s = 1/2 at
+    mu* = 15). When ``use_combined=False``, uses the bare Fisher metric
+    weighted by gamma_p only.
+
+    The paper's headline 18/25 wins on ellipse orientation (RMS Delta theta = 37.8 deg)
+    comes from the combined metric. Bare Fisher alone gives 8/25 at 68.5 deg RMS,
+    which is the zero-parameter baseline before phase-correction and bifurcation.
     """
     pi = xy_to_simplex(x, y)
     gammas = np.array([gamma_p(3), gamma_p(5), gamma_p(7)])
 
-    # Fisher metric in the (pi3, pi5) chart
-    G = fisher_metric(pi, gammas)
+    # SCS metric in the (pi3, pi5) chart — combined (paper) or bare Fisher
+    G = scs_metric(pi) if use_combined else fisher_metric(pi, gammas)
 
     # Eigendecomposition: larger eigenvalue → smaller ellipse axis
     eigvals, eigvecs = np.linalg.eigh(G)

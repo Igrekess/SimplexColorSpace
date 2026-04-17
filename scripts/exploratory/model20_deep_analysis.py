@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """
-Deep Analysis of Model 20: CIEDE2000 + SCT
+Deep Analysis of Model 20: CIEDE2000 + SCS
 ===========================================
 
 Model 20 (r=0.8831) beats CIEDE2000 alone (r=0.8774) with 4 features:
   f0: ΔE₀₀ (CIEDE2000 total)
-  f1: d_lum (SCT Fisher-Bernoulli luminance geodesic)
-  f2: d_chrom (SCT Bhattacharyya chromatic geodesic)
-  f3: d_lum · (ℓ - ½)² (SCT dark correction)
+  f1: d_lum (SCS Fisher-Bernoulli luminance geodesic)
+  f2: d_chrom (SCS Bhattacharyya chromatic geodesic)
+  f3: d_lum · (ℓ - ½)² (SCS dark correction)
 
 This script investigates:
   1. Where the improvement concentrates (L* bins, hue bins, datasets)
-  2. Residual analysis: what CIEDE2000 gets wrong that SCT fixes
-  3. Ablation: which SCT feature matters most
+  2. Residual analysis: what CIEDE2000 gets wrong that SCS fixes
+  3. Ablation: which SCS feature matters most
   4. The Fisher-Bernoulli geodesic vs CIEDE2000 SL in the dark region
   5. Statistical significance of the improvement
   6. Variations: can we do even better?
@@ -26,10 +26,10 @@ from sklearn.linear_model import Ridge, Lasso, ElasticNet
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import KFold
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from sct_ciede2000_analysis import ciede2000, sct_features
-from delta_e_scpt import xyz_to_lms, lms_to_simplex
-from scpt_companion import gamma_p
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from scs_ciede2000_analysis import ciede2000, scs_features
+from delta_e_scs import xyz_to_lms, lms_to_simplex
+from scs_companion import gamma_p
 
 GAMMAS = np.array([gamma_p(3), gamma_p(5), gamma_p(7)])
 
@@ -44,11 +44,11 @@ def load_and_compute():
     de00 = np.zeros(N)
     comp_all = []
 
-    # SCT features
+    # SCS features
     d_lum = np.zeros(N)
     d_chrom = np.zeros(N)
     ell_mid = np.zeros(N)
-    de_sct = np.zeros(N)
+    de_scs = np.zeros(N)
     S_mid = np.zeros(N)
     dtheta = np.zeros(N)
     theta_mid = np.zeros(N)
@@ -70,11 +70,11 @@ def load_and_compute():
         de00[i] = de00_val
         comp_all.append(comp)
 
-        feats = sct_features(xyz1, xyz2)
+        feats = scs_features(xyz1, xyz2)
         d_lum[i] = feats['d_lum']
         d_chrom[i] = feats['d_chrom']
         ell_mid[i] = feats['ell_mid']
-        de_sct[i] = feats['de_sct']
+        de_scs[i] = feats['de_scs']
         S_mid[i] = feats['S_mid']
         dtheta[i] = feats['dtheta']
         theta_mid[i] = feats['theta_mid']
@@ -93,7 +93,7 @@ def load_and_compute():
     ell_centered = (ell_mid - 0.5)**2
 
     return (df, dv, de00, comp_df, d_lum, d_chrom, ell_mid, ell_centered,
-            de_sct, S_mid, dtheta, theta_mid, pi_mid_all, L_mid, C_mid, h_mid)
+            de_scs, S_mid, dtheta, theta_mid, pi_mid_all, L_mid, C_mid, h_mid)
 
 
 def cv_predict(X, y, alpha=1.0):
@@ -111,11 +111,11 @@ def cv_predict(X, y, alpha=1.0):
 
 def main():
     print("=" * 70)
-    print("DEEP ANALYSIS: Model 20 (CIEDE2000 + SCT)")
+    print("DEEP ANALYSIS: Model 20 (CIEDE2000 + SCS)")
     print("=" * 70)
 
     (df, dv, de00, comp_df, d_lum, d_chrom, ell_mid, ell_centered,
-     de_sct, S_mid, dtheta, theta_mid, pi_mid_all, L_mid, C_mid, h_mid) = load_and_compute()
+     de_scs, S_mid, dtheta, theta_mid, pi_mid_all, L_mid, C_mid, h_mid) = load_and_compute()
     N = len(dv)
 
     # ── 1. Full model fit on all data ──
@@ -178,17 +178,17 @@ def main():
         r_abl = stats.pearsonr(y_abl, dv)[0]
         print(f"  Without {name:20s}: r = {r_abl:.4f}  (loss = {r_full-r_abl:+.4f})")
 
-    # Add each SCT feature individually to CIEDE2000
-    print(f"\n  Adding single SCT features to CIEDE2000:")
-    sct_extras = {
+    # Add each SCS feature individually to CIEDE2000
+    print(f"\n  Adding single SCS features to CIEDE2000:")
+    scs_extras = {
         'd_lum': d_lum,
         'd_chrom': d_chrom,
         'd_lum·(ℓ-½)²': d_lum * ell_centered,
         'dS (saturation diff)': np.abs(S_mid),
         'dθ (hue diff)': dtheta,
-        'de_sct (canonical)': de_sct,
+        'de_scs (canonical)': de_scs,
     }
-    for name, feat in sct_extras.items():
+    for name, feat in scs_extras.items():
         X_add = np.column_stack([de00, feat])
         y_add = cv_predict(X_add, dv)
         r_add = stats.pearsonr(y_add, dv)[0]
@@ -196,7 +196,7 @@ def main():
 
     # ── 3. Residual analysis ──
     print("\n" + "─" * 70)
-    print("3. RESIDUAL ANALYSIS: WHERE DOES SCT FIX CIEDE2000?")
+    print("3. RESIDUAL ANALYSIS: WHERE DOES SCS FIX CIEDE2000?")
     print("─" * 70)
 
     resid_00 = dv - de00 * (stats.pearsonr(de00, dv)[0] * np.std(dv) / np.std(de00))
@@ -268,15 +268,15 @@ def main():
 
     # CIEDE2000's luminance term: ΔL'/(kL·SL)
     ciede_lum_term = np.abs(dLp) / SL
-    # SCT's luminance: d_lum = 2|arcsin(√ℓ₁) - arcsin(√ℓ₂)|
-    sct_lum_term = d_lum
+    # SCS's luminance: d_lum = 2|arcsin(√ℓ₁) - arcsin(√ℓ₂)|
+    scs_lum_term = d_lum
 
     print(f"\n  Dark region (L*<25): n = {n_dark}")
     print(f"\n  Correlation with human DV (dark only):")
     r_ciede_lum_dark = stats.pearsonr(ciede_lum_term[dark], dv[dark])[0]
-    r_sct_lum_dark = stats.pearsonr(sct_lum_term[dark], dv[dark])[0]
+    r_scs_lum_dark = stats.pearsonr(scs_lum_term[dark], dv[dark])[0]
     print(f"    CIEDE2000 |ΔL'/SL|     : r = {r_ciede_lum_dark:.4f}")
-    print(f"    SCT d_lum (Fisher)     : r = {r_sct_lum_dark:.4f}")
+    print(f"    SCS d_lum (Fisher)     : r = {r_scs_lum_dark:.4f}")
 
     # Compare the SL function with Fisher behavior
     # SL = 1 + 0.015·(L*-50)²/√(20+(L*-50)²)
@@ -388,7 +388,7 @@ def main():
     r_20e = stats.pearsonr(y_20e, dv)[0]
     print(f"  20e. Model 20 + hue harmonics:         r = {r_20e:.4f}")
 
-    # 20f: + per-channel SCT (all 3 dπ)
+    # 20f: + per-channel SCS (all 3 dπ)
     dpi3 = np.zeros(N)
     dpi5 = np.zeros(N)
     dpi7 = np.zeros(N)
@@ -408,7 +408,7 @@ def main():
     r_20f = stats.pearsonr(y_20f, dv)[0]
     print(f"  20f. ΔE₀₀ + d_lum + dark + dπ₃,₅,₇:   r = {r_20f:.4f}")
 
-    # 20g: CIEDE2000 decomposed + SCT luminance
+    # 20g: CIEDE2000 decomposed + SCS luminance
     term_L = comp_df['term_L'].values
     term_C = comp_df['term_C'].values
     term_H = comp_df['term_H'].values
@@ -422,9 +422,9 @@ def main():
     ])
     y_20g = cv_predict(X20g, dv)
     r_20g = stats.pearsonr(y_20g, dv)[0]
-    print(f"  20g. CIEDE2000 decomp + SCT lum+dark:  r = {r_20g:.4f}")
+    print(f"  20g. CIEDE2000 decomp + SCS lum+dark:  r = {r_20g:.4f}")
 
-    # 20h: Like 20g but also per-channel SCT
+    # 20h: Like 20g but also per-channel SCS
     X20h = np.column_stack([
         term_L**2, term_C**2, term_H**2,
         RT * term_C * term_H,
@@ -433,9 +433,9 @@ def main():
     ])
     y_20h = cv_predict(X20h, dv)
     r_20h = stats.pearsonr(y_20h, dv)[0]
-    print(f"  20h. CIEDE2000 decomp + SCT full:      r = {r_20h:.4f}")
+    print(f"  20h. CIEDE2000 decomp + SCS full:      r = {r_20h:.4f}")
 
-    # 20i: CIEDE2000 + quadratic SCT luminance
+    # 20i: CIEDE2000 + quadratic SCS luminance
     d_lum_sq = d_lum**2
     X20i = np.column_stack([de00, d_lum, d_lum_sq, d_lum * ell_centered])
     y_20i = cv_predict(X20i, dv)
@@ -460,7 +460,7 @@ def main():
 
   This SATURATES at SL ≈ 1.75 for L*→0.
 
-  The SCT Fisher-Bernoulli geodesic uses:
+  The SCS Fisher-Bernoulli geodesic uses:
     d_lum = 2|arcsin(√ℓ₁) - arcsin(√ℓ₂)|
 
   This has sensitivity proportional to 1/√(ℓ(1-ℓ)), which
@@ -474,7 +474,7 @@ def main():
   and approximates this behavior in the mid-range (L*=25-75)
   but falls short in the tails.
 
-  The SCT correction d_lum·(ℓ-½)² amplifies the Fisher geodesic
+  The SCS correction d_lum·(ℓ-½)² amplifies the Fisher geodesic
   AWAY from the midpoint, precisely where CIEDE2000 underperforms.
 
   This is the t^{{1/2}} vs t^{{1/3}} argument made quantitative:
@@ -485,7 +485,7 @@ def main():
 
     # ── 8. Proposed formula ──
     print("─" * 70)
-    print("8. PROPOSED FORMULA: ΔE_SCT00")
+    print("8. PROPOSED FORMULA: ΔE_SCS00")
     print("─" * 70)
 
     # Fit on full data for the final formula
@@ -496,7 +496,7 @@ def main():
     b_raw = m_final.intercept_ - np.sum(m_final.coef_ * sc_final.mean_ / sc_final.scale_)
 
     print(f"""
-  ΔE_SCT00 = {b_raw:.3f}
+  ΔE_SCS00 = {b_raw:.3f}
              + {w_raw[0]:.3f} · ΔE₀₀
              + {w_raw[1]:.3f} · d_lum
              + {w_raw[2]:.3f} · d_chrom
@@ -511,7 +511,7 @@ def main():
 
   Performance: r = {r_full:.4f} (vs CIEDE2000: r = {r_base:.4f})
   Parameters: 4 (3 regression weights + 1 intercept)
-  SCT features: 0 adjustable parameters (derived from s = 1/2)
+  SCS features: 0 adjustable parameters (derived from s = 1/2)
 """)
 
 

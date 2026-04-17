@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Saturation Study — Results</title>
+<style>
+:root{
+  --bg:#0a0a0a; --surface:#141414; --surface2:#1e1e1e; --border:#2a2a2a;
+  --text:#e0e0e0; --text-dim:#8a8a8a; --gold:#c8a84e; --gold-dim:#8a7234;
+  --green:#50c870; --red:#e05050; --blue:#6688bb; --radius:12px; --maxw:1200px;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0 16px 40px;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+header,main{max-width:var(--maxw);margin:0 auto}
+header{padding:28px 0 18px;border-bottom:1px solid var(--border)}
+.header-row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+h1{margin:0;font-size:1.9rem;letter-spacing:-0.02em}
+h1 span{color:var(--gold)}
+.tagline{margin:6px 0 0;color:var(--text-dim)}
+.btn,.btnlink{
+  appearance:none;border:1px solid var(--border);cursor:pointer;background:var(--surface2);color:var(--text);
+  padding:10px 16px;font-weight:600;border-radius:10px;text-decoration:none;display:inline-block;font-size:.92rem
+}
+.btn:hover,.btn.active,.btnlink:hover{border-color:var(--gold);color:#fff}
+.lang-toggle{display:flex;gap:6px}
+.lang-btn{padding:8px 12px;font-size:.82rem}
+.lang-btn.active{border-color:var(--gold);color:var(--gold)}
+.section{margin-top:24px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:16px}
+.section h2{margin:0 0 12px;font-size:1.1rem}
+.muted{color:var(--text-dim)}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px}
+.kpi-label{font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px}
+.kpi-value{font-size:1.5rem;color:var(--gold);font-variant-numeric:tabular-nums}
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+.filters label{display:block;font-size:.8rem;color:var(--text-dim);margin-bottom:4px}
+.filters input{
+  width:100%;min-width:140px;background:var(--bg);color:var(--text);border:1px solid var(--border);
+  border-radius:10px;padding:10px 12px
+}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left;vertical-align:top}
+th{color:var(--text-dim);font-size:.76rem;text-transform:uppercase;letter-spacing:.08em}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--gold)}
+.notice{padding:12px 14px;border-radius:12px;background:rgba(200,168,78,.08);border:1px solid rgba(200,168,78,.25);color:var(--text-dim)}
+.error{padding:12px 14px;border-radius:12px;background:rgba(224,80,80,.08);border:1px solid rgba(224,80,80,.25);color:#ffb3b3}
+.footer-note{font-size:.8rem;color:var(--text-dim);margin-top:10px}
+.chart-wrap{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px}
+canvas{display:block;width:100%;height:320px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+@media (max-width:900px){.grid{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-row">
+    <div>
+      <h1><span>Saturation Study</span> — <span data-i18n="results">Results</span></h1>
+      <p class="tagline" data-i18n="tagline">Consult the collected results from the ideal saturation study.</p>
+    </div>
+    <div class="lang-toggle">
+      <button class="btn lang-btn" id="lang-fr">FR</button>
+      <button class="btn lang-btn" id="lang-en">EN</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="section">
+    <div class="row" style="justify-content:space-between;align-items:flex-start">
+      <div>
+        <h2 data-i18n="connection">Connection</h2>
+        <p class="muted" data-i18n-html="connection_desc">This page reads a read-only reporting endpoint from Supabase.</p>
+      </div>
+      <div class="row">
+        <a class="btnlink" href="index.html" data-i18n="back_home">Back to home</a>
+        <button class="btn" id="refreshBtn" data-i18n="refresh">Refresh</button>
+        <button class="btn" id="csvBtn" data-i18n="export_csv">Export CSV</button>
+      </div>
+    </div>
+    <div id="statusBox" class="notice" style="margin-top:12px"></div>
+    <div class="footer-note" data-i18n="api_note">
+      Source: Edge Function <code>report-results</code>.
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 data-i18n="filters">Filters</h2>
+    <div class="filters">
+      <div><label for="limitInput" data-i18n="max_rows">Max rows</label><input id="limitInput" type="number" min="10" max="1000" step="10" value="200"></div>
+      <div><label for="minTrialsInput" data-i18n="min_trials">Min trials</label><input id="minTrialsInput" type="number" min="0" step="1" value="0"></div>
+      <div><label for="maxDistanceInput" data-i18n="max_distance">Max distance to Koide</label><input id="maxDistanceInput" type="number" min="0" step="0.001" placeholder="∞"></div>
+      <div><label for="protocolInput" data-i18n="protocol">Protocol</label><input id="protocolInput" type="text" placeholder="ideal_saturation_reference_color"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 data-i18n="overview">Overview</h2>
+    <div class="grid">
+      <div class="card"><div class="kpi-label" data-i18n="sessions">Sessions</div><div class="kpi-value" id="kpiSessions">—</div></div>
+      <div class="card"><div class="kpi-label" data-i18n="participants">Participants</div><div class="kpi-value" id="kpiParticipants">—</div></div>
+      <div class="card"><div class="kpi-label" data-i18n="mean_sat">Mean selected saturation</div><div class="kpi-value" id="kpiMeanSat">—</div></div>
+      <div class="card"><div class="kpi-label" data-i18n="mean_dist">Mean distance to Koide</div><div class="kpi-value" id="kpiMeanDist">—</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 data-i18n="family_means">Family means</h2>
+    <div class="chart-wrap"><canvas id="familyChart" width="1100" height="320"></canvas></div>
+  </section>
+
+  <section class="section">
+    <h2 data-i18n="recent_sessions">Recent sessions</h2>
+    <div class="table-wrap">
+      <table id="resultsTable">
+        <thead>
+          <tr>
+            <th data-i18n="date">Date</th>
+            <th data-i18n="code">Code</th>
+            <th data-i18n="protocol">Protocol</th>
+            <th data-i18n="trials">Trials</th>
+            <th data-i18n="mean_sat_short">Mean sat.</th>
+            <th data-i18n="median_sat">Median sat.</th>
+            <th data-i18n="dist_koide">Distance to Koide</th>
+            <th data-i18n="family_means_short">Family means</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<script src="config.js"></script>
+<script>
+const I18N = {
+  fr: {
+    results: "Résultats",
+    tagline: "Consulter les résultats collectés de l’étude sur la saturation idéale.",
+    connection: "Connexion",
+    connection_desc: "Cette page lit un endpoint de reporting en lecture seule depuis Supabase.",
+    refresh: "Rafraîchir",
+    export_csv: "Exporter CSV",
+    back_home: "Retour à l’accueil",
+    api_note: "Source : Edge Function <code>report-results</code>.",
+    filters: "Filtres",
+    max_rows: "Nombre max de lignes",
+    min_trials: "Nombre min de trials",
+    max_distance: "Distance max à Koide",
+    protocol: "Protocole",
+    overview: "Vue d’ensemble",
+    sessions: "Sessions",
+    participants: "Participants",
+    mean_sat: "Saturation moyenne choisie",
+    mean_dist: "Distance moyenne à Koide",
+    family_means: "Moyennes par famille",
+    recent_sessions: "Sessions récentes",
+    date: "Date",
+    code: "Code",
+    trials: "Trials",
+    mean_sat_short: "Sat. moy.",
+    median_sat: "Sat. méd.",
+    dist_koide: "Distance à Koide",
+    family_means_short: "Moyennes familles",
+    loading: "Chargement des données…",
+    loaded: "Données chargées.",
+    no_data: "Aucune donnée à afficher.",
+    fetch_error: "Erreur de lecture Supabase."
+  },
+  en: {
+    results: "Results",
+    tagline: "Consult the collected results from the ideal saturation study.",
+    connection: "Connection",
+    connection_desc: "This page reads a read-only reporting endpoint from Supabase.",
+    refresh: "Refresh",
+    export_csv: "Export CSV",
+    back_home: "Back to home",
+    api_note: "Source: Edge Function <code>report-results</code>.",
+    filters: "Filters",
+    max_rows: "Max rows",
+    min_trials: "Min trials",
+    max_distance: "Max distance to Koide",
+    protocol: "Protocol",
+    overview: "Overview",
+    sessions: "Sessions",
+    participants: "Participants",
+    mean_sat: "Mean selected saturation",
+    mean_dist: "Mean distance to Koide",
+    family_means: "Family means",
+    recent_sessions: "Recent sessions",
+    date: "Date",
+    code: "Code",
+    trials: "Trials",
+    mean_sat_short: "Mean sat.",
+    median_sat: "Median sat.",
+    dist_koide: "Distance to Koide",
+    family_means_short: "Family means",
+    loading: "Loading data…",
+    loaded: "Data loaded.",
+    no_data: "No data to display.",
+    fetch_error: "Supabase read error."
+  }
+};
+
+let currentLang = localStorage.getItem("results_lang") || (((navigator.language||"").toLowerCase().startsWith("fr")) ? "fr" : "en");
+let currentData = { rows: [], overview: null, family_means: [] };
+
+function t(key){ return (I18N[currentLang] && I18N[currentLang][key]) || key; }
+function applyLanguage(lang){
+  currentLang = lang;
+  localStorage.setItem("results_lang", lang);
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.getAttribute("data-i18n")); });
+  document.querySelectorAll("[data-i18n-html]").forEach(el => { el.innerHTML = t(el.getAttribute("data-i18n-html")); });
+  document.getElementById("lang-fr").classList.toggle("active", lang === "fr");
+  document.getElementById("lang-en").classList.toggle("active", lang === "en");
+}
+function setStatus(msg, kind){
+  const box = document.getElementById("statusBox");
+  box.className = kind === "error" ? "error" : "notice";
+  box.textContent = msg;
+}
+function num(x, digits=3){ return (x==null || Number.isNaN(Number(x))) ? "—" : Number(x).toFixed(digits); }
+function pct01(x, digits=1){ return (x==null || Number.isNaN(Number(x))) ? "—" : (Number(x)*100).toFixed(digits)+"%"; }
+function formatDate(iso){ try{ return iso ? new Date(iso).toLocaleString(currentLang==="fr"?"fr-FR":"en-US") : "—"; }catch{return iso||"—";}}
+function getFilters(){
+  return {
+    limit: Math.max(10, Math.min(1000, Number(document.getElementById("limitInput").value || 200))),
+    minTrials: Math.max(0, Number(document.getElementById("minTrialsInput").value || 0)),
+    maxDistance: document.getElementById("maxDistanceInput").value === "" ? null : Number(document.getElementById("maxDistanceInput").value),
+    protocol: document.getElementById("protocolInput").value.trim()
+  };
+}
+function renderKPIs(overview){
+  document.getElementById("kpiSessions").textContent = overview ? (overview.sessions ?? 0) : "0";
+  document.getElementById("kpiParticipants").textContent = overview ? (overview.participants ?? 0) : "0";
+  document.getElementById("kpiMeanSat").textContent = overview ? pct01(overview.mean_selected_saturation,1) : "—";
+  document.getElementById("kpiMeanDist").textContent = overview ? num(overview.mean_distance_to_koide,3) : "—";
+}
+function renderTable(rows){
+  const tbody = document.querySelector("#resultsTable tbody");
+  tbody.innerHTML = "";
+  if(!rows.length){
+    tbody.innerHTML = `<tr><td colspan="8" class="muted">${t("no_data")}</td></tr>`;
+    return;
+  }
+  rows.forEach(r => {
+    const familyMeans = r.family_means && typeof r.family_means === "object"
+      ? Object.entries(r.family_means).map(([k,v]) => `${k}: ${pct01(v,1)}`).join(" · ")
+      : "—";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${formatDate(r.completed_at || r.created_at)}</td>
+      <td><code>${r.anonymous_code || "—"}</code></td>
+      <td>${r.protocol_name || "—"}</td>
+      <td>${r.trial_count ?? "—"}</td>
+      <td>${pct01(r.mean_selected_saturation,1)}</td>
+      <td>${pct01(r.median_selected_saturation,1)}</td>
+      <td>${num(r.distance_to_koide,3)}</td>
+      <td>${familyMeans}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+function drawFamilyChart(data){
+  const canvas = document.getElementById("familyChart");
+  const ctx = canvas.getContext("2d");
+  const rows = data || [];
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = "#0a0a0a";
+  ctx.fillRect(0,0,w,h);
+  if(!rows.length){
+    ctx.fillStyle = "#8a8a8a";
+    ctx.font = "16px sans-serif";
+    ctx.fillText(t("no_data"), 20, 40);
+    return;
+  }
+  const pad = {l:140, r:40, t:20, b:40};
+  const chartW = w - pad.l - pad.r, chartH = h - pad.t - pad.b;
+  const maxV = Math.max(...rows.map(d => d.value || 0), 1);
+  const gap = 14;
+  const barH = Math.max(18, (chartH - gap*(rows.length-1))/rows.length);
+  ctx.strokeStyle = "#2a2a2a";
+  ctx.lineWidth = 1;
+  for(let i=0;i<=5;i++){
+    const x = pad.l + chartW * i/5;
+    ctx.beginPath(); ctx.moveTo(x,pad.t); ctx.lineTo(x,h-pad.b); ctx.stroke();
+    ctx.fillStyle = "#8a8a8a"; ctx.font = "12px sans-serif";
+    ctx.fillText((i/5*100).toFixed(0)+"%", x-10, h-12);
+  }
+  rows.forEach((d,i) => {
+    const y = pad.t + i*(barH+gap);
+    const bw = chartW*(d.value/maxV);
+    ctx.fillStyle = "#c8a84e";
+    ctx.fillRect(pad.l,y,bw,barH);
+    ctx.fillStyle = "#e0e0e0"; ctx.font = "14px sans-serif";
+    ctx.fillText(d.name, 12, y + barH*0.72);
+    ctx.fillStyle = "#c8a84e";
+    ctx.fillText((d.value*100).toFixed(1)+"%", pad.l + bw + 10, y + barH*0.72);
+  });
+}
+function toCsv(rows){
+  const headers = ["completed_at","anonymous_code","protocol_name","trial_count","mean_selected_saturation","median_selected_saturation","distance_to_koide","family_means"];
+  const esc = v => '"' + String(typeof v === "string" ? v : JSON.stringify(v ?? "")).replaceAll('"','""') + '"';
+  return [headers.join(",")].concat(rows.map(r => headers.map(h => esc(r[h])).join(","))).join("\n");
+}
+function downloadCsv(rows){
+  const blob = new Blob([toCsv(rows)], {type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "saturation_study_results.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+async function loadData(){
+  setStatus(t("loading"));
+  try{
+    const f = getFilters();
+    const qs = new URLSearchParams();
+    qs.set("limit", String(f.limit));
+    qs.set("min_trials", String(f.minTrials));
+    if(f.maxDistance !== null) qs.set("max_distance", String(f.maxDistance));
+    if(f.protocol) qs.set("protocol", f.protocol);
+    const url = window.STUDY_CONFIG.supabaseUrl + "/functions/v1/report-results?" + qs.toString();
+    const res = await fetch(url, {
+      headers: { "apikey": window.STUDY_CONFIG.publishableKey }
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || JSON.stringify(data));
+    currentData = data;
+    renderKPIs(data.overview || null);
+    renderTable(data.rows || []);
+    drawFamilyChart(data.family_means || []);
+    setStatus(t("loaded"));
+  }catch(err){
+    console.error(err);
+    setStatus(t("fetch_error") + " " + String(err.message || err), "error");
+    renderKPIs(null); renderTable([]); drawFamilyChart([]);
+  }
+}
+document.getElementById("lang-fr").addEventListener("click", ()=>{ applyLanguage("fr"); renderKPIs(currentData.overview || null); renderTable(currentData.rows || []); drawFamilyChart(currentData.family_means || []); });
+document.getElementById("lang-en").addEventListener("click", ()=>{ applyLanguage("en"); renderKPIs(currentData.overview || null); renderTable(currentData.rows || []); drawFamilyChart(currentData.family_means || []); });
+document.getElementById("refreshBtn").addEventListener("click", loadData);
+document.getElementById("csvBtn").addEventListener("click", ()=>downloadCsv(currentData.rows || []));
+["limitInput","minTrialsInput","maxDistanceInput","protocolInput"].forEach(id => document.getElementById(id).addEventListener("change", loadData));
+applyLanguage(currentLang); loadData();
+</script>
+</body>
+</html>

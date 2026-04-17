@@ -1,6 +1,6 @@
 """
-SCPT — Persistence Chromatic System
-====================================
+SCS — Sieve Color Space
+========================
 
 A first-principles color space and color-difference formula derived
 from the Sieve of Eratosthenes (Persistence Theory).
@@ -8,11 +8,11 @@ from the Sieve of Eratosthenes (Persistence Theory).
 Single input: s = 1/2. Zero adjustable parameters.
 
 Quick start:
-    >>> from scpt import delta_e, to_scpt
+    >>> from scs import delta_e, to_scs
     >>> d = delta_e([0.95, 1.0, 1.09], [0.60, 0.50, 0.30])
     >>> print(f"Color difference: {d:.4f}")
-    >>> coords = to_scpt([0.95, 1.0, 1.09])
-    >>> print(f"SCPT: ℓ={coords.ell:.3f}, S={coords.S:.3f}, θ={coords.hue:.1f}°")
+    >>> coords = to_scs([0.95, 1.0, 1.09])
+    >>> print(f"SCS: ℓ={coords.ell:.3f}, S={coords.S:.3f}, θ={coords.hue:.1f}°")
 
 Theory summary:
     - 4 primes: {2, 3, 5, 7}. p=2 = luminance. {3,5,7} = chromaticity.
@@ -27,8 +27,8 @@ Reference: PT_COLOR.tex (Senez, 2026).
 import numpy as np
 from dataclasses import dataclass
 
-__version__ = "0.1.0"
-__all__ = ["delta_e", "delta_e_lab", "to_scpt", "SCPTColor",
+__version__ = "0.2.0"
+__all__ = ["delta_e", "delta_e_lab", "to_scs", "SCSColor",
            "MU_STAR", "GAMMAS", "PRIMES"]
 
 # ============================================================
@@ -77,8 +77,8 @@ _M_HPE = np.array([
 # ============================================================
 
 @dataclass
-class SCPTColor:
-    """SCPT color coordinates."""
+class SCSColor:
+    """SCS color coordinates."""
     ell: float          # luminance ∈ [0, 1] (p=2 channel)
     S: float            # saturation = D_KL(π||u) ∈ [0, log₂3]
     hue: float          # hue angle in degrees ∈ [0, 360)
@@ -92,14 +92,14 @@ def _xyz_to_lms(xyz, matrix=None):
 
 
 def _lms_to_simplex(lms):
-    """LMS → SCPT simplex (π₃, π₅, π₇), weighted by γ_p."""
+    """LMS → SCS simplex (π₃, π₅, π₇), weighted by γ_p."""
     w = GAMMAS * np.maximum(lms, 1e-12)
     return w / w.sum()
 
 
-def to_scpt(xyz, Y_ref=1.0, matrix=None):
+def to_scs(xyz, Y_ref=1.0, matrix=None):
     """
-    Convert CIE XYZ to SCPT coordinates.
+    Convert CIE XYZ to SCS coordinates.
 
     Parameters:
         xyz: CIE XYZ tristimulus (3-vector)
@@ -107,7 +107,7 @@ def to_scpt(xyz, Y_ref=1.0, matrix=None):
         matrix: optional XYZ→LMS matrix (default HPE)
 
     Returns:
-        SCPTColor with (ell, S, hue, pi)
+        SCSColor with (ell, S, hue, pi)
     """
     xyz = np.asarray(xyz, dtype=float)
     lms = _xyz_to_lms(xyz, matrix)
@@ -124,16 +124,16 @@ def to_scpt(xyz, Y_ref=1.0, matrix=None):
         2 * pi[0] - pi[1] - pi[2]
     )) % 360
 
-    return SCPTColor(ell=ell, S=S, hue=hue, pi=pi)
+    return SCSColor(ell=ell, S=S, hue=hue, pi=pi)
 
 
 # ============================================================
-# COLOR DIFFERENCE: ΔE_SCPT
+# COLOR DIFFERENCE: ΔE_SCS
 # ============================================================
 
 def delta_e(xyz1, xyz2, Y_ref=1.0, matrix=None):
     """
-    SCPT color difference between two XYZ colors.
+    SCS color difference between two XYZ colors.
 
     Formula (zero adjustable parameters):
 
@@ -152,7 +152,7 @@ def delta_e(xyz1, xyz2, Y_ref=1.0, matrix=None):
         matrix: optional XYZ→LMS matrix
 
     Returns:
-        ΔE_SCPT (float ≥ 0)
+        ΔE_SCS (float ≥ 0)
     """
     xyz1 = np.asarray(xyz1, dtype=float)
     xyz2 = np.asarray(xyz2, dtype=float)
@@ -176,9 +176,9 @@ def delta_e(xyz1, xyz2, Y_ref=1.0, matrix=None):
 def delta_e_lab(L1, a1, b1, L2, a2, b2,
                 white=(0.9505, 1.0, 1.089)):
     """
-    SCPT color difference from CIELAB coordinates.
+    SCS color difference from CIELAB coordinates.
 
-    Convenience wrapper: converts Lab → XYZ → ΔE_SCPT.
+    Convenience wrapper: converts Lab → XYZ → ΔE_SCS.
     """
     xyz1 = _lab_to_xyz(L1, a1, b1, white)
     xyz2 = _lab_to_xyz(L2, a2, b2, white)
@@ -232,7 +232,7 @@ def _lab_to_xyz(L, a, b, white=(0.9505, 1.0, 1.089)):
 
 def _selftest():
     """Run basic verification."""
-    print(f"SCPT v{__version__} — self-test")
+    print(f"SCS v{__version__} — self-test")
     print(f"  μ* = {MU_STAR}, γ = ({GAMMA_3:.4f}, {GAMMA_5:.4f}, {GAMMA_7:.4f})")
 
     # GFT conservation

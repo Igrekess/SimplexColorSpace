@@ -4,20 +4,20 @@
 
 model,r_pearson,n_features,n_params_adjustable
 CIELAB (reference),0.7554,1,1
-SCT pure (0 params),0.6420,2,2
-SCT + opponent LM,0.6752,3,3
-SCT + opponent S,0.6432,3,3
-SCT + opponent Lum,0.6420,3,3
-SCT + all opponent,0.6749,5,5
+SCS pure (0 params),0.6420,2,2
+SCS + opponent LM,0.6752,3,3
+SCS + opponent S,0.6432,3,3
+SCS + opponent Lum,0.6420,3,3
+SCS + all opponent,0.6749,5,5
 Opponent channels only,0.5208,3,3
-SCT + CIELAB,0.7616,3,3
-SCT+CAM02,0.8240,5,5
+SCS + CIELAB,0.7616,3,3
+SCS+CAM02,0.8240,5,5
 CIEDE2000,0.8780,5,5
 
 "# Feature weights (standardized β, full model)"
 feature,beta,pt_interpretation
-d_lum(SCT),0.2705,p=2 luminance (Fisher-Bernoulli)
-d_chrom(SCT),-0.0118,"{3,5,7} chromaticity (Bhattacharyya on Δ²)"
+d_lum(SCS),0.2705,p=2 luminance (Fisher-Bernoulli)
+d_chrom(SCS),-0.0118,"{3,5,7} chromaticity (Bhattacharyya on Δ²)"
 |Δ(L-M)|(γ₃),0.0056,"γ₃ channel (L-M, p=3)"
 |ΔS|(γ₇),-0.0427,"γ₇ channel (S, p=7)"
 |ΔLum|(p=2),-0.1278,p=2 channel (luminance)

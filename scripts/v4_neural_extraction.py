@@ -9,7 +9,7 @@ Pipeline:
   3. Extract mean BOLD per block (14s = 7 TRs, HRF shift +4s = +2 TRs)
   4. Define V4 ROI (anatomical: posterior occipital cortex)
   5. Average across runs/sessions/subjects → transfer function
-  6. Map DKL hues → SCT coordinates
+  6. Map DKL hues → SCS coordinates
   7. Test PT hypothesis: BOLD_V4 ∝ Fisher(γ_p)?
 
 Dataset: OpenNeuro ds005521 (Conway lab, Harvard/NIH)
@@ -33,7 +33,7 @@ from collections import defaultdict
 #   pip install openneuro-py
 #   openneuro download --dataset ds005521 --target-dir data/ds005521
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.environ.get("SCT_V4_DATA", os.path.join(SCRIPT_DIR, "data", "ds005521"))
+DATA_DIR = os.environ.get("SCS_V4_DATA", os.path.join(SCRIPT_DIR, "data", "ds005521"))
 OUTPUT_DIR = os.path.join(SCRIPT_DIR, "datasets")
 TR = 2.0           # seconds
 BLOCK_DUR = 14.0   # seconds per stimulus block
@@ -187,7 +187,7 @@ def make_posterior_occipital_mask(shape, fraction=0.35):
 
 
 # ============================================================
-# STEP 5: DKL → SCT MAPPING
+# STEP 5: DKL → SCS MAPPING
 # ============================================================
 
 def dkl_to_lms_direction(angle_deg, contrast=1.0):
@@ -255,9 +255,9 @@ def dkl_to_opponent_channels(angle_deg, contrast=1.0):
     return lm, s, lum
 
 
-def lms_to_sct_simplex(lms):
-    """LMS → SCT simplex π = (π₃, π₅, π₇), weighted by γ_p."""
-    # Import gamma values from SCT
+def lms_to_scs_simplex(lms):
+    """LMS → SCS simplex π = (π₃, π₅, π₇), weighted by γ_p."""
+    # Import gamma values from SCS
     gammas = np.array([0.80761, 0.69632, 0.59547])  # γ₃, γ₅, γ₇
     w = gammas * np.maximum(lms, 1e-12)
     return w / w.sum()
@@ -272,8 +272,8 @@ def fisher_distance_from_achromatic(pi):
 
     where u = (1/3, 1/3, 1/3) is the achromatic (uniform) point.
 
-    This is EXACTLY the SCT d_chrom formula — the same distance
-    that appears in the color difference ΔE_SCT.
+    This is EXACTLY the SCS d_chrom formula — the same distance
+    that appears in the color difference ΔE_SCS.
 
     PT predicts: V4 response should scale with this distance,
     because it measures the information content (saturation)
@@ -380,12 +380,12 @@ def run_pipeline():
             bold_std = np.std(bold_values) / np.sqrt(len(bold_values))  # SEM
             n_runs = len(bold_values)
 
-            # DKL → SCT mapping
+            # DKL → SCS mapping
             dkl_angle = DKL_ANGLES_DEG.get(color)
             if dkl_angle is not None:
                 # Chromatic hue (1-8)
                 lms = dkl_to_lms_direction(dkl_angle, contrast)
-                pi = lms_to_sct_simplex(lms)
+                pi = lms_to_scs_simplex(lms)
                 fisher = fisher_distance_from_achromatic(pi)
             else:
                 # Luminance (hue 9) — achromatic on simplex
@@ -400,9 +400,9 @@ def run_pipeline():
                 'bold_v4_mean': bold_mean,
                 'bold_v4_std': bold_std,
                 'n_runs': n_runs,
-                'sct_pi3': pi[0],
-                'sct_pi5': pi[1],
-                'sct_pi7': pi[2],
+                'scs_pi3': pi[0],
+                'scs_pi5': pi[1],
+                'scs_pi7': pi[2],
                 'fisher_distance': fisher,
             })
 
@@ -418,7 +418,7 @@ def run_pipeline():
         writer = csv.DictWriter(f, fieldnames=[
             'hue_index', 'hue_dkl_deg', 'contrast',
             'bold_v4_mean', 'bold_v4_std', 'n_runs',
-            'sct_pi3', 'sct_pi5', 'sct_pi7', 'fisher_distance'
+            'scs_pi3', 'scs_pi5', 'scs_pi7', 'fisher_distance'
         ])
         writer.writeheader()
         writer.writerows(results)
@@ -484,15 +484,15 @@ def run_pipeline():
 
         # Compute anisotropy (γ-weighted deviation from achromatic)
         pi_at_max = np.array([
-            [r['sct_pi3'], r['sct_pi5'], r['sct_pi7']]
+            [r['scs_pi3'], r['scs_pi5'], r['scs_pi7']]
             for r in subset if r['contrast'] == 0.95
         ])
         if len(pi_at_max) > 0:
             aniso = fisher_anisotropy(pi_at_max.mean(axis=0))
         else:
-            aniso = fisher_anisotropy(np.array([subset[0]['sct_pi3'],
-                                                 subset[0]['sct_pi5'],
-                                                 subset[0]['sct_pi7']]))
+            aniso = fisher_anisotropy(np.array([subset[0]['scs_pi3'],
+                                                 subset[0]['scs_pi5'],
+                                                 subset[0]['scs_pi7']]))
 
         # Which cone is most modulated at this angle?
         lms = dkl_to_lms_direction(dkl_angle, 0.95)
@@ -550,7 +550,7 @@ def run_pipeline():
 
 def compare_with_cam02(v4_results_path=None):
     """
-    Compare SCT+V4_neural vs SCT+CAM02 on COMBVD 3813 pairs.
+    Compare SCS+V4_neural vs SCS+CAM02 on COMBVD 3813 pairs.
 
     This function:
       1. Loads the V4 neural transfer function
@@ -576,9 +576,9 @@ def compare_with_cam02(v4_results_path=None):
             v4_data[key] = {
                 'bold': float(row['bold_v4_mean']),
                 'fisher': float(row['fisher_distance']),
-                'pi': np.array([float(row['sct_pi3']),
-                               float(row['sct_pi5']),
-                               float(row['sct_pi7'])])
+                'pi': np.array([float(row['scs_pi3']),
+                               float(row['scs_pi5']),
+                               float(row['scs_pi7'])])
             }
 
     print(f"\nLoaded {len(v4_data)} V4 conditions")

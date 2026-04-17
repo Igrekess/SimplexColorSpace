@@ -19,6 +19,16 @@ window.STUDY_CONFIG = {
     3: [0.20, 0.55, 0.90],
     5: [0.15, 0.35, 0.55, 0.75, 0.95],
     7: [0.08, 0.22, 0.38, 0.56, 0.71, 0.86, 0.98]
+  },
+  staircase: {
+    initialLevel: 0.50,
+    initialStep: 0.25,
+    stepFactor: 0.5,
+    maxReversals: 3,
+    maxTrialsPerFamily: 8,
+    minSat: 0.05,
+    maxSat: 1.00,
+    protocolName: "ideal_saturation_staircase"
   }
 };
 
@@ -49,7 +59,14 @@ window.I18N = {
     thanksTagline: "Session enregistrée",
     thanksBody: "Votre session a bien été enregistrée.",
     session: "Session",
-    backHome: "Revenir à l’accueil"
+    backHome: "Revenir à l’accueil",
+    protocolClassic: "Protocole classique (rapide, 1 choix par famille)",
+    protocolStaircase: "Protocole staircase (adaptatif, ~8 essais par famille)",
+    staircaseInstruction: "Observez la couleur affichée. Est-elle trop pâle/fade ou trop vive/saturée pour être la saturation maximum agréable de cette famille ?",
+    tooFaded: "Trop fade",
+    tooVivid: "Trop vif",
+    family: "Famille",
+    convergedTo: "Seuil estimé"
   },
   en: {
     siteTitle: "Study",
@@ -77,6 +94,13 @@ window.I18N = {
     thanksTagline: "Session recorded",
     thanksBody: "Your session has been successfully recorded.",
     session: "Session",
-    backHome: "Back to home"
+    backHome: "Back to home",
+    protocolClassic: "Classic protocol (fast, 1 choice per family)",
+    protocolStaircase: "Staircase protocol (adaptive, ~8 trials per family)",
+    staircaseInstruction: "Look at the displayed color. Is it too pale/faded or too vivid/saturated to be the maximum pleasant saturation of this family?",
+    tooFaded: "Too faded",
+    tooVivid: "Too vivid",
+    family: "Family",
+    convergedTo: "Estimated threshold"
   }
 };

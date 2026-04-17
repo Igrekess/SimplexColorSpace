@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SCS — Staircase</title>
+  <style>
+:root{
+  --bg:#0a0a0a; --surface:#141414; --surface2:#1e1e1e; --border:#2a2a2a;
+  --text:#e0e0e0; --text-dim:#777; --gold:#c8a84e; --gold-dim:#8a7234;
+  --green:#50c870; --red:#e05050; --radius:12px; --max-w:960px;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  line-height:1.6; margin:0; padding:0 16px 40px;
+}
+header,main{max-width:var(--max-w); margin:0 auto}
+header{padding:28px 0 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:flex-start; gap:16px}
+h1{font-size:1.8rem; letter-spacing:-0.02em; margin:0}
+h1 span{color:var(--gold)}
+.tagline{color:var(--text-dim); margin-top:4px}
+.module{
+  background:var(--surface); border:1px solid var(--border); border-radius:16px;
+  padding:24px; margin-top:28px;
+}
+.row{display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin:14px 0; justify-content:center}
+button{
+  background:var(--surface2); color:var(--text); border:1px solid var(--border);
+  padding:14px 28px; border-radius:10px; cursor:pointer; font-size:1rem; min-width:160px;
+}
+button:hover{border-color:var(--gold)}
+.muted{color:var(--text-dim)}
+.stimulus{
+  width:240px; height:240px; border-radius:16px; margin:28px auto;
+  border:1px solid var(--border);
+}
+.badge{display:inline-block; padding:4px 8px; border:1px solid var(--border); border-radius:999px; color:var(--text-dim); font-size:.8rem}
+.error{color:#ff8a8a; margin-top:10px}
+.lang-toggle{display:flex; gap:6px}
+.lang-btn{padding:8px 12px; font-size:.82rem}
+.lang-btn.active{border-color:var(--gold); color:var(--gold)}
+.family-progress{display:flex; justify-content:center; gap:6px; margin:10px 0}
+.dot{width:10px; height:10px; border-radius:50%; background:var(--surface2); border:1px solid var(--border)}
+.dot.done{background:var(--gold)}
+.dot.current{border-color:var(--gold)}
+@media (max-width:700px){
+  .stimulus{width:180px; height:180px}
+  header{flex-direction:column; align-items:flex-start}
+  button{min-width:130px; padding:12px 18px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1><span>SCS</span> — <span data-i18n="siteTitle"></span></h1>
+    <p class="tagline" data-i18n="siteTagline"></p>
+  </div>
+  <div class="lang-toggle">
+    <button class="lang-btn" data-lang="fr">FR</button>
+    <button class="lang-btn" data-lang="en">EN</button>
+  </div>
+</header>
+
+<main>
+  <div class="module">
+    <div class="row">
+      <span class="badge"><span data-i18n="anonCode"></span> : <strong id="anonCode">…</strong></span>
+      <span class="badge" id="familyBadge">…</span>
+    </div>
+    <p id="instruction" style="text-align:center"></p>
+    <div class="family-progress" id="familyProgress"></div>
+
+    <div id="stimulus" class="stimulus"></div>
+
+    <div class="row">
+      <button id="btnTooFaded" data-i18n="tooFaded"></button>
+      <button id="btnTooVivid" data-i18n="tooVivid"></button>
+    </div>
+
+    <p id="progress" class="muted" style="text-align:center"></p>
+    <p id="error" class="error"></p>
+  </div>
+</main>
+
+<script src="config.js"></script>
+<script src="i18n.js"></script>
+<script src="study_staircase.js"></script>
+<script>
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+});
+applyLang(detectLang());
+</script>
+</body>
+</html>

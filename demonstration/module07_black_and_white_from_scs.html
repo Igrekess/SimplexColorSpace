@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SCS — Module 07 - Black & White from SCS</title>
+<style>
+:root{
+  --bg:#0a0a0a; --surface:#141414; --surface2:#1e1e1e; --border:#2a2a2a;
+  --text:#e0e0e0; --text-dim:#7f7f7f; --gold:#c8a84e; --gold-dim:#8a7234; --red:#e05050;
+  --radius:12px; --maxw:1180px;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0 16px 40px;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+header,main{max-width:var(--maxw);margin:0 auto}
+header{padding:28px 0 18px;border-bottom:1px solid var(--border)}
+.header-row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+h1{margin:0;font-size:1.95rem;letter-spacing:-0.02em}
+h1 span{color:var(--gold)}
+.tagline{margin:6px 0 0;color:var(--text-dim);line-height:1.5}
+.btn{appearance:none;border:1px solid var(--border);cursor:pointer;background:var(--surface2);color:var(--text);padding:10px 14px;border-radius:10px;font-weight:600}
+.btn:hover,.btn.active{border-color:var(--gold);color:#fff}
+.lang-toggle{display:flex;gap:6px}
+.lang-btn{padding:8px 12px;font-size:.82rem}
+.module{margin-top:28px;padding:24px;background:var(--surface);border:1px solid var(--border);border-radius:16px}
+.module-header{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+.module-num{font-size:2rem;font-weight:800;color:var(--gold-dim);opacity:.55;line-height:1}
+.module-desc{margin:0 0 18px;color:var(--text-dim);line-height:1.58}
+.panel{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px}
+.panel.scs{border-color:var(--gold-dim)}
+.controls{display:grid;gap:14px;margin-bottom:16px}
+.thumb-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.thumb{
+  width:62px;height:82px;border-radius:10px;border:2px solid var(--border);overflow:hidden;background:#101010;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:.74rem;font-weight:700;
+  opacity:.75;transition:.2s;
+}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb:hover{opacity:1;border-color:var(--gold)}
+.thumb.active{opacity:1;border-color:var(--gold);box-shadow:0 0 10px rgba(200,168,78,.35)}
+.helper-note{font-size:.78rem;color:var(--text-dim);line-height:1.5}
+.upload-box{
+  border:1px dashed var(--border);border-radius:10px;padding:12px 14px;background:#0d0d0d;
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap
+}
+.upload-box input[type=file]{color:var(--text-dim);max-width:100%}
+.slider-group label{display:block;font-size:.82rem;color:var(--text-dim);margin-bottom:.35rem}
+.slider-row{display:flex;align-items:center;gap:10px}
+.slider-row input{flex:1}
+.slider-val{min-width:72px;text-align:right;color:var(--gold);font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;background:var(--surface2);border-radius:999px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--gold);border:2px solid var(--bg);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--gold);border:2px solid var(--bg);cursor:pointer}
+.split{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:start}
+@media (max-width:900px){.split{grid-template-columns:1fr}}
+.compare-panel h3{margin:0 0 10px;font-size:.84rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim)}
+canvas{display:block;width:100%;height:auto;border-radius:10px}
+.ref-col{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:14px}
+.ref-col span{font-size:.72rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em}
+.compare-note{font-size:.78rem;line-height:1.5;margin-top:10px;padding:10px 12px;border-radius:10px}
+.compare-note.classical{background:rgba(255,80,80,.08);border-left:3px solid var(--red);color:var(--text-dim)}
+.compare-note.scs{background:rgba(200,168,78,.08);border-left:3px solid var(--gold);color:var(--text-dim)}
+.theory{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);color:var(--text-dim);line-height:1.7;font-size:.86rem}
+.theory code{color:var(--gold);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-row">
+    <div>
+      <h1><span>SCS</span> — <span data-i18n="headerTitle">Module 07 - Black & White from SCS</span></h1>
+      <p class="tagline" data-i18n="siteTagline">Turning chromatic structure into tonal separation — 0% = grayscale baseline</p>
+    </div>
+    <div class="lang-toggle">
+      <button class="btn lang-btn" id="lang-fr">FR</button>
+      <button class="btn lang-btn" id="lang-en">EN</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="module">
+  <div class="module-header">
+    <span class="module-num">07</span>
+    <h2 data-i18n="title" style="margin:0;font-size:1.25rem;">Black & White from SCS</h2>
+  </div>
+  <p class="module-desc" data-i18n="desc">This module compares a classical black-and-white conversion with an SCS version that translates chromatic structure into tonal separation.</p>
+
+  <div class="controls">
+    <div class="upload-box">
+      <label for="fileInput" style="font-size:.82rem;color:var(--text-dim)" data-i18n="uploadLabel">Load your own image:</label>
+      <input type="file" id="fileInput" accept="image/*">
+      <span class="helper-note" data-i18n="uploadNote">The uploaded image fills the 4th thumbnail and behaves exactly like the others.</span>
+    </div>
+
+    <div class="panel">
+      <div class="slider-group">
+        <label for="toneSlider" data-i18n="sliderLabel">Chromatic Translation</label>
+        <div class="slider-row">
+          <input type="range" id="toneSlider" min="0" max="100" value="0">
+          <span class="slider-val" id="toneVal">+0%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="split">
+    <div class="panel compare-panel">
+      <h3 data-i18n="classicalTitle">Classical B&W</h3>
+      <canvas id="classicalCanvas"></canvas>
+      <div class="compare-note classical" id="classicalNote"></div>
+    </div>
+
+    <div class="ref-col">
+      <canvas id="refCanvas" style="border:2px solid var(--border);width:84px"></canvas>
+      <span data-i18n="original">Original</span>
+    </div>
+
+    <div class="panel compare-panel scs">
+      <h3 data-i18n="scsTitle">SCS B&W</h3>
+      <canvas id="scsCanvas"></canvas>
+      <div class="compare-note scs" id="scsNote"></div>
+    </div>
+  </div>
+
+  <div class="theory" data-i18n-html="theory"></div>
+</section>
+</main>
+
+<script>
+const I18N = {
+  fr: {
+    headerTitle:"Module 07 - Noir et blanc depuis le SCS",
+    siteTagline:"Transformer la structure chromatique en séparation tonale — 0% = base noir et blanc",
+    title:"Noir et blanc depuis le SCS",
+    desc:"Ce module compare une conversion noir et blanc classique à une version SCS qui traduit la structure chromatique en séparation tonale. Il est conçu ici pour être utilisé avec vos propres photos.",
+    uploadLabel:"Charger sa propre image :",
+    uploadNote:"Chargez votre propre photo pour tester la conversion noir et blanc classique face à la traduction tonale inspirée du SCS.",
+    sliderLabel:"Traduction chromatique",
+    classicalTitle:"N&B classique",
+    scsTitle:"N&B SCS",
+    classicalNote:"Conversion standard en niveaux de gris, avec une séparation tonale plus uniforme.",
+    scsNote:"La structure chromatique est traduite en écarts tonaux supplémentaires.",
+    original:"Original",
+    theory:"Une conversion noir et blanc classique transforme la couleur en niveaux de gris à partir d’un mélange fixe des canaux. Cela fonctionne bien, mais traite souvent des couleurs différentes comme si elles avaient la même valeur tonale.<br><br>La version SCS part de l’idée qu’une couleur ne se réduit pas à sa luminance : elle possède aussi une structure chromatique. Cette structure peut être traduite en séparation tonale. Le but n’est donc pas seulement d’enlever la couleur, mais de conserver une partie de son organisation dans l’image noir et blanc."
+  },
+  en: {
+    headerTitle:"Module 07 - Black & White from SCS",
+    siteTagline:"Turning chromatic structure into tonal separation — 0% = grayscale baseline",
+    title:"Black & White from SCS",
+    desc:"This module compares a classical black-and-white conversion with an SCS version that translates chromatic structure into tonal separation. It is designed here to be used with your own photos.",
+    uploadLabel:"Load your own image:",
+    uploadNote:"Load your own photo to compare classical black-and-white conversion with SCS-inspired tonal translation.",
+    sliderLabel:"Chromatic Translation",
+    classicalTitle:"Classical B&W",
+    scsTitle:"SCS B&W",
+    classicalNote:"Standard grayscale conversion, with more uniform tonal separation.",
+    scsNote:"Chromatic structure is translated into additional tonal separation.",
+    original:"Original",
+    theory:"A classical black-and-white conversion turns color into grayscale through a fixed channel mixture. This works well, but often treats different colors as if they had the same tonal value.<br><br>The SCS version starts from the idea that a color is not only luminance: it also has a chromatic structure. That structure can be translated into tonal separation. The goal is therefore not only to remove color, but to preserve part of its organization in the black-and-white image."
+  }
+};
+
+function detectLang(){
+  const saved = localStorage.getItem('module07_lang');
+  if(saved === 'fr' || saved === 'en') return saved;
+  return (navigator.language || '').toLowerCase().startsWith('fr') ? 'fr' : 'en';
+}
+let currentLang = detectLang();
+
+let uploadedSrc = null;
+let W=0,H=0,origPixels=null,loaded=false;
+
+function applyLanguage(lang){
+  currentLang = lang;
+  localStorage.setItem('module07_lang', lang);
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.getAttribute('data-i18n'); if (I18N[lang][k]) el.textContent = I18N[lang][k];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const k = el.getAttribute('data-i18n-html'); if (I18N[lang][k]) el.innerHTML = I18N[lang][k];
+  });
+  document.getElementById('classicalNote').textContent = I18N[lang].classicalNote;
+  document.getElementById('scsNote').textContent = I18N[lang].scsNote;
+  document.getElementById('lang-fr').classList.toggle('active', lang==='fr');
+  document.getElementById('lang-en').classList.toggle('active', lang==='en');
+}
+document.getElementById('lang-fr').addEventListener('click', ()=>applyLanguage('fr'));
+document.getElementById('lang-en').addEventListener('click', ()=>applyLanguage('en'));
+
+function clamp01(x){ return Math.min(1, Math.max(0, x)); }
+function srgbToLinear(c){ c=clamp01(c); return c<=0.04045 ? c/12.92 : Math.pow((c+0.055)/1.055,2.4); }
+function rgbToHsl(r,g,b){
+  const max=Math.max(r,g,b), min=Math.min(r,g,b);
+  let h=0,s=0; const l=(max+min)/2; const d=max-min;
+  if(d!==0){
+    s=d/(1-Math.abs(2*l-1));
+    switch(max){
+      case r: h=((g-b)/d)%6; break;
+      case g: h=(b-r)/d+2; break;
+      default: h=(r-g)/d+4; break;
+    }
+    h/=6; if(h<0) h+=1;
+  }
+  return [h*360, s||0, l];
+}
+function fitSize(w,h,maxW=1200,maxH=800){
+  const s = Math.min(maxW/w, maxH/h, 1);
+  return {w:Math.round(w*s), h:Math.round(h*s)};
+}
+function luminanceGray(r,g,b){
+  const rl = srgbToLinear(r), gl = srgbToLinear(g), bl = srgbToLinear(b);
+  return 0.2126*rl + 0.7152*gl + 0.0722*bl;
+}
+function grayToByte(y){
+  // simple gamma-ish return to display gray
+  const c = y <= 0.0031308 ? 12.92*y : 1.055*Math.pow(y,1/2.4)-0.055;
+  return Math.round(clamp01(c)*255);
+}
+
+function loadImageFromSrc(src){
+  const img = new Image();
+  img.onload = () => {
+    const size = fitSize(img.naturalWidth, img.naturalHeight);
+    W = size.w; H = size.h;
+    const ref = document.getElementById('refCanvas');
+    const cc = document.getElementById('classicalCanvas');
+    const sc = document.getElementById('scsCanvas');
+    [ref,cc,sc].forEach(c => { c.width = W; c.height = H; });
+
+    const tmp = document.createElement('canvas');
+    tmp.width = W; tmp.height = H;
+    const tctx = tmp.getContext('2d');
+    tctx.drawImage(img,0,0,W,H);
+    const imgData = tctx.getImageData(0,0,W,H);
+    origPixels = new Uint8ClampedArray(imgData.data);
+    loaded = true;
+    copyOriginal();
+    render(Number(document.getElementById('toneSlider').value)/100);
+  };
+  img.src = src;
+}
+
+function copyOriginal(){
+  if(!loaded) return;
+  ['refCanvas','classicalCanvas','scsCanvas'].forEach(id => {
+    const ctx = document.getElementById(id).getContext('2d');
+    const img = ctx.createImageData(W,H);
+    img.data.set(origPixels);
+    if(id !== 'refCanvas'){
+      // default to baseline grayscale at 0 for viewers
+      for(let i=0;i<img.data.length;i+=4){
+        const r = origPixels[i]/255, g = origPixels[i+1]/255, b = origPixels[i+2]/255;
+        const y = luminanceGray(r,g,b);
+        const gb = grayToByte(y);
+        img.data[i]=gb; img.data[i+1]=gb; img.data[i+2]=gb;
+      }
+    }
+    ctx.putImageData(img,0,0);
+  });
+}
+
+function render(amount){
+  document.getElementById('toneVal').textContent = '+' + Math.round(amount*100) + '%';
+  if(!loaded) return;
+
+  const classicalCtx = document.getElementById('classicalCanvas').getContext('2d');
+  const scsCtx = document.getElementById('scsCanvas').getContext('2d');
+  const classicalImg = classicalCtx.createImageData(W,H);
+  const scsImg = scsCtx.createImageData(W,H);
+  const cd = classicalImg.data, sd = scsImg.data;
+
+  for(let i=0;i<origPixels.length;i+=4){
+    const r = origPixels[i]/255, g = origPixels[i+1]/255, b = origPixels[i+2]/255, a = origPixels[i+3];
+    const [h,s,l] = rgbToHsl(r,g,b);
+    const y = luminanceGray(r,g,b);
+
+    // Classical baseline grayscale
+    const cg = grayToByte(y);
+
+    // SCS-inspired tonal translation:
+    // translate hue family and saturation into tonal offsets around luminance
+    const warm = Math.cos((h - 35) * Math.PI / 180);   // warm hues positive
+    const cool = Math.cos((h - 220) * Math.PI / 180);  // cool hues positive
+    const chromaBias = (0.65 * warm - 0.45 * cool) * s * amount;
+    const tonalY = clamp01(y + 0.22 * chromaBias);
+    const sg = grayToByte(tonalY);
+
+    cd[i]=cg; cd[i+1]=cg; cd[i+2]=cg; cd[i+3]=a;
+    sd[i]=sg; sd[i+1]=sg; sd[i+2]=sg; sd[i+3]=a;
+  }
+
+  classicalCtx.putImageData(classicalImg,0,0);
+  scsCtx.putImageData(scsImg,0,0);
+}
+
+document.getElementById('toneSlider').addEventListener('input', e => render(Number(e.target.value)/100));
+document.getElementById('fileInput').addEventListener('change', e => {
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    uploadedSrc = ev.target.result;
+    activeSource = { kind:'upload', index:0 };
+      loadImageFromSrc(uploadedSrc);
+    e.target.value = '';
+  };
+  reader.readAsDataURL(file);
+});
+
+applyLanguage(currentLang);
+</script>
+</body>
+</html>

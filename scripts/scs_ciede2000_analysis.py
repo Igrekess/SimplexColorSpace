@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-SCT vs CIEDE2000 Analysis — Deriving Cortical Corrections
+SCS vs CIEDE2000 Analysis — Deriving Cortical Corrections
 ==========================================================
 
-Goal: Analyze CIEDE2000's correction structure in SCT coordinates
-to derive cortical correction factors that bring SCT to CIEDE2000 level.
+Goal: Analyze CIEDE2000's correction structure in SCS coordinates
+to derive cortical correction factors that bring SCS to CIEDE2000 level.
 
 Strategy:
 1. Implement CIEDE2000 (CIE standard formula)
-2. Compute SCT features on COMBVD (3813 pairs)
+2. Compute SCS features on COMBVD (3813 pairs)
 3. Extract CIEDE2000 correction components (SL, SC, SH, RT)
-4. Regress cortical corrections in SCT native coordinates
-5. Compare: SCT pure vs SCT+cortical vs CIEDE2000
+4. Regress cortical corrections in SCS native coordinates
+5. Compare: SCS pure vs SCS+cortical vs CIEDE2000
 
 Author: Yan Senez
 Date: 2026-04-08
@@ -26,8 +26,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import cross_val_predict, KFold
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from scpt_companion import gamma_p, MU_STAR, Q_REL, Q_THERM, PRIMES
-from delta_e_scpt import xyz_to_lms, lms_to_simplex, delta_e, xyz_to_scpt
+from scs_companion import gamma_p, MU_STAR, Q_REL, Q_THERM, PRIMES
+from delta_e_scs import xyz_to_lms, lms_to_simplex, delta_e, xyz_to_scs
 
 # ============================================================
 # CIEDE2000 IMPLEMENTATION (CIE standard)
@@ -140,17 +140,17 @@ def ciede2000(Lab1, Lab2, kL=1, kC=1, kH=1):
 
 
 # ============================================================
-# SCT FEATURES EXTRACTION
+# SCS FEATURES EXTRACTION
 # ============================================================
 
-def sct_features(xyz1, xyz2):
+def scs_features(xyz1, xyz2):
     """
-    Extract rich SCT feature set for regression.
+    Extract rich SCS feature set for regression.
 
     Returns dict with:
     - d_lum: Fisher-Bernoulli luminance geodesic
     - d_chrom: Bhattacharyya chromatic geodesic
-    - delta_e_sct: canonical SCT distance
+    - delta_e_scs: canonical SCS distance
     - Simplex midpoint coordinates and differences
     - Saturation, hue, entropy at both points
     """
@@ -180,8 +180,8 @@ def sct_features(xyz1, xyz2):
     bc = min(bc, 1.0)
     d_chrom = 2 * np.arccos(bc)
 
-    # Canonical SCT
-    de_sct = np.sqrt(0.75 * d_lum**2 + 0.25 * d_chrom**2)
+    # Canonical SCS
+    de_scs = np.sqrt(0.75 * d_lum**2 + 0.25 * d_chrom**2)
 
     # Saturation (D_KL from uniform)
     def sat(pi):
@@ -218,12 +218,12 @@ def sct_features(xyz1, xyz2):
     return {
         'd_lum': d_lum,
         'd_chrom': d_chrom,
-        'de_sct': de_sct,
+        'de_scs': de_scs,
         'dS': abs(S2 - S1),        # saturation difference
         'S_mid': S_mid,             # midpoint saturation
         'dtheta': abs(dtheta),      # hue angle difference
         'theta_mid': hue(pi_mid),   # midpoint hue
-        'dH_sct': np.sqrt(max(d_chrom**2 - (S2-S1)**2, 0)),  # hue-only chrom
+        'dH_scs': np.sqrt(max(d_chrom**2 - (S2-S1)**2, 0)),  # hue-only chrom
         'dpi3': abs(dpi[0]),        # red channel change
         'dpi5': abs(dpi[1]),        # green channel change
         'dpi7': abs(dpi[2]),        # blue channel change
@@ -242,7 +242,7 @@ def sct_features(xyz1, xyz2):
 
 def main():
     print("=" * 70)
-    print("SCT vs CIEDE2000 — Cortical Correction Analysis")
+    print("SCS vs CIEDE2000 — Cortical Correction Analysis")
     print("=" * 70)
 
     # Load COMBVD
@@ -255,7 +255,7 @@ def main():
     dv = df['DV'].values  # human visual difference
 
     de00_vals = np.zeros(N)
-    de_sct_vals = np.zeros(N)
+    de_scs_vals = np.zeros(N)
     de_lab_vals = np.zeros(N)
 
     # CIEDE2000 components
@@ -265,11 +265,11 @@ def main():
     RT_vals = np.zeros(N)
     T_vals = np.zeros(N)
 
-    # SCT features (for regression)
-    feat_names = ['d_lum', 'd_chrom', 'de_sct', 'dS', 'S_mid',
-                  'dtheta', 'theta_mid', 'dH_sct', 'dpi3', 'dpi5', 'dpi7',
+    # SCS features (for regression)
+    feat_names = ['d_lum', 'd_chrom', 'de_scs', 'dS', 'S_mid',
+                  'dtheta', 'theta_mid', 'dH_scs', 'dpi3', 'dpi5', 'dpi7',
                   'pi3_mid', 'pi5_mid', 'pi7_mid', 'ell_mid', 'dL', 'H_mid']
-    sct_feats = {k: np.zeros(N) for k in feat_names}
+    scs_feats = {k: np.zeros(N) for k in feat_names}
 
     # CIEDE2000 decomposed terms
     term_L_vals = np.zeros(N)
@@ -303,11 +303,11 @@ def main():
         term_C_vals[i] = comp['term_C']
         term_H_vals[i] = comp['term_H']
 
-        # SCT features
-        feats = sct_features(xyz1, xyz2)
+        # SCS features
+        feats = scs_features(xyz1, xyz2)
         for k in feat_names:
-            sct_feats[k][i] = feats[k]
-        de_sct_vals[i] = feats['de_sct']
+            scs_feats[k][i] = feats[k]
+        de_scs_vals[i] = feats['de_scs']
 
     print("Done.\n")
 
@@ -316,22 +316,22 @@ def main():
     print("BASELINE CORRELATIONS WITH HUMAN DV")
     print("=" * 70)
 
-    r_sct, _ = stats.pearsonr(de_sct_vals, dv)
+    r_scs, _ = stats.pearsonr(de_scs_vals, dv)
     r_lab, _ = stats.pearsonr(de_lab_vals, dv)
     r_00, _ = stats.pearsonr(de00_vals, dv)
 
-    print(f"  SCT pure (0 param)  : r = {r_sct:.4f}")
+    print(f"  SCS pure (0 param)  : r = {r_scs:.4f}")
     print(f"  CIELAB (3 param)    : r = {r_lab:.4f}")
     print(f"  CIEDE2000 (5 param) : r = {r_00:.4f}")
 
     # Dark region
     dark = df['L1'].values < 25
     if dark.sum() > 10:
-        r_sct_d, _ = stats.pearsonr(de_sct_vals[dark], dv[dark])
+        r_scs_d, _ = stats.pearsonr(de_scs_vals[dark], dv[dark])
         r_lab_d, _ = stats.pearsonr(de_lab_vals[dark], dv[dark])
         r_00_d, _ = stats.pearsonr(de00_vals[dark], dv[dark])
         print(f"\n  Dark region (L*<25, n={dark.sum()}):")
-        print(f"    SCT     : r = {r_sct_d:.4f}")
+        print(f"    SCS     : r = {r_scs_d:.4f}")
         print(f"    CIELAB  : r = {r_lab_d:.4f}")
         print(f"    CIEDE2000: r = {r_00_d:.4f}")
 
@@ -346,16 +346,16 @@ def main():
     print(f"  RT range: [{RT_vals.min():.3f}, {RT_vals.max():.3f}], mean={RT_vals.mean():.3f}")
     print(f"  T  range: [{T_vals.min():.3f}, {T_vals.max():.3f}], mean={T_vals.mean():.3f}")
 
-    # Correlation of CIEDE2000 components with SCT features
-    print("\n  Correlation of CIEDE2000 corrections with SCT coordinates:")
-    print(f"    SL vs ell_mid:  r = {stats.pearsonr(SL_vals, sct_feats['ell_mid'])[0]:.3f}")
-    print(f"    SC vs S_mid:    r = {stats.pearsonr(SC_vals, sct_feats['S_mid'])[0]:.3f}")
-    print(f"    SH vs S_mid:    r = {stats.pearsonr(SH_vals, sct_feats['S_mid'])[0]:.3f}")
-    print(f"    T  vs theta_mid: r = {stats.pearsonr(T_vals, sct_feats['theta_mid'])[0]:.3f}")
+    # Correlation of CIEDE2000 components with SCS features
+    print("\n  Correlation of CIEDE2000 corrections with SCS coordinates:")
+    print(f"    SL vs ell_mid:  r = {stats.pearsonr(SL_vals, scs_feats['ell_mid'])[0]:.3f}")
+    print(f"    SC vs S_mid:    r = {stats.pearsonr(SC_vals, scs_feats['S_mid'])[0]:.3f}")
+    print(f"    SH vs S_mid:    r = {stats.pearsonr(SH_vals, scs_feats['S_mid'])[0]:.3f}")
+    print(f"    T  vs theta_mid: r = {stats.pearsonr(T_vals, scs_feats['theta_mid'])[0]:.3f}")
 
-    # ── SCT Cortical Correction Models ──
+    # ── SCS Cortical Correction Models ──
     print("\n" + "=" * 70)
-    print("SCT + CORTICAL CORRECTIONS (Ridge regression, 5-fold CV)")
+    print("SCS + CORTICAL CORRECTIONS (Ridge regression, 5-fold CV)")
     print("=" * 70)
 
     kf = KFold(n_splits=5, shuffle=True, random_state=42)
@@ -383,73 +383,73 @@ def main():
         return r, model_full.coef_, model_full.intercept_
 
     # Build feature matrices
-    F = np.column_stack([sct_feats[k] for k in feat_names])
+    F = np.column_stack([scs_feats[k] for k in feat_names])
 
-    # Model 1: SCT pure (d_lum + d_chrom)
-    X1 = np.column_stack([sct_feats['d_lum'], sct_feats['d_chrom']])
-    r1, c1, _ = evaluate_model(X1, "SCT pure", 2)
-    print(f"\n  1. SCT pure (d_lum, d_chrom):")
+    # Model 1: SCS pure (d_lum + d_chrom)
+    X1 = np.column_stack([scs_feats['d_lum'], scs_feats['d_chrom']])
+    r1, c1, _ = evaluate_model(X1, "SCS pure", 2)
+    print(f"\n  1. SCS pure (d_lum, d_chrom):")
     print(f"     r = {r1:.4f}  (2 features)")
 
-    # Model 2: SCT + lightness correction (analogue of SL)
-    # SL depends on (L*-50)^2 → in SCT: ell_mid and (ell_mid - 0.5)^2
-    ell_centered = (sct_feats['ell_mid'] - 0.5)**2
-    X2 = np.column_stack([sct_feats['d_lum'], sct_feats['d_chrom'],
-                           sct_feats['d_lum'] * (1 + ell_centered)])
-    r2, c2, _ = evaluate_model(X2, "SCT + SL analogue", 3)
-    print(f"\n  2. SCT + lightness correction (SL analogue):")
+    # Model 2: SCS + lightness correction (analogue of SL)
+    # SL depends on (L*-50)^2 → in SCS: ell_mid and (ell_mid - 0.5)^2
+    ell_centered = (scs_feats['ell_mid'] - 0.5)**2
+    X2 = np.column_stack([scs_feats['d_lum'], scs_feats['d_chrom'],
+                           scs_feats['d_lum'] * (1 + ell_centered)])
+    r2, c2, _ = evaluate_model(X2, "SCS + SL analogue", 3)
+    print(f"\n  2. SCS + lightness correction (SL analogue):")
     print(f"     r = {r2:.4f}  (3 features)")
 
-    # Model 3: SCT + chroma correction (analogue of SC)
-    # SC = 1 + 0.045*C'_bar → in SCT: S_mid (saturation at midpoint)
-    X3 = np.column_stack([sct_feats['d_lum'], sct_feats['d_chrom'],
-                           sct_feats['dS'],
-                           sct_feats['d_chrom'] * (1 + sct_feats['S_mid'])])
-    r3, c3, _ = evaluate_model(X3, "SCT + SC analogue", 4)
-    print(f"\n  3. SCT + chroma correction (SC analogue):")
+    # Model 3: SCS + chroma correction (analogue of SC)
+    # SC = 1 + 0.045*C'_bar → in SCS: S_mid (saturation at midpoint)
+    X3 = np.column_stack([scs_feats['d_lum'], scs_feats['d_chrom'],
+                           scs_feats['dS'],
+                           scs_feats['d_chrom'] * (1 + scs_feats['S_mid'])])
+    r3, c3, _ = evaluate_model(X3, "SCS + SC analogue", 4)
+    print(f"\n  3. SCS + chroma correction (SC analogue):")
     print(f"     r = {r3:.4f}  (4 features)")
 
-    # Model 4: SCT + hue correction (analogue of SH, T)
+    # Model 4: SCS + hue correction (analogue of SH, T)
     # SH depends on hue-dependent T function
-    # In SCT: use cos/sin harmonics of theta_mid (Fourier on hue circle)
-    cos1 = np.cos(sct_feats['theta_mid'])
-    sin1 = np.sin(sct_feats['theta_mid'])
-    cos2 = np.cos(2 * sct_feats['theta_mid'])
-    sin2 = np.sin(2 * sct_feats['theta_mid'])
+    # In SCS: use cos/sin harmonics of theta_mid (Fourier on hue circle)
+    cos1 = np.cos(scs_feats['theta_mid'])
+    sin1 = np.sin(scs_feats['theta_mid'])
+    cos2 = np.cos(2 * scs_feats['theta_mid'])
+    sin2 = np.sin(2 * scs_feats['theta_mid'])
 
-    X4 = np.column_stack([sct_feats['d_lum'], sct_feats['d_chrom'],
-                           sct_feats['dtheta'],
-                           sct_feats['d_chrom'] * cos1,
-                           sct_feats['d_chrom'] * sin1,
-                           sct_feats['d_chrom'] * cos2])
-    r4, c4, _ = evaluate_model(X4, "SCT + SH analogue", 6)
-    print(f"\n  4. SCT + hue correction (SH analogue):")
+    X4 = np.column_stack([scs_feats['d_lum'], scs_feats['d_chrom'],
+                           scs_feats['dtheta'],
+                           scs_feats['d_chrom'] * cos1,
+                           scs_feats['d_chrom'] * sin1,
+                           scs_feats['d_chrom'] * cos2])
+    r4, c4, _ = evaluate_model(X4, "SCS + SH analogue", 6)
+    print(f"\n  4. SCS + hue correction (SH analogue):")
     print(f"     r = {r4:.4f}  (6 features)")
 
-    # Model 5: SCT + blue rotation (analogue of RT)
-    # RT activates near h ≈ 275° (blue). In SCT: pi7 region
-    blue_weight = sct_feats['pi7_mid']**2  # activates in blue region
-    X5 = np.column_stack([sct_feats['d_lum'], sct_feats['d_chrom'],
-                           sct_feats['dS'], sct_feats['dtheta'],
-                           sct_feats['d_chrom'] * blue_weight])
-    r5, c5, _ = evaluate_model(X5, "SCT + RT analogue", 5)
-    print(f"\n  5. SCT + blue rotation (RT analogue):")
+    # Model 5: SCS + blue rotation (analogue of RT)
+    # RT activates near h ≈ 275° (blue). In SCS: pi7 region
+    blue_weight = scs_feats['pi7_mid']**2  # activates in blue region
+    X5 = np.column_stack([scs_feats['d_lum'], scs_feats['d_chrom'],
+                           scs_feats['dS'], scs_feats['dtheta'],
+                           scs_feats['d_chrom'] * blue_weight])
+    r5, c5, _ = evaluate_model(X5, "SCS + RT analogue", 5)
+    print(f"\n  5. SCS + blue rotation (RT analogue):")
     print(f"     r = {r5:.4f}  (5 features)")
 
-    # Model 6: SCT FULL CORTICAL — all corrections combined
+    # Model 6: SCS FULL CORTICAL — all corrections combined
     X6 = np.column_stack([
-        sct_feats['d_lum'],                           # base luminance
-        sct_feats['d_chrom'],                          # base chroma
-        sct_feats['d_lum'] * ell_centered,             # SL: lightness weighting
-        sct_feats['dS'],                               # saturation difference
-        sct_feats['d_chrom'] * sct_feats['S_mid'],     # SC: chroma weighting
-        sct_feats['dtheta'],                           # hue difference
-        sct_feats['d_chrom'] * cos1,                   # SH: hue harmonic 1
-        sct_feats['d_chrom'] * cos2,                   # SH: hue harmonic 2
-        sct_feats['d_chrom'] * blue_weight,            # RT: blue rotation
+        scs_feats['d_lum'],                           # base luminance
+        scs_feats['d_chrom'],                          # base chroma
+        scs_feats['d_lum'] * ell_centered,             # SL: lightness weighting
+        scs_feats['dS'],                               # saturation difference
+        scs_feats['d_chrom'] * scs_feats['S_mid'],     # SC: chroma weighting
+        scs_feats['dtheta'],                           # hue difference
+        scs_feats['d_chrom'] * cos1,                   # SH: hue harmonic 1
+        scs_feats['d_chrom'] * cos2,                   # SH: hue harmonic 2
+        scs_feats['d_chrom'] * blue_weight,            # RT: blue rotation
     ])
-    r6, c6, intercept6 = evaluate_model(X6, "SCT full cortical", 9)
-    print(f"\n  6. SCT + FULL CORTICAL (all corrections):")
+    r6, c6, intercept6 = evaluate_model(X6, "SCS full cortical", 9)
+    print(f"\n  6. SCS + FULL CORTICAL (all corrections):")
     print(f"     r = {r6:.4f}  (9 features, 5 correction types)")
 
     feat6_names = ['d_lum', 'd_chrom', 'd_lum·(ℓ-½)²', 'dS',
@@ -459,14 +459,14 @@ def main():
     for name, coef in sorted(zip(feat6_names, c6), key=lambda x: -abs(x[1])):
         print(f"       {name:25s}: β = {coef:+.4f}")
 
-    # Model 7: SCT + CIEDE2000 terms directly (upper bound)
+    # Model 7: SCS + CIEDE2000 terms directly (upper bound)
     X7 = np.column_stack([
-        sct_feats['d_lum'], sct_feats['d_chrom'],
+        scs_feats['d_lum'], scs_feats['d_chrom'],
         term_L_vals**2, term_C_vals**2, term_H_vals**2,
         RT_vals * term_C_vals * term_H_vals,
     ])
-    r7, c7, _ = evaluate_model(X7, "SCT + CIEDE2000 terms", 6)
-    print(f"\n  7. SCT + CIEDE2000 terms (upper bound):")
+    r7, c7, _ = evaluate_model(X7, "SCS + CIEDE2000 terms", 6)
+    print(f"\n  7. SCS + CIEDE2000 terms (upper bound):")
     print(f"     r = {r7:.4f}  (6 features)")
 
     # Model 8: CIEDE2000 alone (reference)
@@ -475,17 +475,17 @@ def main():
     print(f"\n  8. CIEDE2000 alone (reference):")
     print(f"     r = {r8:.4f}  (1 feature)")
 
-    # Model 9: Minimal SCT cortical — fewest features to match CIEDE2000
+    # Model 9: Minimal SCS cortical — fewest features to match CIEDE2000
     # Try d_lum, d_chrom, dS, dtheta, d_chrom*S_mid (= 5 features like CIEDE2000)
     X9 = np.column_stack([
-        sct_feats['d_lum'],
-        sct_feats['d_chrom'],
-        sct_feats['dS'],
-        sct_feats['dtheta'],
-        sct_feats['d_chrom'] * sct_feats['S_mid'],
+        scs_feats['d_lum'],
+        scs_feats['d_chrom'],
+        scs_feats['dS'],
+        scs_feats['dtheta'],
+        scs_feats['d_chrom'] * scs_feats['S_mid'],
     ])
-    r9, c9, intercept9 = evaluate_model(X9, "SCT minimal cortical", 5)
-    print(f"\n  9. SCT MINIMAL CORTICAL (5 features, like CIEDE2000):")
+    r9, c9, intercept9 = evaluate_model(X9, "SCS minimal cortical", 5)
+    print(f"\n  9. SCS MINIMAL CORTICAL (5 features, like CIEDE2000):")
     print(f"     r = {r9:.4f}")
 
     feat9_names = ['d_lum', 'd_chrom', 'dS', 'dθ', 'd_chrom·S_mid']
@@ -663,12 +663,12 @@ def main():
     print(f"\n  16b. √LMS + cortical corrections:")
     print(f"       r = {r16b:.4f}  (12 features)")
 
-    # ── APPROACH 3: Hybrid SCT geometry + CIELAB space ──
-    # Use SCT-derived WEIGHTS on CIELAB-space DIFFERENCES
+    # ── APPROACH 3: Hybrid SCS geometry + CIELAB space ──
+    # Use SCS-derived WEIGHTS on CIELAB-space DIFFERENCES
     # This combines: derived geometry (from PT) + measured nonlinearity (cube root)
 
     print("\n" + "=" * 70)
-    print("APPROACH 3: SCT WEIGHTS ON CIELAB DIFFERENCES")
+    print("APPROACH 3: SCS WEIGHTS ON CIELAB DIFFERENCES")
     print("=" * 70)
 
     # CIELAB differences
@@ -687,7 +687,7 @@ def main():
     dH_sq = da**2 + db**2 - dC**2
     dH = np.sign(dH_sq) * np.sqrt(np.abs(dH_sq))
 
-    # SCT weights at midpoint (from γ_p and simplex position)
+    # SCS weights at midpoint (from γ_p and simplex position)
     pi_mid_all = np.zeros((N, 3))
     for i in range(N):
         row = df.iloc[i]
@@ -701,7 +701,7 @@ def main():
     fisher_w = GAMMAS_arr[None,:] / np.maximum(pi_mid_all, 1e-10)
     fisher_total = np.sum(fisher_w, axis=1)
 
-    # Model 17: CIELAB terms weighted by SCT Fisher
+    # Model 17: CIELAB terms weighted by SCS Fisher
     X17 = np.column_stack([
         np.abs(dL),
         np.abs(dC),
@@ -711,60 +711,60 @@ def main():
     print(f"\n  17. CIELAB (|ΔL|, |ΔC|, |ΔH|):")
     print(f"      r = {r17:.4f}  (3 features)")
 
-    # Model 18: CIELAB LCH + SCT Fisher weights
+    # Model 18: CIELAB LCH + SCS Fisher weights
     X18 = np.column_stack([
         np.abs(dL),
         np.abs(dC),
         np.abs(dH),
-        np.abs(dL) * (1 + ((L_mid - 50)/50)**2),     # SL from SCT: ell deviation
-        np.abs(dC) * C_mid,                             # SC from SCT: saturation
+        np.abs(dL) * (1 + ((L_mid - 50)/50)**2),     # SL from SCS: ell deviation
+        np.abs(dC) * C_mid,                             # SC from SCS: saturation
         np.abs(dH) * C_mid,                             # SH
         np.abs(dC) * np.abs(dH) * (b_mid < 0).astype(float),  # RT: blue region
     ])
-    r18, c18, _ = evaluate_model(X18, "CIELAB + SCT weights", 7)
-    print(f"\n  18. CIELAB + SCT-style weights:")
+    r18, c18, _ = evaluate_model(X18, "CIELAB + SCS weights", 7)
+    print(f"\n  18. CIELAB + SCS-style weights:")
     print(f"      r = {r18:.4f}  (7 features)")
 
     # Model 19: CIELAB terms with CIEDE2000-exact weighting functions
-    # but replace SL/SC/SH/T constants with SCT-derived coefficients
+    # but replace SL/SC/SH/T constants with SCS-derived coefficients
     X19 = np.column_stack([
         np.abs(dL) / (1 + 0.015 * ((L_mid - 50)**2) / np.sqrt(20 + (L_mid-50)**2)),  # ΔL'/SL
         np.abs(dC) / (1 + 0.045 * C_mid),                                              # ΔC'/SC
         np.abs(dH) / (1 + 0.015 * C_mid),                                              # ΔH'/SH (T=1 approx)
         fisher_total,                                                                    # Fisher curvature
-        sct_feats['d_lum'],                                                              # SCT luminance
-        sct_feats['d_chrom'],                                                            # SCT chroma
+        scs_feats['d_lum'],                                                              # SCS luminance
+        scs_feats['d_chrom'],                                                            # SCS chroma
     ])
-    r19, c19, _ = evaluate_model(X19, "CIEDE2000-struct + SCT", 6)
-    print(f"\n  19. CIEDE2000 structure + SCT features:")
+    r19, c19, _ = evaluate_model(X19, "CIEDE2000-struct + SCS", 6)
+    print(f"\n  19. CIEDE2000 structure + SCS features:")
     print(f"      r = {r19:.4f}  (6 features)")
 
-    # Model 20: The WINNING hybrid — CIEDE2000 terms + SCT geometry
+    # Model 20: The WINNING hybrid — CIEDE2000 terms + SCS geometry
     X20 = np.column_stack([
         de00_vals,                       # CIEDE2000 total
-        sct_feats['d_lum'],              # SCT luminance geodesic
-        sct_feats['d_chrom'],            # SCT chroma geodesic
-        sct_feats['d_lum'] * ell_centered,  # SCT lightness correction
+        scs_feats['d_lum'],              # SCS luminance geodesic
+        scs_feats['d_chrom'],            # SCS chroma geodesic
+        scs_feats['d_lum'] * ell_centered,  # SCS lightness correction
     ])
-    r20, c20, _ = evaluate_model(X20, "CIEDE2000 + SCT", 4)
-    print(f"\n  20. CIEDE2000 + SCT luminance correction:")
+    r20, c20, _ = evaluate_model(X20, "CIEDE2000 + SCS", 4)
+    print(f"\n  20. CIEDE2000 + SCS luminance correction:")
     print(f"      r = {r20:.4f}  (4 features)")
 
-    # Model 21: CIEDE2000 components + SCT luminance (targeted)
+    # Model 21: CIEDE2000 components + SCS luminance (targeted)
     X21 = np.column_stack([
         term_L_vals**2,                  # CIEDE2000 lightness term
         term_C_vals**2,                  # CIEDE2000 chroma term
         term_H_vals**2,                  # CIEDE2000 hue term
         RT_vals * term_C_vals * term_H_vals,  # CIEDE2000 rotation
-        sct_feats['d_lum'],              # SCT Fisher luminance
-        sct_feats['d_lum'] * ell_centered,  # SCT dark correction
+        scs_feats['d_lum'],              # SCS Fisher luminance
+        scs_feats['d_lum'] * ell_centered,  # SCS dark correction
     ])
-    r21, c21, _ = evaluate_model(X21, "CIEDE2000 decomp + SCT dark", 6)
-    print(f"\n  21. CIEDE2000 decomposed + SCT dark correction:")
+    r21, c21, _ = evaluate_model(X21, "CIEDE2000 decomp + SCS dark", 6)
+    print(f"\n  21. CIEDE2000 decomposed + SCS dark correction:")
     print(f"      r = {r21:.4f}  (6 features)")
 
     feat21_names = ["(ΔL'/SL)²", "(ΔC'/SC)²", "(ΔH'/SH)²",
-                    "RT·ΔC'·ΔH'", "d_lum_SCT", "d_lum·(ℓ-½)²"]
+                    "RT·ΔC'·ΔH'", "d_lum_SCS", "d_lum·(ℓ-½)²"]
     print(f"\n      Feature weights:")
     for name, coef in sorted(zip(feat21_names, c21), key=lambda x: -abs(x[1])):
         print(f"        {name:25s}: β = {coef:+.4f}")
@@ -775,18 +775,18 @@ def main():
     print("=" * 70)
 
     results = [
-        ("SCT pure (0 param)", r_sct, 0),
-        ("SCT full cortical (9 feat)", r6, 9),
+        ("SCS pure (0 param)", r_scs, 0),
+        ("SCS full cortical (9 feat)", r6, 9),
         ("Raw ξ pure (4 feat)", r14, 4),
         ("Raw ξ + cortical (12 feat)", r15, 12),
         ("√LMS pure (4 feat)", r16, 4),
         ("√LMS + cortical (12 feat)", r16b, 12),
         ("CIELAB LCH (3 feat)", r17, 3),
-        ("CIELAB + SCT weights (7 feat)", r18, 7),
-        ("CIEDE2000-struct + SCT (6 feat)", r19, 6),
+        ("CIELAB + SCS weights (7 feat)", r18, 7),
+        ("CIEDE2000-struct + SCS (6 feat)", r19, 6),
         ("CIELAB (reference)", r_lab, 3),
-        ("CIEDE2000 + SCT lum (4 feat)", r20, 4),
-        ("CIEDE2000 decomp + SCT dark (6 feat)", r21, 6),
+        ("CIEDE2000 + SCS lum (4 feat)", r20, 4),
+        ("CIEDE2000 decomp + SCS dark (6 feat)", r21, 6),
         ("CIEDE2000 (reference)", r8, 5),
     ]
 
@@ -801,8 +801,8 @@ def main():
     if dark.sum() > 10:
         print(f"\n  Dark region (L*<25, n={dark.sum()}):")
         # Recompute for dark
-        for name, X, nf in [("SCT minimal cortical", X9, 5),
-                             ("SCT full cortical", X6, 9)]:
+        for name, X, nf in [("SCS minimal cortical", X9, 5),
+                             ("SCS full cortical", X6, 9)]:
             scaler = StandardScaler()
             model = Ridge(alpha=1.0)
             y_pred = np.zeros(N)
@@ -820,17 +820,17 @@ def main():
     print("CONCLUSION")
     print("=" * 70)
     if r9 >= r8 * 0.98:
-        print(f"\n  SCT minimal cortical (r={r9:.4f}) MATCHES CIEDE2000 (r={r8:.4f})")
-        print(f"  with 5 features derived from SCT native coordinates.")
+        print(f"\n  SCS minimal cortical (r={r9:.4f}) MATCHES CIEDE2000 (r={r8:.4f})")
+        print(f"  with 5 features derived from SCS native coordinates.")
     elif r6 >= r8 * 0.98:
-        print(f"\n  SCT full cortical (r={r6:.4f}) MATCHES CIEDE2000 (r={r8:.4f})")
-        print(f"  with 9 features derived from SCT native coordinates.")
+        print(f"\n  SCS full cortical (r={r6:.4f}) MATCHES CIEDE2000 (r={r8:.4f})")
+        print(f"  with 9 features derived from SCS native coordinates.")
     else:
-        print(f"\n  Best SCT model: r={max(r6,r9):.4f} vs CIEDE2000: r={r8:.4f}")
+        print(f"\n  Best SCS model: r={max(r6,r9):.4f} vs CIEDE2000: r={r8:.4f}")
         print(f"  Gap: {r8 - max(r6,r9):.4f}")
 
     print(f"\n  Key insight: CIEDE2000's 5 empirical corrections correspond to")
-    print(f"  SCT-native quantities derived from the sieve geometry:")
+    print(f"  SCS-native quantities derived from the sieve geometry:")
     print(f"    SL (lightness weighting) → d_lum · (ℓ - ½)²")
     print(f"    SC (chroma weighting)    → d_chrom · S_mid")
     print(f"    SH (hue weighting)       → d_chrom · cos(nθ)")

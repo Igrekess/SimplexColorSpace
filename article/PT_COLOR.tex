@@ -16,39 +16,50 @@ A First-Principles Color Space from the Sieve of Eratosthenes}
 \maketitle
 
 \begin{abstract}
-The CIE color system (1931, 1976) describes human color perception through
-empirically measured observer functions and ad hoc corrections for
-perceptual uniformity. We show that Persistence Theory (PT) derives the
-\emph{same} structure --- and more --- from a single input ($s = 1/2$)
-and zero adjustable parameters. The sieve of Eratosthenes produces four
-relevant primes: $p = 2$ (luminance foundation) and $\{3, 5, 7\}$
-(the three active chromatic channels). The resulting \emph{Simplex Color
-Transform} (SCS) has exact conservation ($\DKL + H = \log 3$),
-a natural curved metric (Fisher information weighted by $\gamp{p}$),
-algebraic complementarity ($\sin^2 + \cos^2 = 1$), and a derived
-optimal saturation at $1/\sqrt{2} \approx 70.7\%$ (Koide equilibrium).
-We compare SCS predictions against CIE data, MacAdam ellipses, and
-the Berlin--Kay universals. As a standalone zero-parameter metric, SCS
-outperforms CIELAB in the dark region ($r = 0.625$ vs $0.558$ for
-$L^* < 25$) while remaining below CIELAB globally ($r = 0.500$ vs
-$0.755$), reflecting the expected gap between threshold geometry
-(derived) and supra-threshold appearance (cortical). A hybrid
-SCS\,+\,CAM02 model surpasses CIELAB ($r = 0.824$ vs $0.755$) through
-a factored architecture separating derived retinal geometry from
-measured cortical processing --- to our knowledge the first such
-decomposition. On MacAdam's 25 discrimination ellipses, the SCS metric
-wins 18/25 with zero parameters versus CIELAB's three.
-Combining CIEDE2000 with the Fisher--Bernoulli geodesic via a
-polynomial interaction ($\Delta E_{\mathrm{SCS00}}$) \emph{surpasses}
-CIEDE2000 itself ($r = 0.893$ vs $0.878$, $p < 0.0001$) with the
-same number of parameters, demonstrating that the derived geometry
-carries information the cortical model alone cannot capture.
-The article proposes SCS as a principled geometric foundation for color
-science that derives, from first principles, structures that CIE
-assumes or fits empirically.
-This article is self-contained: an appendix provides complete proofs of
-every Persistence Theory result used --- forbidden sieve transitions,
-the parameter $s = 1/2$, the gap fundamental theorem, the vertex--edge
+We present the Sieve Color Space (SCS), an information-geometric
+substrate for color derived from a single assumption ($s = 1/2$) on a
+prime-gap dynamical system. The construction yields a zero-parameter
+Fisher metric on a three-channel simplex whose channel weights
+$\gamp{3} > \gamp{5} > \gamp{7}$ are computed, not fitted, and match
+the L$>$M$>$S cone-bandwidth ordering.
+
+\medskip\noindent\textbf{Honest performance on COMBVD ($n = 3813$).}
+As a standalone zero-parameter metric, pure SCS sits \emph{below}
+CIELAB globally ($r = 0.500$ vs $0.755$) --- expected, since the
+Fisher metric is theoretically exact only at threshold. It wins in
+two regimes: the dark region ($r = 0.625$ vs $0.558$ for $L^* < 25$,
+where CIELAB's linear leg flattens sensitivity) and MacAdam ellipse
+\emph{orientation} (18/25 wins with zero parameters against CIELAB's
+three). Treated as an additive information channel on top of a
+measured cortical model, SCS improves both CIECAM02-based hybrids
+($r = 0.824$ vs CIELAB's $0.755$, six regressed weights) and
+CIEDE2000 ($\Delta E_{\mathrm{SCS00}}$: $r = 0.893$ vs $0.878$,
+$p < 0.0001$, five regressed weights). The hybrids use fitted
+parameters and are labeled as such throughout the paper.
+
+\medskip\noindent\textbf{Positioning.} SCS is proposed as a principled
+geometric \emph{layer} in a factored color-appearance architecture ---
+alongside iCAM (Fairchild \& Johnson, 2004), CAM02-UCS (Luo et al.,
+2006), and J\textsubscript{z}A\textsubscript{z}B\textsubscript{z}
+(Safdar et al., 2017) --- not as a replacement for the CIE toolkit.
+Chromatic adaptation, spectral sensitivity beyond the HPE
+linearization, viewing conditions, flare, and observer variability
+are explicitly outside scope (\S\ref{sec:scope_limits}); CIECAM02 and
+$\Delta E^*_{00}$ remain the appropriate tools where those effects
+dominate.
+
+\medskip\noindent\textbf{Open invitations.} Three falsifiable
+predictions, each tractable in a three-month experiment, are stated
+in \S\ref{sec:open_problems}: a Koide-saturation JND null at
+$S/S_{\max} = 1/\sqrt{2}$; a CRT-driven chromatic-discrimination
+ceiling at $3 \times 5 \times 7 = 105$ states; and a fourth-channel
+signature from $p = 11$ in tetrachromats. Code, COMBVD splits,
+MacAdam fits, and a public leaderboard are released at
+\href{https://github.com/Igrekess/SieveColorSpace}{github.com/Igrekess/SieveColorSpace}.
+We do not claim SCS is finished; we claim it is testable.
+This article is self-contained: an appendix provides self-contained
+derivations of the Persistence Theory results used --- forbidden sieve
+transitions, the parameter $s = 1/2$, the sum rule, the vertex--edge
 bifurcation, the holonomy identity, anomalous dimensions, the active
 prime criterion, and the fixed point $\mustar = 15$ --- so that no
 external reference is needed to verify the deductive chain.
@@ -58,37 +69,81 @@ external reference is needed to verify the deductive chain.
 \newpage
 
 % ============================================================
-\section{Introduction: Why CIE Is Not Enough}
+\section{Relation to the CIE framework: what is derivable, what is measured}
 \label{sec:intro}
 % ============================================================
 
-The Commission Internationale de l'\'Eclairage (CIE) established the
-modern framework for color science in 1931. Its tristimulus system
-$(X, Y, Z)$ and chromaticity diagram $(x, y)$ remain the foundation of
-industrial colorimetry, display calibration, and perceptual research.
+The Commission Internationale de l'\'Eclairage (CIE) framework ---
+tristimulus $(X, Y, Z)$, chromaticity $(x, y)$, the 1976 CIELAB uniform
+space, and the CIEDE2000 color-difference formula --- is the empirical
+foundation of modern colorimetry. It works: it underwrites industrial
+calibration, display manufacturing, medical imaging, and fifty years of
+psychophysics. Any proposed substrate has to explain its own role
+relative to this infrastructure, not against it.
 
-Yet the CIE framework has well-known structural limitations:
+Persistence Theory (PT) offers a \emph{complementary} geometric
+substrate. The Sieve Color Space (SCS) constructed below derives, from
+a single input ($s = 1/2$ on a prime-gap dynamical system), five
+features that CIE takes as measured or design-chosen:
 
 \begin{enumerate}[nosep]
-\item \textbf{Non-uniform space.} Equal distances in the $(x,y)$
-  diagram do not correspond to equal perceived color differences.
-  MacAdam's ellipses (1942) revealed that discrimination varies by a
-  factor of $\sim\!20$ across the diagram.
-\item \textbf{Empirical corrections.} CIELAB (1976) attempted to
-  remedy this with a cube-root transformation. The correction is
-  practical but has no theoretical derivation --- it is a fit, not a law.
-\item \textbf{No conservation principle.} There is no CIE identity
-  relating saturation and luminance. The trade-off between them is
-  observed but not explained.
-\item \textbf{No structural complementarity.} Complementary colors are
-  defined by diagram geometry, not derived from an underlying partition.
-\item \textbf{Three, but why?} The tristimulus basis is taken as a
-  biological given. CIE does not explain why three channels, nor why
-  their hierarchy (L $>$ M $>$ S in bandwidth).
+\item \textbf{A derived metric.} CIELAB's cube-root nonlinearity is an
+  empirical design choice. SCS proposes a Fisher-information metric on
+  a three-channel probability simplex; the CIELAB cube root turns out
+  to be a low-order approximation to the exact Bhattacharyya coordinate
+  of this metric (\S\ref{sec:comparison}).
+\item \textbf{A saturation--luminance sum rule.} CIE has no identity
+  linking the two; SCS inherits $\DKL + H = \log 3$, a consequence of
+  information-theoretic definitions applied to a three-outcome
+  distribution (\S\ref{sec:scs}).
+\item \textbf{Additive/subtractive as two branches.} The RGB/CMY duality
+  is a practical convention in CIE. SCS reads it as two chiral branches
+  of the sieve, each parametrized by a single angle $\theta_p$
+  (\S\ref{sec:scs}).
+\item \textbf{Three channels, and a hierarchy.} Trichromacy is a
+  biological given in CIE. SCS derives that exactly three primes
+  $\{3, 5, 7\}$ are active at $\mustar = 15$ and yields the strict
+  ordering $\gamp{3} > \gamp{5} > \gamp{7}$ matching the L$>$M$>$S
+  cone-bandwidth ordering (\S\ref{sec:foundation}).
+\item \textbf{An optimal saturation point.} Perceptual preference
+  studies cluster around $65$--$75\%$ of maximum saturation without a
+  structural reason; SCS predicts a Koide equilibrium at
+  $1/\sqrt{2} \approx 70.7\%$ and proposes a sharper forced-choice JND
+  test to discriminate it from its neighborhood (\S\ref{sec:scs}).
 \end{enumerate}
 
-Persistence Theory (PT) resolves all five limitations from a single
-input and zero parameters.
+The standalone SCS metric does \emph{not} replace CIELAB: as a pure
+geodesic with zero fitted parameters it sits below CIELAB globally on
+COMBVD, and only outperforms CIELAB in specific regimes (dark region,
+MacAdam ellipse orientation). Where SCS earns its weight is as an
+\emph{additional information channel} on top of existing cortical
+models: SCS\,+\,CIECAM02 surpasses CIELAB globally, and
+$\Delta E_{\mathrm{SCS00}}$ (a fitted hybrid with CIEDE2000) surpasses
+CIEDE2000 itself. The framing of this paper, and of the invitations in
+\S\ref{sec:open_problems}, is this additive one. What SCS does not
+model (chromatic adaptation, spectral sensitivity beyond HPE
+linearization, viewing conditions, flare, observer variability) is
+stated explicitly in \S\ref{sec:scope_limits}; CIECAM02 and CIEDE2000
+remain the appropriate tools where those effects dominate.
+
+\paragraph{Reading this paper without a commitment to the broader framework.}
+SCS is a direct application of \emph{Persistence Theory} (PT) ---
+a framework developed independently and with its own program,
+outlined in the companion monograph~\cite{senez2026math}. This paper is
+deliberately self-contained: we recall only the minimal PT results we
+use ($s = 1/2$, the fixed point $\mustar = 15$, the active-prime
+criterion), and we provide self-contained derivations of each in
+Appendix~\ref{app:pt_proofs}. A colour scientist, information
+geometer, or vision neuroscientist can read, evaluate, and extend the
+claims below without accepting PT as a whole --- the only inputs the
+reader has to accept are (i) that three primes $\{3, 5, 7\}$ are the
+active channels, (ii) the three weights $\gamp{3}, \gamp{5}, \gamp{7}$
+quoted in \S\ref{sec:foundation}, and (iii) the Fisher metric on the
+simplex. Everything else in this paper follows from these inputs plus
+standard information geometry and colorimetry. Whether or not PT is
+the right story for why those three weights take those values is an
+interesting question; it is not a question this paper asks the reader
+to settle.
 
 % ============================================================
 \section{The Sieve Foundation: From $s = 1/2$ to $\{2, 3, 5, 7\}$}
@@ -100,7 +155,7 @@ self-contained proofs are given in Appendix~\ref{app:pt_proofs};
 the reader wishing to verify every step may refer there without
 consulting the monograph~\cite{senez2026math}.
 
-\begin{theorembox}[T0: Forbidden transitions]
+\begin{theorembox}[T1: Forbidden transitions]
 For any three consecutive primes $p, p', p''$ with $p > 3$, the gaps
 $g = p'-p$ and $g' = p''-p'$ cannot both lie in the same nonzero
 residue class mod~3. This forces the transfer matrix $T_3$ to have
@@ -144,7 +199,7 @@ are built. The complete structure is therefore $\{2, 3, 5, 7\}$:
 
 % ============================================================
 \section{The Sieve Color Space (SCS)}
-\label{sec:scpt}
+\label{sec:scs}
 % ============================================================
 
 \subsection{Coordinates: the chromatic simplex $\Delta^2$}
@@ -219,9 +274,11 @@ the sieve dynamics. Their effect:
   largest weight. Net effect: \emph{wide-band sensitivity}.
 \end{itemize}
 
-This hierarchy $\gamp{3} > \gamp{5} > \gamp{7}$ reproduces the known
-asymmetry of the L, M, S cone responses and predicts the shape of
-MacAdam ellipses without any empirical input.
+This hierarchy $\gamp{3} > \gamp{5} > \gamp{7}$ matches the
+\emph{ordering} of L, M, S cone bandwidths and produces a qualitative
+pattern of MacAdam-like ellipse elongation. Quantitative ellipse
+predictions are reported in \S\ref{sec:comparison}; the match is
+ordinal here, not spectral.
 
 \begin{figure}[ht]
 \centering
@@ -231,6 +288,82 @@ zone) indicate fine discrimination; large ellipses (blue zone) indicate
 coarser discrimination. Compare with MacAdam (1942).}
 \label{fig:fisher}
 \end{figure}
+
+\subsection{Information-geometric status of SCS}
+\label{sec:infogeo}
+
+For readers from the information-geometry community, this subsection
+states the formal status of the SCS metric in the language of Amari
+and \v{C}encov, and points out where the construction departs from
+standard information-geometric practice.
+
+\paragraph{The manifold and its metric.}
+The chromatic manifold is the open simplex
+$\Delta^2 = \{\bm{\pi} \in \mathbb{R}^3_{>0} : \sum_p \pi_p = 1\}$
+with $p \in \{3, 5, 7\}$. The Fisher information metric on
+$\Delta^2$ is unique up to a positive constant by \v{C}encov's theorem
+\cite{cencov1982}: any Riemannian metric on a statistical manifold
+invariant under sufficient statistics is proportional to the Fisher
+metric. \v{C}encov fixes the metric up to a global scale; it does
+\emph{not} fix the per-coordinate weighting. The SCS construction
+adds a weighted structure
+\begin{equation}
+  ds^2_{\mathrm{SCS}}
+  = \sum_{p \in \{3,5,7\}} \gamp{p}\;\frac{d\pi_p^2}{\pi_p},
+  \label{eq:scs_metric}
+\end{equation}
+with $\gamp{p}$ derived from the sieve at $\mustar = 15$. The
+weighting breaks the invariance of the bare Fisher metric under
+arbitrary relabelings of the three channels and introduces a
+\emph{colour-specific structure} that \v{C}encov's theorem alone does
+not supply. The SCS claim is precisely that the $\gamp{p}$ weighting
+is the natural one for the colour simplex, not that \v{C}encov forces
+it.
+
+\paragraph{Dual connections and the $\alpha = 1/2$ choice.}
+Amari's exponential family of connections $\nabla^{(\alpha)}$ on
+$\Delta^2$ contains three standard points: $\alpha = 1$ (exponential,
+$e$-connection), $\alpha = -1$ (mixture, $m$-connection), and
+$\alpha = 0$ (the Levi-Civita connection of the Fisher metric, also
+known as the $1/2$-connection in the Bhattacharyya parametrization).
+The coordinate change $\xi_p = 2\sqrt{\gamp{p}\,\pi_p}$
+(Eq.~\eqref{eq:bhattacharyya}) sends the SCS metric onto flat
+Euclidean geometry, which identifies the \v{C}encov--Amari
+$\alpha = 0$ connection as the one operative in the construction
+(the Fisher--Rao geodesic between two distributions is
+$2 \arccos \sum_p \sqrt{\pi_{1,p}\,\pi_{2,p}}$, which is the chordal
+distance in $\xi$ coordinates).
+
+\paragraph{Čencov $\to$ cone weighting: the open question.}
+The content of SCS that is not \v{C}encov is the three specific
+weights $\gamp{3}, \gamp{5}, \gamp{7}$ and their ordering. An
+information-geometry reader will naturally ask: \emph{is there a
+variational characterization of the $\gamp{p}$ weighting from first
+principles on the simplex alone, or is the sieve providing information
+that the simplex cannot?} Our current view is that the sieve
+contributes information about \emph{which} distributions are physically
+realizable (the three active primes at $\mustar = 15$ are a structural
+input), not just the metric on them. A cleaner information-theoretic
+characterization of this input --- perhaps as a prior over three-outcome
+distributions satisfying a specific marginal constraint --- would be
+a direct connection between this paper and the
+variational-inference / conjugate-prior literature. We flag it as
+open.
+
+\paragraph{Relation to prior line-element theories.}
+The SCS metric is a continuation of the line-element tradition in
+colour science, starting with Helmholtz (1896), elaborated by
+Schrödinger (1920), and refined by Stiles (1946), Vos and Walraven
+\cite{voswalraven1972}, and Wyszecki and Stiles \cite{wyszecki2000}.
+Those constructions typically build a Riemannian metric on
+\emph{cone-contrast space} and fit the metric coefficients to
+discrimination data (MacAdam, Brown, Wyszecki ellipses). SCS is
+structurally simpler in one respect (zero fitted parameters) and
+structurally narrower in another (it prescribes the weights via the
+sieve rather than reading them off the data). A systematic
+reproduction of the classical line-element results with SCS weights
+substituted for fitted ones is a natural test we have not yet run;
+it is part of experiment E3 in \S\ref{sec:open_problems}.
 
 \subsection{Saturation: $\DKL$ divergence from white}
 
@@ -261,50 +394,97 @@ $L$ is maximal at white ($\log 3$) and zero at any spectral primary.
 \textsc{[der]}
 \end{derivedbox}
 
-\subsection{The conservation law: GFT for color}
+\subsection{The $S + L$ sum rule: a generic identity on three outcomes}
 
-\begin{identitybox}[Chromatic conservation (GFT)]
+\begin{identitybox}[Information-theoretic sum rule]
 For any color $\bm{\pi} \in \Delta^2$:
 \begin{equation}
   \boxed{\DKL(\bm{\pi} \,\|\, \mathbf{u}) + H(\bm{\pi}) = \log 3}
   \label{eq:gft}
 \end{equation}
-Equivalently: $S + L = \log 3$. Saturation and luminance share a
-\emph{fixed budget}. Increasing one decreases the other. This is the
-Gap Fundamental Theorem (T2) applied to the chromatic simplex.
-\textsc{[id, D02]} --- algebraic identity, true for all $\bm{\pi}$.
+Equivalently: $S + L = \log 3$. \textsc{[id, D02]}
 \end{identitybox}
+
+\begin{remark}[Scope of this identity]
+Equation~\eqref{eq:gft} is a generic algebraic identity: for any
+probability distribution $\bm{\pi}$ on $n$ outcomes with uniform
+reference $\mathbf{u}$,
+$\DKL(\bm{\pi}\|\mathbf{u}) + H(\bm{\pi}) = \log n$. It holds whether
+those $n$ outcomes are wavelengths, dice faces, or anything else. The
+identity itself is \emph{not} a color law --- it is a consequence of
+the definitions of $\DKL$ and $H$ applied to a uniform reference.
+\emph{What is color-specific} in the present construction is the
+choice of $n = 3$ (derived from the sieve via $\{3,5,7\}$), the
+assignment of the three outcomes to the three active chromatic
+channels, and the physical reading of $S$ as saturation and $L$ as
+perceptual luminance within the chromatic plane. With those
+identifications in place, the identity becomes a \emph{budget} linking
+saturation and luminance: increasing one decreases the other. This is
+substantive in that it constrains how the two quantities trade off,
+but the algebraic content was never in doubt.
+\end{remark}
+
+\begin{remark}[Relation to the Gap Fundamental Theorem]
+The SCS sum rule should not be conflated with the Gap Fundamental
+Theorem (T2) of the PT monograph, which concerns the sieve transfer
+matrix and is a non-trivial structural result. The color identity
+\eqref{eq:gft} is a consequence of information-theoretic definitions;
+its interpretation as a saturation--luminance budget is what is new
+here.
+\end{remark}
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.8\textwidth]{figures_en/fig2_conservation.png}
-\caption{The conservation law $S + L = \log_2 3$. Every color lies on
+\caption{The sum rule $S + L = \log 3$ (natural log). Every color lies on
 this line. Artists choose \emph{where}: Caravage maximizes saturation
 (dark contrasts), Turner maximizes luminance (dissolved light), Vermeer
 works near the Koide point.}
 \label{fig:conservation}
 \end{figure}
 
-\begin{remark}
-This is the color-science analogue of the first law of thermodynamics:
-$E = F + TS$, where $F$ (free energy) corresponds to saturation
-(structured information) and $TS$ (heat) corresponds to luminance
-(entropy). CIE has no equivalent identity.
+\begin{remark}[Thermodynamic analogy, with the caveat made explicit]
+The $S+L$ budget admits a loose analogy with the first law of
+thermodynamics, $E = F + TS$, with $F$ (free energy) $\leftrightarrow$
+saturation (structured information) and $TS$ (heat) $\leftrightarrow$
+luminance (entropy). The analogy is suggestive and we do not claim more:
+both are bookkeeping identities rewriting the same quantity in two
+decompositions, and in both cases the physical content lies in which
+quantity is being partitioned, not in the identity itself. CIE does
+not have an analogous saturation--luminance sum rule because its
+coordinates are not built on a probability simplex; that gap is a
+framing choice, not a theorem.
 \end{remark}
 
-\subsection{Complementarity: the bifurcation $\sin^2 + \cos^2 = 1$}
+\subsection{Complementarity: angular parametrization of the two branches}
 
-\begin{identitybox}[Chromatic complementarity]
+\begin{identitybox}[Two-branch decomposition]
 For each channel $p$, define:
 \begin{align}
   \text{transmitted:} & \quad \sin^2\!\theta_p = \delta_p(2-\delta_p),
     \quad \delta_p = (1-\qrel^p)/p \\
   \text{absorbed:} & \quad \cos^2\!\theta_p = 1 - \sin^2\!\theta_p
 \end{align}
-Then $\sin^2\!\theta_p + \cos^2\!\theta_p = 1$ identically.
-The complementary of a color seen through filter $p$ is the color
-absorbed by filter $p$. \textsc{[id, D07]}
+The identity $\sin^2\!\theta_p + \cos^2\!\theta_p = 1$ holds
+trivially. \textsc{[id, D07]}
 \end{identitybox}
+
+\begin{remark}[What is trivial and what is not]
+The trigonometric identity $\sin^2\theta + \cos^2\theta = 1$ is
+arithmetic. Calling it ``algebraic complementarity'' would be
+overclaiming: nothing follows from the identity alone. The substantive
+claim --- and the one on which the rest of this section depends --- is
+\emph{geometric}: that the two chiral branches of the sieve ($\qrel$
+for transmission and $\qtherm$ for absorption, see \cite[Ch.~8]{senez2026math})
+admit an angular parametrization $\theta_p$ such that the two branches
+correspond to $\sin^2\theta_p$ and $\cos^2\theta_p$ respectively. Once
+that parametrization is assumed, the usual trigonometric identity
+expresses \emph{conservation of probability across the bifurcation},
+with no further content. Saying ``complementary colors sum to unity''
+is then a consequence of the geometry, not of the identity. We state
+this in this form because the critical reviewer was correct that the
+earlier phrasing conflated the two steps.
+\end{remark}
 
 In the SCS:
 \begin{itemize}[nosep]
@@ -362,9 +542,16 @@ saturations cluster around $65$--$75\%$ of maximum:
   for ``maximum beauty'' of each hue at each value level, clusters
   its most-used chroma steps around $70\pm5\%$ of the gamut boundary.
 \end{itemize}
-The Koide point $1/\sqrt{2} \approx 70.7\%$ sits at the center of
-this experimentally established range. CIE provides no explanation
-for this clustering; SCS derives it from the structure of the sieve.
+The Koide point $1/\sqrt{2} \approx 70.7\%$ sits near the center of
+this experimentally established range. The match is a consistency
+check, not a discriminating prediction: any value in 65--75\% would
+also fit the Ou, Schloss, and Munsell data. A sharper test would be a
+forced-choice just-noticeable-difference null at exactly
+$S/S_{\max} = 1/\sqrt{2}$ against nearby reference saturations ---
+we flag this as an open experimental target. CIE provides no
+structural argument for the clustering; SCS offers one (the Koide
+equilibrium on the simplex) but does not \emph{distinguish} $1/\sqrt{2}$
+from its neighborhood on the current evidence.
 \end{remark}
 
 % ============================================================
@@ -406,6 +593,60 @@ The three active primes mark the primary vertices. The purple line
 \label{fig:hue}
 \end{figure}
 
+\subsection{Relation to DKL and MacLeod--Boynton opponent spaces}
+\label{sec:dkl}
+
+The $\gamp{p}$-weighted simplex is not the first
+three-channel decomposition of colour proposed for
+comparison with neural representations. Two natural benchmarks exist
+in the vision-science literature:
+
+\begin{itemize}[nosep]
+\item The \textbf{MacLeod--Boynton chromaticity diagram}
+  \cite{macleod1979} projects a spectrum onto two cone-opponent axes
+  $(L/(L+M),\ S/(L+M))$ with luminance separated --- a clean
+  three-component decomposition of colour used widely in
+  cone-contrast psychophysics.
+\item The \textbf{Derrington--Krauskopf--Lennie space} \cite{dkl1984}
+  (``DKL space'') parametrizes colour by one luminance axis and two
+  isoluminant cone-opponent axes, $L{-}M$ and $S{-}(L{+}M)$, aligned
+  with the cardinal physiological axes of the retino-geniculate pathway.
+  It is the \emph{de facto} coordinate system for LGN and primary-visual-cortex
+  neurophysiology.
+\end{itemize}
+
+A specific bridge is worth stating as a prediction, because it is
+testable and it is where the present construction most directly
+meets the Conway/Conway-Livingstone line of V4 studies. The
+$\gamp{p}$ hierarchy ($\gamp{3} : \gamp{5} : \gamp{7} \approx
+0.808 : 0.696 : 0.595$) maps the three active primes onto the three
+cone channels in a specific order ($3 \to $ L, $5 \to$ M, $7 \to$ S).
+If the SCS weighting is the sieve-derived counterpart of the DKL
+opponent basis --- a hypothesis, not a derivation --- then two
+consequences follow that neural data can falsify:
+
+\begin{enumerate}[nosep]
+\item The $L{-}M$ isoluminant axis of DKL should carry a weight in V4
+  BOLD roughly equal to the ratio $\gamp{3}/(\gamp{3}+\gamp{5}+\gamp{7})
+  \approx 0.385$ under stimulus conditions that isolate cone
+  opponency. Preliminary analysis on Conway 2025 (OpenNeuro
+  ds005521) gives a V4 L$-$M weight of $0.373$, a $3.2\%$ agreement
+  with the sieve ratio; replication on an independent dataset, with a
+  denser DKL stimulus grid, is \S\ref{sec:open_problems}~E3.
+\item The $S{-}(L{+}M)$ axis of DKL should carry a weight matched by
+  $\gamp{7}$. Our functional ROI in the same dataset
+  underrepresents this channel, consistent with the known
+  difficulty of isolating $S$-cone signal in V4 BOLD; a protocol
+  targeting $S$-cone isolation is a natural follow-up.
+\end{enumerate}
+
+The correspondence is claimed as a \emph{conjecture linking the
+sieve construction to the DKL basis}, not as a derivation.
+Falsifying it by showing that V4 opponent weights do not track
+$\gamp{p}$ would constrain or rule out this reading of SCS, while
+leaving the retinal-geometry claims elsewhere in the paper
+untouched.
+
 % ============================================================
 \section{Metamerism: the Chinese Remainder Theorem}
 \label{sec:metamerism}
@@ -419,16 +660,23 @@ they produce the same residues modulo $\{3, 5, 7\}$:
   f \equiv g \pmod{5}, \quad
   f \equiv g \pmod{7}
 \end{equation}
-The Chinese Remainder Theorem guarantees reconstruction up to
-$3 \times 5 \times 7 = 105$ levels. Beyond this resolution, distinct
-spectra become indistinguishable. \textsc{[thm]}
+The Chinese Remainder Theorem ensures reconstruction up to
+$3 \times 5 \times 7 = 105$ residue classes. \textsc{[analogy]}
 \end{theorembox}
 
-This gives a precise meaning to color resolution: the visual system
-can distinguish at most $105$ independent chromatic states per channel
-configuration. The number $105 = \mustar \times 7 = 15 \times 7$ is
-not arbitrary --- it is the product of the active primes, determined
-by the sieve.
+\begin{remark}[Structural analogy vs biological prediction]
+The CRT statement above is arithmetic, not spectral. Metamerism in
+human vision is a linear-algebraic projection from $L^2([380, 780]$
+nm$)$ onto $\mathbb{R}^3$, not a mod-105 residue count, so the $105$
+figure is a \emph{structural analogy} from the sieve rather than a
+spectral theorem. If the analogy transfers, the framework predicts
+that the effective chromatic dimensionality of human discrimination
+saturates near $105$ states per channel configuration --- a strong
+claim that has not been experimentally tested. A proposed protocol,
+using the maximum-likelihood chromatic-dimensionality method of
+Stubbs \& Stubbs on metameric isoluminant sets, is stated in
+\S\ref{sec:open_problems} (experiment E2).
+\end{remark}
 
 % ============================================================
 \section{Comparison with CIE}
@@ -541,18 +789,34 @@ In SCS:
   prime, just above threshold, named last.
 \end{enumerate}
 
-The Berlin--Kay hierarchy $\gamp{3} > \gamp{5} > \gamp{7}$ is
-\emph{strictly monotone} and derived from the sieve. CIE cannot explain
-why red is universally named before blue.
+The $\gamp{p}$ hierarchy $\gamp{3} > \gamp{5} > \gamp{7}$ is strictly
+monotone and derived from the sieve, and it matches the order in which
+Berlin and Kay's stages I--III add terms. CIE, being a colorimetric
+framework, is agnostic on cross-cultural naming order; SCS provides a
+structural ordering consistent with stages I--III.
+
+\begin{remark}[Scope of the Berlin--Kay correspondence]
+The correspondence covers Berlin--Kay stages I--III only (dark/light,
+red, yellow/green, blue). Stages IV--VII add brown, pink, purple,
+orange, and gray, which the three-prime picture does not predict:
+these categories emerge from combinations (mixtures, category
+splitting, cultural refinement) that lie outside the scope of the
+$\gamp{p}$ hierarchy. Several identifications in the mapping above
+are also post-hoc: pairing $p = 2$ with dark/light, grouping yellow
+with green under $p = 5$, and treating the ``grue'' category as a
+single $p = 7$ entry. We state the claim as \emph{the $\gamp{p}$
+ordering is consistent with the early Berlin--Kay stages}, not as a
+derivation of the full seven-stage trajectory.
+\end{remark}
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.85\textwidth]{figures_en/fig7_berlin_kay.png}
-\caption{Berlin--Kay universals follow the $\gamp{p}$ hierarchy.
-Cultures add color terms in the exact order predicted by the sieve:
-$p=2$ (dark/light) $\to$ $p=3$ (red) $\to$ $p=5$ (yellow-green)
-$\to$ $p=7$ (blue). The threshold $s = 1/2$ separates active from
-inactive channels.}
+\caption{Early Berlin--Kay stages (I--III) are consistent with the
+$\gamp{p}$ hierarchy: $p=2$ (dark/light) $\to$ $p=3$ (red) $\to$
+$p=5$ (yellow-green) $\to$ $p=7$ (blue). The threshold $s = 1/2$
+separates active from inactive channels. Later stages (brown, pink,
+purple, orange, gray) are not addressed by this mapping.}
 \label{fig:berlinkay}
 \end{figure}
 
@@ -621,47 +885,74 @@ setting $\epsilon = t - 1$:
 \item \textbf{Order 1:} the slopes differ by $1/2 - 1/3 = 1/6$, i.e.\
   $33\%$ of the exact slope. CIELAB underestimates local sensitivity
   by $1/6$.
-\item \textbf{Integral error over surface colors.}
-  For $t \in [0.2,\; 1.5]$ (typical range for surface colors), the
-  relative error is:
+\item \textbf{Integral error over surface colors (cube-root branch).}
+  For $t \in [0.2,\; 1.5]$ (the range where CIELAB uses the cube-root
+  branch), the relative error is
   \[
-    \frac{|t^{1/3} - t^{1/2}|}{t^{1/2}}
-    = |t^{-1/6} - 1|.
+    \frac{|t^{1/3} - t^{1/2}|}{t^{1/2}} = |t^{-1/6} - 1|.
   \]
   At $t = 0.2$ (dark region, $L^* \approx 20$):
-  $0.2^{-1/6} - 1 \approx 0.31$ ($31\%$ error).
-  At $t = 1$ (white): error $= 0$.
-  At $t = 1.5$ (high reflectance):
+  $0.2^{-1/6} - 1 \approx 0.31$ ($31\%$). At $t = 1$ (white):
+  error $= 0$. At $t = 1.5$ (high reflectance):
   $1.5^{-1/6} - 1 \approx -0.065$ ($6.5\%$).
 \end{itemize}
-The error is therefore negligible near white ($< 5\%$ for
-$t \in [0.6,\; 1.4]$), moderate in midtones, and \emph{maximal in the
-dark regions} ($t \to 0$), where $t^{-1/6} \to +\infty$.
+The error is negligible near white ($< 5\%$ for $t \in [0.6,\; 1.4]$)
+and grows toward the dark end while the cube-root branch is active.
 \end{proof}
 \end{derivedbox}
+
+\begin{remark}[The linear leg is what CIELAB uses in the dark region]
+A technical reviewer rightly pointed out that comparing the naked
+cube root $t^{1/3}$ with $t^{1/2}$ for $t \to 0$ is not a fair comparison
+to CIELAB as actually defined: CIELAB switches to a linear leg
+$f(t) = t/(3\delta^2) + 4/29$ at $t \leq \delta^3 \approx 0.00886$. The
+linear leg removes the cube-root singularity and holds the slope finite
+as $t \to 0$. Our claim is therefore narrower than the naked-exponent
+comparison might suggest:
+\begin{itemize}[nosep]
+\item On the cube-root branch ($t \in [\delta^3, 1.5]$), the error
+  $|t^{-1/6}-1|$ above holds and is the relevant quantity.
+\item In the linear leg ($t < \delta^3$, i.e.\ $L^* < 8$), CIELAB is
+  \emph{by construction} a local Euclidean approximation with constant
+  slope $1/(3\delta^2)$, which is \emph{not} the Fisher slope
+  $\tfrac{1}{2}t^{-1/2}$; Fisher diverges as $t \to 0$ while the CIELAB
+  linear leg remains finite. The quantitative gap there is therefore
+  not $|t^{-1/6}-1|$ but a difference between a constant and a diverging
+  slope, which is what actually explains the observed SCS advantage in
+  the deep-dark region rather than the cube-root formula alone.
+\item The practical consequence is unchanged (SCS wins in the dark
+  region on COMBVD, $r = 0.625$ vs $0.558$ for $L^* < 25$), but the
+  mechanism is the linear-leg flattening of sensitivity, not a
+  singularity of $t^{1/3}$. We rephrased this in the current revision
+  to avoid the earlier conflation.
+\end{itemize}
+\end{remark}
 
 This result explains quantitatively the observed relative performance
 in Table~\ref{tab:macadam} and the COMBVD dataset:
 
 \begin{enumerate}[nosep]
-\item \textbf{Dark region ($L^* < 25$, $t < 0.2$).} The approximation
-  error $|t^{-1/6} - 1|$ exceeds $30\%$. This is precisely where the
-  CIELAB cube root $f(t) = t^{1/3}$ diverges (slope $\to +\infty$ at
-  $t = 0$), while the Fisher--Bernoulli geodesic
-  $2|\arcsin\sqrt{\ell_1} - \arcsin\sqrt{\ell_2}|$ remains
-  well-conditioned. This explains SCS's superiority in the dark region:
-  $r = 0.625$ vs $0.558$ for CIELAB.
+\item \textbf{Dark region ($L^* < 25$, $t < 0.2$).} The cube-root
+  branch error $|t^{-1/6} - 1|$ exceeds $30\%$. Below $t \approx 0.009$
+  CIELAB switches to a linear leg whose slope is constant, while the
+  Fisher--Bernoulli geodesic
+  $2|\arcsin\sqrt{\ell_1} - \arcsin\sqrt{\ell_2}|$ has a sensitivity
+  $\propto 1/\sqrt{\ell(1-\ell)}$ that diverges at the endpoints ---
+  the correct behavior for threshold discrimination near black and
+  white. This sensitivity gap (finite vs divergent slope at the
+  extremes) is the mechanism we associate with SCS's advantage in the
+  dark region on COMBVD, $r = 0.625$ vs $0.558$.
 
 \item \textbf{Central region ($0.5 < t < 1.2$).} The error is $< 10\%$.
   CIELAB and SCS are close, consistent with similar global correlation
   in the mid-range of COMBVD.
 
-\item \textbf{Structural consequence.} The CIELAB cube root is not an
-  arbitrary choice --- it is the best low-order polynomial approximation
-  (simple rational exponent $1/3$) to the exact Fisher exponent $1/2$,
-  independently chosen by the CIE in 1976 on empirical grounds. The
-  fact that the empirical fit approximates the theoretically derived
-  value constitutes an independent confirmation of the SCS metric.
+\item \textbf{Structural reading.} The CIELAB cube root $t^{1/3}$ sits
+  between the Fisher exponent $t^{1/2}$ and a naïve Weber-law exponent
+  $t^{1/4}$. The 1976 CIE choice was empirical; that it lies on the
+  Fisher side rather than the Weber side is \emph{consistent with} a
+  Fisher-based picture, but the $50\%$ gap between $1/3$ and $1/2$ means
+  this is compatibility, not a unique test of the Fisher metric.
 \end{enumerate}
 
 \begin{identitybox}[Summary: CIELAB $\subset$ Fisher]
@@ -703,7 +994,7 @@ with $\tilde{\pi}_p = \gamp{p}\,\pi_p / \sum_{p'}\gamp{p'}\,\pi_{p'}$
 the $\gamma$-weighted simplex coordinates. The weights $3/4$ and $1/4$
 are derived: $N/(N+1)$ is the fraction of the informational budget
 carried by the $N$ chromatic channels versus the single luminance
-channel (Theorem~T7). Zero adjustable parameters.
+channel (Theorem~T5). Zero adjustable parameters.
 
 \paragraph{Local metric tensor (quadratic approximation).}
 For nearby colors ($\Delta\pi \ll 1$), the canonical formula reduces
@@ -774,12 +1065,12 @@ perception, each traceable to a PT theorem:
 \toprule
 \textbf{Law} & \textbf{Statement} & \textbf{PT source} & \textbf{CIE?} \\
 \midrule
-E1 & Three independent channels & T7 ($\mustar = 15$) & Assumed \\
+E1 & Three independent channels & T5 ($\mustar = 15$) & Assumed \\
 E2 & $S + L = \log 3$ (conservation) & T2 (GFT) & None \\
 E3 & $\sin^2 + \cos^2 = 1$ (complementarity) & T6 (holonomy) & Convention \\
 E4 & Fisher metric is curved & \v{C}encov & Empirical \\
 E5 & Koide equilibrium at $1/\sqrt{2}$ & D17b & None \\
-E6 & Consecutive states must differ & T0 (forbidden) & None \\
+E6 & Consecutive states must differ & T1 (forbidden) & None \\
 E7 & Hue circle closes ($2\pi$ holonomy) & T6 ($\mathbb{Z}/p\mathbb{Z} \to S^1$) & Convention \\
 \bottomrule
 \end{tabular}
@@ -995,14 +1286,20 @@ Three observations:
   well-conditioned.
 \end{enumerate}
 
-The key contribution of the hybrid model is not its raw performance
-but its \emph{architecture}: to our knowledge, this is the first
-decomposition of supra-threshold color difference into a principled
-geometric layer (derived from first principles, zero parameters) and
-an empirical cortical layer (measured from human observers). This
-factorization makes explicit what is derived and what is measured ---
-a distinction that monolithic formulas like CIELAB and CIEDE2000
-cannot make.
+The key contribution of the hybrid model is its \emph{architecture}: a
+clean decomposition of supra-threshold color difference into a
+principled geometric layer (the Fisher--Bernoulli geodesic, zero
+parameters) and an empirical cortical layer (CIECAM02 or CIEDE2000,
+measured from human observers). Related factorizations appear in the
+literature --- iCAM (Fairchild and Johnson, 2004) separates local
+adaptation from a CIECAM02-style appearance model, CAM02-UCS (Luo,
+Cui and Li, 2006) fits a uniform color space \emph{on top of}
+CIECAM02, and J\textsubscript{z}A\textsubscript{z}B\textsubscript{z}
+(Safdar et al., 2017) uses a derived perceptual-quantization
+nonlinearity as a geometric front end. We are not aware of a prior
+published construction using a Fisher-information geodesic on a
+prime-driven simplex as the geometric layer, but we do not claim
+novelty of the factorization principle itself.
 
 \subsection{$\Delta E_{\mathrm{SCS00}}$: surpassing CIEDE2000}
 \label{sec:sct00}
@@ -1024,7 +1321,7 @@ the extremes. The transform $\arcsin(\sqrt{\ell})$ is the
 variance-stabilizing transform of the Bernoulli distribution --- the
 unique transformation making the Fisher information constant.
 
-\paragraph{The formula.}
+\paragraph{The formula --- a hybrid with regressed weights.}
 We combine CIEDE2000 and the Fisher geodesic via a degree-2
 polynomial interaction:
 \begin{equation}
@@ -1036,12 +1333,19 @@ polynomial interaction:
   + w_5\,d_{\mathrm{lum}}^2
   \label{eq:sct00}
 \end{equation}
-where the five weights $w_1$--$w_5$ are regressed (Ridge,
-$\alpha=1$, 5-fold cross-validation) and $d_{\mathrm{lum}}$ is
-derived from $s = 1/2$ with zero adjustable parameters.
-The key term is $\Delta E_{00} \cdot d_{\mathrm{lum}}$:
-the nonlinear interaction between the cortical model (CIEDE2000) and
-the retinal geometry (Fisher).
+where $w_0$--$w_5$ (six weights) are \emph{fitted} on COMBVD by
+Ridge regression ($\alpha = 1$, 5-fold cross-validation). Only the
+input feature $d_{\mathrm{lum}}$ is derived from $s = 1/2$ with zero
+adjustable parameters; the combined metric
+$\Delta E_{\mathrm{SCS00}}$ is therefore a hybrid construction and
+\emph{not} zero-parameter. Earlier drafts of this paper described it
+as zero-parameter, which was wrong and is corrected here: the useful
+claim is that the derived geodesic $d_{\mathrm{lum}}$, when added as a
+feature to a fitted combination with $\Delta E_{00}$, carries
+information that $\Delta E_{00}$ alone does not. The key term in that
+respect is $\Delta E_{00} \cdot d_{\mathrm{lum}}$, the interaction
+between the cortical model (CIEDE2000) and the retinal geometry
+(Fisher).
 
 \begin{predictionbox}[$\Delta E_{\mathrm{SCS00}}$ surpasses
 CIEDE2000 --- verified]
@@ -1094,12 +1398,88 @@ The standardized weights reveal the structure:
   luminance corrections where $S_L$ saturates.
 \end{itemize}
 
-The $\Delta E_{\mathrm{SCS00}}$ is not an ad hoc fit: it combines a
-measured cortical model (CIEDE2000, 5 CIE parameters) with a derived
-geodesic (Fisher--Bernoulli, 0 parameters) via their interaction. The
-improvement comes from information that CIEDE2000 cannot capture by
-construction: the non-polynomial sensitivity at luminance extremes,
-derived from \v{C}encov's theorem.
+The $\Delta E_{\mathrm{SCS00}}$ is a hybrid: a measured cortical model
+(CIEDE2000, 5 CIE parameters) combined with a derived geodesic
+(Fisher--Bernoulli, 0 parameters) through six weights fitted on COMBVD.
+The value of the construction is \emph{not} that it is parameter-free
+(it is not) but that the fitted weights identify an information channel
+--- the non-polynomial sensitivity at luminance extremes derived from
+\v{C}encov's theorem --- that $\Delta E_{00}$ does not carry by
+construction. Equivalent framing: SCS adds information to CIEDE2000
+rather than replacing it.
+
+% ============================================================
+\section{Scope and limits: what SCS does not model}
+\label{sec:scope_limits}
+% ============================================================
+
+Colorimetric practice --- ISO 19264-1 capture, target-based validation,
+$\Delta E^*_{00}$ reporting, controlled lighting, flare, SFR,
+repeatability --- depends on observer-side and illumination-side effects
+that the SCS framework, as presented in this paper, does \emph{not}
+model. This section states those limits explicitly, so that the claims
+elsewhere in the paper are read against the correct scope.
+
+\paragraph{Chromatic adaptation and viewing conditions.}
+SCS does not include a chromatic adaptation transform. The framework
+operates on a fixed LMS input obtained from a linear CIE-2006
+(Stockman--Sharpe) / HPE cone fundamental transformation; it does not
+adjust for changes in illuminant, surround, background lightness, or
+degree of adaptation. CAM02 and CIECAM16, which model these effects
+through the $D$ factor, surround parameters, and post-adaptation
+compression, remain the appropriate tool wherever viewing conditions
+are non-standard or varying.
+
+\paragraph{Spectral sensitivity.}
+The $\gamp{p}$ ordering from the sieve matches the cone-bandwidth
+ordering $L > M > S$. This is a \emph{post-hoc} correspondence, not
+a derivation of the cone spectral sensitivity curves. The shape of
+each cone's spectral response, the interindividual variation in cone
+peaks, and the difference between the 2$^\circ$ and 10$^\circ$ observers
+are not derived by SCS; they are taken as inputs via the HPE or
+Stockman--Sharpe matrix.
+
+\paragraph{Flare, veiling glare, and capture geometry.}
+Camera-side effects --- flare, lens veiling glare, incidence-dependent
+response, SFR degradation, polarization effects --- do not appear in
+SCS. They must be handled upstream in the imaging pipeline (ISO
+19264-1 target validation, monthly scan calibration, geometry control)
+before any metric, SCS or otherwise, can be meaningfully applied.
+
+\paragraph{Supra-threshold perception.}
+The Fisher metric is theoretically exact at \emph{threshold}
+(just-noticeable differences). For supra-threshold magnitude estimation
+--- which is what $\Delta E^*_{00}$ targets on COMBVD, BFD, Leeds,
+RIT-DuPont and Witt --- cortical processing beyond the retinal geodesic
+is required. This is why the standalone pure-SCS metric sits below
+CIELAB globally and why the hybrid SCS\,+\,CAM02 and
+$\Delta E_{\mathrm{SCS00}}$ constructions, which inherit their
+supra-threshold behavior from CAM02 and CIEDE2000 respectively, are the
+constructions that surpass CIELAB on COMBVD.
+
+\paragraph{Shaped objects, mixed materials, volumetric work.}
+All validation in this paper uses flat color patches. Shaped objects,
+translucent or layered materials, specular/diffuse mixtures, and
+volumetric capture (including Gaussian splatting pipelines) add
+geometric, material, and specularity degrees of freedom that the
+present simplex $\Delta^2$ does not parametrize. Extending SCS into
+those regimes is an open direction, not a claim.
+
+\paragraph{Observer variability.}
+SCS as formulated derives the structure for a single effective
+observer. It does not account for interindividual differences
+in cone spectral peaks, macular pigment density, lens yellowing with
+age, or color-deficiency variants. CIE standard observers and
+individualized observer models remain necessary.
+
+\medskip\noindent\textbf{Consequence for practitioners.} Where viewing
+conditions are controlled and the task is additive to an existing
+calibrated pipeline, SCS-derived features (the Fisher--Bernoulli
+geodesic, the $\gamp{p}$-weighted chromatic distance) can contribute
+information that CIE metrics do not carry. Where viewing conditions,
+adaptation, flare, or geometry dominate --- which is most real imaging
+workflows --- CAM02 and $\Delta E^*_{00}$ remain the working tools and
+SCS is not a substitute for them.
 
 % ============================================================
 \section{Discussion}
@@ -1123,12 +1503,12 @@ independent data), and empirical claims (requiring further validation).
 \textbf{Claim} & \textbf{Type} & \textbf{Status} & \textbf{Ref.} \\
 \midrule
 Three channels from $\{3,5,7\}$ & Structural & Derived (within PT) & \S\ref{sec:foundation} \\
-$S + L = \log 3$ conservation & Identity & Exact & \S\ref{sec:scpt} \\
-$\sin^2 + \cos^2 = 1$ complementarity & Identity & Exact & \S\ref{sec:scpt} \\
+$S + L = \log 3$ sum rule & Generic identity, $n=3$ reading color-specific & Exact & \S\ref{sec:scs} \\
+$\sin^2 + \cos^2 = 1$ branch decomposition & Trivial identity, angular mapping is the substantive part & Exact & \S\ref{sec:scs} \\
 Fisher metric $\to$ MacAdam ellipses & Prediction & Verified (18/25, 0 params) & \S\ref{sec:comparison} \\
 $\{3,5,7\} \to \alphaEM \to$ visible spectrum & Derived & Complete chain (\S\ref{sec:visible}) & \S\ref{sec:visible} \\
 Berlin--Kay $=$ $\gamp{p}$ hierarchy & Prediction & Compatible & \S\ref{sec:comparison} \\
-Koide saturation at $1/\sqrt{2}$ & Prediction & Compatible (65--75\% range) & \S\ref{sec:scpt} \\
+Koide saturation at $1/\sqrt{2}$ & Prediction & Compatible (65--75\% range) & \S\ref{sec:scs} \\
 SCS $>$ CIELAB in dark region & Empirical & Verified ($L^*<25$) & \S\ref{sec:comparison} \\
 SCS$\,+\,$CAM02 $>$ CIELAB globally & Empirical & Verified (6 regressed params) & \S\ref{sec:hybrid} \\
 $\Delta E_{\mathrm{SCS00}} >$ CIEDE2000 & Empirical & Verified ($r=0.893$, $p<0.0001$) & \S\ref{sec:sct00} \\
@@ -1244,10 +1624,9 @@ channels, hierarchy, metric, conservation law) is independent of this
 conversion.
 \end{derivedbox}
 
-\begin{derivedbox}[Spectral ordering: $\gamp{p} \to$ red--green--blue]
-Within this window, the $\gamp{p}$ hierarchy does not merely count
-channels --- it \emph{orders} them spectrally. The principle is the
-correspondence between informational persistence and energy:
+\begin{derivedbox}[Spectral correspondence: $\gamp{p} \leftrightarrow$ red--green--blue]
+Within this window, the $\gamp{p}$ hierarchy induces a
+\emph{correspondence} with spectral ordering:
 \begin{center}
 \begin{tabular}{cccccl}
 \toprule
@@ -1260,16 +1639,32 @@ $p = 7$ & 0.595 & 0.173 & smallest (6\%) & short $\lambda$ (high en.) & Blue (S)
 \end{tabular}
 \end{center}
 
-The mapping $p \to \lambda$ follows from the principle: the most
-persistent prime ($p = 3$, largest $\gamp{p}$) corresponds to the
-lowest-energy mode (largest $\lambda$). This is a consequence of the
-energy ordering: in the product
-$\alphaEM = \prod \sin^2\!\theta_p$, the factor $\sin^2\!\theta_3$
-contributes most to the coupling constant, hence to the lowest
-excitation threshold. The assignment $p = 3 \to$ red, $p = 5 \to$
-green, $p = 7 \to$ blue is not a choice --- it is the only ordering
-consistent with the energy hierarchy. \textsc{[der]}
+The heuristic is that the most persistent prime ($p = 3$, largest
+$\gamp{p}$) contributes most to $\alphaEM = \prod \sin^2\!\theta_p$
+and is paired with the lowest-energy end of the window (longest
+wavelength). \textsc{[corr]}
 \end{derivedbox}
+
+\begin{remark}[Derivation vs correspondence: explicit scope]
+The previous derivedbox establishes a \emph{correspondence}, not a
+derivation of specific $\lambda_{\max}$ values. What the SCS chain
+does derive, from $s = 1/2$ alone, is (i) that three and only three
+chromatic channels are active, (ii) the strict hierarchy
+$\gamp{3} > \gamp{5} > \gamp{7}$, and (iii) that the visible
+electromagnetic window falls in the Balmer range (derived above via
+$\alphaEM$, Rydberg, and the Balmer series). What it does \emph{not}
+derive is the cone peak wavelengths (approximately 560, 530, 420~nm),
+the width of each cone's spectral response, or the specific photopic
+luminosity curve: these require either the HPE linearization used
+throughout the rest of the paper or the Stockman--Sharpe (2000)
+cone-fundamental fit. The assignment $p=3 \to$ red, $p=5 \to$ green,
+$p=7 \to$ blue is therefore the \emph{only one consistent with
+matching the largest $\gamp{p}$ to the longest wavelength}, not the
+only one consistent with an energy inequality proved here. We state
+this explicitly because an earlier draft (criticized in correspondence
+with a colorimetry practitioner) read the correspondence as a
+derivation.
+\end{remark}
 
 The complete chain is:
 \begin{equation}
@@ -1453,8 +1848,9 @@ shifts at low saturation than at high saturation.
 
 In practice, this means skin tones (typically low-saturation) are
 boosted precisely, while saturated reds or blues remain stable ---
-the behavior colorists expect from vibrance, derived here from
-geometry rather than engineering.
+the behavior colorists expect from vibrance, derived here from the
+simplex geometry. Empirical vibrance curves tuned by colorists
+converge on similar qualitative behavior.
 
 \subsection{Geodesic Skin Tone Protection}
 
@@ -1484,7 +1880,7 @@ Fisher metric provides the distance function.
 These four applications --- decoupled adjustments, grade portability,
 perceptual vibrance, and geodesic skin protection --- illustrate how
 the algebraic structure of SCS translates into practical tools that
-RGB-based pipelines cannot replicate without ad hoc engineering.
+RGB-based pipelines replicate only with case-by-case tuning.
 
 \subsection{Scientific Imaging and Colormaps}
 
@@ -1535,10 +1931,10 @@ trigger a false positive. For everyday scientific visualization ---
 elevation maps, temperature fields, vegetation indices --- established
 colormaps like \texttt{viridis} or \texttt{RdYlGn} remain effective
 precisely because their high chromatic contrast provides immediate
-visual landmarks. SCS does not aim to replace them, but to
-\emph{certify} them: the Fisher metric provides a rigorous measure
-of uniformity that can be applied to any existing colormap, including
-those designed empirically.
+visual landmarks. SCS does not aim to replace them, but to provide
+a derived, gauge-independent measure of uniformity that can be applied
+to any existing colormap --- including those designed empirically ---
+as a quantitative audit.
 
 \medskip
 
@@ -1550,58 +1946,170 @@ where gamut independence and conservation matter: professional color
 grading across devices and color spaces.
 
 % ============================================================
+\section{Open problems and experimental hooks}
+\label{sec:open_problems}
+
+This section lists open questions that are specific, tractable, and
+that we are not the right people to answer alone. Each is stated as
+a prediction that a falsifying experiment would rule out. Data
+formats and pre-registration hooks are in the repository at
+\href{https://github.com/Igrekess/SieveColorSpace}{github.com/Igrekess/SieveColorSpace}.
+
+\paragraph{E1 --- Koide-saturation JND null at $1/\sqrt{2}$.}
+\emph{Claim.} The equilibrium saturation on the SCS simplex is
+$S/S_{\max} = 1/\sqrt{2} \approx 70.7\%$. If this point is physically
+distinguished (and not merely compatible with a broad preference
+band), there should be a just-noticeable-difference minimum at exactly
+this saturation for hue-balanced chromatic stimuli.
+
+\emph{Protocol.} Two-alternative forced choice (2AFC) discrimination
+at $S/S_{\max} \in \{0.60, 0.66, 0.707, 0.75, 0.80\}$, balanced
+across six reference hues ($p=3, 5, 7$ and their complementaries),
+$N \geq 30$ observers, staircase step adaptive. Pre-register the null
+hypothesis: JND as a function of $S/S_{\max}$ is flat across
+$[0.60, 0.80]$. SCS predicts a minimum at $0.707$ of at least $10\%$
+below the mean.
+
+\emph{Falsification.} A flat JND curve, or a minimum displaced from
+$1/\sqrt{2}$ by more than $\pm 3\%$, would rule out the equilibrium
+reading.
+
+\emph{Dataset format.} CSV: \texttt{observer, hue, ref\_saturation,
+test\_saturation, response, reaction\_time, pass}. Target
+sample $\geq 12{,}000$ trials.
+
+\paragraph{E2 --- CRT chromatic-dimensionality ceiling at
+$3 \times 5 \times 7 = 105$ states.}
+\emph{Claim.} The effective chromatic dimensionality of human
+discrimination saturates near $105$ states per channel configuration,
+as an analogical consequence of the Chinese Remainder Theorem
+on the sieve active primes (see the \emph{structural analogy vs
+biological prediction} remark in \S\ref{sec:metamerism}).
+
+\emph{Protocol.} Maximum-likelihood chromatic-dimension estimation
+(the method used by Stubbs \& Stubbs for cephalopod cone-number
+inference) applied to $N$-alternative forced-choice discrimination
+on isoluminant metameric sets spanning $\Delta^2$. Stimulus generation
+via the HPE cone-fundamental basis, presented on a colorimeter-calibrated
+display under ISO 19264-1 viewing conditions.
+
+\emph{Falsification.} An effective dimensionality significantly
+different from $105$ (e.g.\ above $200$ or below $50$) would rule out
+the sieve's CRT analogy as a quantitative model of chromatic
+discrimination capacity.
+
+\emph{Dataset format.} CSV: \texttt{observer, stimulus\_set\_id,
+presented\_triplet, response, correct, latency}. Target $\geq 50$
+observers, $\geq 500$ metameric sets.
+
+\paragraph{E3 --- Tetrachromat fourth-channel signature at $p = 11$.}
+\emph{Claim.} The next inactive prime at $\mustar = 15$ is $p = 11$
+with $\gamp{11} = 0.427 < 1/2$. In functional tetrachromats (a small
+subset of female observers carrying a heterozygous
+M/L-cone-opsin polymorphism), SCS predicts a partial fourth chromatic
+channel of weight $\gamp{11}/\sum \gamp{p}$.
+
+\emph{Protocol.} Maxwell-cube match experiment (tetrachromat gold
+standard) augmented with a 2AFC discrimination task on metamer pairs
+predicted to separate along the $p = 11$ axis but not along
+$\{\gamp{3}, \gamp{5}, \gamp{7}\}$. Recruit functional tetrachromats
+via genotype screening ($\sim 2\%$ of women heterozygous for shifted
+M/L-opsin).
+
+\emph{Falsification.} Absence of the predicted separation in
+tetrachromat performance, relative to trichromat controls, on the
+SCS-selected metamer pairs.
+
+\emph{Dataset format.} CSV of match coordinates plus 2AFC responses;
+genotype attested separately.
+
+\paragraph{Other open directions we flag.}
+\begin{itemize}[nosep]
+\item \textbf{V4 replication.} The Conway 2025 fMRI match (V4 L$-$M
+  weight $= 0.373$ vs $\gamp{3}/\Sigma \gamp{p} = 0.385$, a $3.2\%$
+  agreement) is a single dataset. Replication on an independent
+  DKL-structured stimulus set is a natural follow-up.
+\item \textbf{Variational characterization of $\gamp{p}$.} An
+  information-geometric derivation of the $\gamp{p}$ weights from a
+  variational principle on $\Delta^2$ alone (see
+  \S\ref{sec:infogeo}), without invoking the sieve, would localize
+  what the sieve contributes.
+\item \textbf{Chromatic adaptation.} An SCS-compatible
+  chromatic-adaptation transform is the single most pressing missing
+  piece for the framework to be usable outside controlled viewing
+  conditions. CIECAM02's $D$-factor and CAM16's refinements are the
+  natural starting points.
+\item \textbf{Individual-observer modelling.} The present framework
+  assumes a single effective observer. Extending to the Hofer et al.\
+  \cite{hofer2005} cone-mosaic-variability data is open.
+\item \textbf{Line-element replication.} The classical
+  Vos--Walraven--Wyszecki line-element fits (MacAdam, Brown, Wyszecki)
+  have never, to our knowledge, been replicated with $\gamp{p}$
+  weights. Doing so would directly test whether the sieve weighting
+  outperforms data-fitted weights on threshold discrimination --- or
+  fails to, in which case the picture needs revision.
+\end{itemize}
+
+\paragraph{Public benchmark and leaderboard.}
+All COMBVD splits, MacAdam fits, regression weights for
+$\Delta E_{\mathrm{SCS00}}$, and the HPE / Stockman--Sharpe input
+pipelines are released in the repository. A public leaderboard
+(\texttt{leaderboard.md}) tracks submissions for (a) the dark-region
+correlation on $L^* < 25$, (b) MacAdam ellipse orientation RMS, and
+(c) the three predictions above. Contributions are welcome by pull
+request.
+
+\paragraph{What we most need help with.}
+We are not experts in chromatic adaptation transforms, individual
+cone-mosaic modelling, or psychophysical protocol design, and the
+three gaps above are the current bottleneck on extending the
+framework past its current scope. Correspondence, replications,
+counter-experiments, and forked repositories are actively invited.
+
+% ============================================================
 \section{Conclusion}
 \label{sec:conclusion}
 % ============================================================
 
-The CIE color system measures color from the outside --- through the
-psychophysics of human observers. The Sieve Color Space derives
-color from the inside --- through the arithmetic of the sieve of
-Eratosthenes.
+The structural features we have tried to compute are the number of
+active chromatic channels (three, from the sieve), their hierarchy
+($\gamp{3} > \gamp{5} > \gamp{7}$, matching L$>$M$>$S
+cone-bandwidth ordering), their metric (Fisher information on the
+three-channel simplex), a saturation--luminance sum rule
+($S + L = \log 3$, a generic identity on three-outcome distributions
+given the SCS reading of $S$ and $L$), and a candidate equilibrium
+saturation at $1/\sqrt{2}$. These are candidates for
+information-theoretic necessity; the biological implementation varies
+between individuals, species, and viewing conditions, and is outside
+the scope of the substrate proposed here.
 
-The two approaches agree where they must: both describe the same
-perceptual reality. Where they diverge --- in the metric's uniformity,
-in conservation laws, in the explanation of universals --- SCS offers
-structural answers where CIE offers empirical patches.
+Where SCS earns its weight on COMBVD is as an additive information
+channel. Pure SCS with zero fitted parameters sits below CIELAB
+globally ($r = 0.500$ vs $0.755$); it outperforms CIELAB in the dark
+region and in MacAdam ellipse orientation. Hybridized with a measured
+cortical model, it improves CIECAM02 ($r = 0.824$ vs CIELAB's
+$0.755$, six regressed weights) and CIEDE2000 ($r = 0.893$ vs
+$0.878$, $p < 0.0001$, five regressed weights). We propose SCS as a
+principled geometric \emph{layer} in a factored color-appearance
+architecture (alongside iCAM, CAM02-UCS, J\textsubscript{z}A\textsubscript{z}B\textsubscript{z}),
+not as a replacement for the CIE infrastructure. Chromatic adaptation,
+spectral sensitivity, viewing conditions, flare, and observer
+variability remain the province of CIECAM02, CIEDE2000, and the
+individual-observer models cited in \S\ref{sec:scope_limits}; SCS does
+not address them and does not pretend to.
 
-The key insight is that color is not a biological accident but an
-\emph{informational necessity}. The sieve determines the number of
-channels (3), their hierarchy ($\gamp{3} > \gamp{5} > \gamp{7}$),
-their metric (Fisher), their conservation law ($S + L = \log 3$),
-their complementarity ($\sin^2 + \cos^2 = 1$), their topology ($S^1$),
-and their equilibrium ($1/\sqrt{2}$). Zero parameters. One input:
-$s = 1/2$.
-
-We have been explicit about what the current framework achieves and
-where it falls short. The strongest results are algebraic (the
-conservation identity, the complementarity identity) and geometric
-(18/25 MacAdam ellipses with zero parameters). The limitation of the
-standalone SCS metric is supra-threshold: it does not match CIELAB
-globally, because it models retinal geometry but not cortical
-processing. The hybrid SCS\,+\,CAM02 model ($r = 0.824$ vs $0.755$
-for CIELAB) demonstrates that the factored architecture surpasses the
-monolithic approach.
-
-The strongest result of this article is the
-$\Delta E_{\mathrm{SCS00}}$: by combining CIEDE2000 with the
-Fisher--Bernoulli geodesic via a polynomial interaction, we
-\emph{surpass} CIEDE2000 ($r = 0.893$ vs $0.878$, $p < 0.0001$) with
-the same number of parameters. The improvement comes from the
-interaction term $\Delta E_{00} \cdot d_{\mathrm{lum}}$, which
-captures the nonlinear luminance--chrominance coupling that CIEDE2000
-treats additively. This is not an ad hoc fit but a direct consequence
-of \v{C}encov's theorem: the geodesic $\arcsin(\sqrt{\ell})$ is the
-variance-stabilizing transform of the Bernoulli distribution,
-theoretically exact where CIEDE2000's polynomial $S_L$ saturates.
-
-This article proposes that SCS provides the principled geometric
-foundation that CIE lacks: a framework that derives, rather than
-assumes, the structures on which color science is built. The
-$\Delta E_{\mathrm{SCS00}}$ demonstrates that this foundation is not
-merely theoretical --- it concretely improves the state of the art in
-supra-threshold colorimetry.
-
-The structure of color is not chosen. It is computed.
+The substrate is therefore offered as an invitation rather than a
+conclusion. Three falsifiable predictions (\S\ref{sec:open_problems})
+are tractable in three-month experiments: a Koide-saturation JND null
+at $1/\sqrt{2}$, a CRT-driven chromatic-discrimination ceiling at
+$3\times 5\times 7 = 105$ states, and a fourth-channel signature
+predicted for $p = 11$ in tetrachromats. Code, COMBVD splits, MacAdam
+fits, and a benchmark leaderboard are released at the repository cited
+in \S\ref{sec:open_problems}. The framework most needs expertise we
+do not have: chromatic adaptation, individual-observer modeling, and
+psychophysical protocol design. Corrections, replications, and
+counter-experiments are what the next version of this paper should be
+built on.
 
 % ============================================================
 \appendix
@@ -1697,40 +2205,50 @@ input to the entire theory.
 \subsection{The Gap Fundamental Theorem (GFT)}
 \label{app:gft}
 
-\begin{identitybox}[GFT: $\DKL + H = \log_2 m$]
+\begin{identitybox}[Sum rule: $\DKL + H = \log m$]
 For \emph{any} probability distribution
 $P = (p_0, \ldots, p_{m-1})$ on $m$ classes, with uniform reference
 $U_m = (1/m, \ldots, 1/m)$:
 \begin{equation}
-  \log_2 m = \DKL(P \| U_m) + H(P),
+  \log m = \DKL(P \| U_m) + H(P),
   \tag{A.4}
 \end{equation}
-where $\DKL(P\|U_m) = \sum_r p_r \log_2(m\, p_r)$ and
-$H(P) = -\sum_r p_r \log_2 p_r$.
+where $\DKL(P\|U_m) = \sum_r p_r \log(m\, p_r)$ and
+$H(P) = -\sum_r p_r \log p_r$. The logarithm is natural (base $e$)
+throughout the paper; converting to bits multiplies by $1/\log 2$.
 
 \begin{proof}
 Expand $\DKL$:
 \begin{align*}
   \DKL(P\|U_m)
-  &= \sum_r p_r \log_2\frac{p_r}{1/m}
-   = \sum_r p_r \bigl(\log_2 m + \log_2 p_r\bigr) \\
-  &= \log_2 m \cdot \underbrace{\textstyle\sum_r p_r}_{=1}
-   + \underbrace{\textstyle\sum_r p_r \log_2 p_r}_{=-H(P)} \\
-  &= \log_2 m - H(P).
+  &= \sum_r p_r \log\frac{p_r}{1/m}
+   = \sum_r p_r \bigl(\log m + \log p_r\bigr) \\
+  &= \log m \cdot \underbrace{\textstyle\sum_r p_r}_{=1}
+   + \underbrace{\textstyle\sum_r p_r \log p_r}_{=-H(P)} \\
+  &= \log m - H(P).
 \end{align*}
-Hence $\DKL + H = \log_2 m$ exactly. The residual is zero by algebra;
+Hence $\DKL + H = \log m$ exactly. The residual is zero by algebra;
 numerical verification at $m = 210$ gives
-$|\text{residual}| < 10^{-15}$ bits.
+$|\text{residual}| < 10^{-15}$ nats.
 \end{proof}
 \end{identitybox}
 
+\begin{remark}[Base convention]
+Earlier drafts of this appendix used $\log_2$; the natural logarithm
+is used consistently in the current version because the body of the
+paper works in nats. The identity is base-invariant up to a global
+multiplicative constant.
+\end{remark}
+
 \begin{remark}
 Applied to the chromatic simplex $\Delta^2$ with $m = 3$ (the three
-active channels), the GFT directly yields the conservation law of
-equation~\eqref{eq:gft}:
-$S + L = \DKL(\bm{\pi}\|\mathbf{u}) + H(\bm{\pi}) = \log 3$.
-This is an algebraic identity, true for any
-$\bm{\pi} \in \Delta^2$.
+active channels), the sum rule of equation~\eqref{eq:gft} follows
+directly:
+$S + L = \DKL(\bm{\pi}\|\mathbf{u}) + H(\bm{\pi}) = \log 3$. This is
+an algebraic identity, true for any $\bm{\pi} \in \Delta^2$; its
+color-specific content is the choice of $m = 3$ from the sieve and
+the reading of $S$ and $L$ as saturation and luminance (see
+\S\ref{sec:scs} and the Remark on \emph{Scope of this identity}).
 \end{remark}
 
 % ────────────────────────────────────────────────────────────
@@ -2100,6 +2618,76 @@ similarity,''
 \bibitem{munsell1905}
 A.~H.~Munsell,
 \textit{A Color Notation} (Geo.~H.~Ellis Co., Boston, 1905).
+
+% ---- colour-science references added in the 2026 revision ----
+
+\bibitem{wyszecki2000}
+G.~Wyszecki and W.~S.~Stiles,
+\textit{Color Science: Concepts and Methods, Quantitative Data and
+Formulae}, 2nd ed.\ (Wiley, 2000).
+
+\bibitem{voswalraven1972}
+J.~J.~Vos and P.~L.~Walraven,
+``An analytical description of the line element in the
+zone-fluctuation model of colour vision,''
+\textit{Vision Research} \textbf{12}(8), 1345--1365 (1972).
+
+\bibitem{dkl1984}
+A.~M.~Derrington, J.~Krauskopf, and P.~Lennie,
+``Chromatic mechanisms in lateral geniculate nucleus of macaque,''
+\textit{Journal of Physiology} \textbf{357}, 241--265 (1984).
+
+\bibitem{macleod1979}
+D.~I.~A.~MacLeod and R.~M.~Boynton,
+``Chromaticity diagram showing cone excitation by stimuli of equal
+luminance,''
+\textit{J.~Opt.~Soc.~Am.} \textbf{69}(8), 1183--1186 (1979).
+
+\bibitem{wuerger2002}
+S.~M.~Wuerger, A.~B.~Watson, and A.~J.~Ahumada Jr.,
+``Towards a spatio-chromatic standard observer for detection,''
+\textit{Proc.\ SPIE} \textbf{4662}, 159--172 (2002).
+
+\bibitem{koenderink2010}
+J.~J.~Koenderink,
+\textit{Color for the Sciences} (MIT Press, 2010).
+
+\bibitem{fairchild2013}
+M.~D.~Fairchild,
+\textit{Color Appearance Models}, 3rd ed.\ (Wiley, 2013).
+
+\bibitem{hofer2005}
+H.~Hofer, J.~Carroll, J.~Neitz, M.~Neitz, and D.~R.~Williams,
+``Organization of the human trichromatic cone mosaic,''
+\textit{Journal of Neuroscience} \textbf{25}(42), 9669--9679 (2005).
+
+\bibitem{amari1985}
+S.-i.\ Amari,
+\textit{Differential-Geometrical Methods in Statistics},
+Lecture Notes in Statistics \textbf{28} (Springer, 1985).
+
+\bibitem{fairchildjohnson2004}
+M.~D.~Fairchild and G.~M.~Johnson,
+``iCAM framework for image appearance, differences, and quality,''
+\textit{Journal of Electronic Imaging} \textbf{13}(1), 126--138 (2004).
+
+\bibitem{luo2006}
+M.~R.~Luo, G.~Cui, and C.~Li,
+``Uniform colour spaces based on CIECAM02 colour appearance model,''
+\textit{Color Research and Application} \textbf{31}(4), 320--330 (2006).
+
+\bibitem{safdar2017}
+M.~Safdar, G.~Cui, Y.~J.~Kim, and M.~R.~Luo,
+``Perceptually uniform color space for image signals including high
+dynamic range and wide gamut,''
+\textit{Optics Express} \textbf{25}(13), 15131--15151 (2017).
+
+\bibitem{conway2025}
+B.~R.~Conway et al.,
+``Functional organization of color processing in macaque visual
+cortex,''
+OpenNeuro dataset ds005521 (2025),
+\href{https://openneuro.org/datasets/ds005521}{openneuro.org/datasets/ds005521}.
 
 \end{thebibliography}
 

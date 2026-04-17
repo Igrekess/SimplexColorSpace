@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SCT Colormap — Perceptually Uniform Colormaps from the Sieve of Eratosthenes
+SCS Colormap — Perceptually Uniform Colormaps from the Sieve of Eratosthenes
 =======================================================================
 
 Generates colormaps as geodesic paths on the simplex Δ² with monotonic
@@ -10,16 +10,16 @@ uniform in the Fisher metric — by construction, not by fitting.
 Conservation: S + L = log₂(3) at every point guarantees no dead zones.
 
 Usage:
-    python sct_colormap.py              # Generate all colormaps + comparison
-    python sct_colormap.py --demo       # Apply to real scientific data
+    python scs_colormap.py              # Generate all colormaps + comparison
+    python scs_colormap.py --demo       # Apply to real scientific data
 """
 
 import numpy as np
 import sys, os
 
-# Add SCT engine
+# Add SCS engine
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'PT_PROJECTS', 'SCT_GRADE_APP'))
-from sct_core import sct_to_rgb, GAMMAS, M_HPE, M_HPE_INV, M_SRGB_TO_XYZ, M_XYZ_TO_SRGB, LOG2_3
+from sct_core import scs_to_rgb, GAMMAS, M_HPE, M_HPE_INV, M_SRGB_TO_XYZ, M_XYZ_TO_SRGB, LOG2_3
 
 
 # ============================================================
@@ -38,13 +38,13 @@ def simplex_vertices(chrom_strength=0.5):
     PT prescribes 3/4 luminance, 1/4 chromaticity — so moderate
     chromaticity (0.3-0.5) maximizes readability.
     """
-    from sct_core import rgb_to_sct
+    from sct_core import rgb_to_scs
     neutral = np.array([1/3, 1/3, 1/3])
 
     # Maximum in-gamut chromaticity vertices
-    _, _, pi_r_max = rgb_to_sct(np.array([0.70, 0.30, 0.25]))
-    _, _, pi_g_max = rgb_to_sct(np.array([0.30, 0.65, 0.30]))
-    _, _, pi_b_max = rgb_to_sct(np.array([0.25, 0.35, 0.75]))
+    _, _, pi_r_max = rgb_to_scs(np.array([0.70, 0.30, 0.25]))
+    _, _, pi_g_max = rgb_to_scs(np.array([0.30, 0.65, 0.30]))
+    _, _, pi_b_max = rgb_to_scs(np.array([0.25, 0.35, 0.75]))
 
     def blend(pi_max):
         pi = neutral + chrom_strength * (pi_max - neutral)
@@ -178,7 +178,7 @@ def make_colormap(pi_path, ell_start=0.08, ell_end=0.92, n=256):
         # Flat path — just return uniform
         colors = np.zeros((n, 3))
         for i in range(n):
-            colors[i] = np.clip(sct_to_rgb(ells_over[0], pis_over[0]), 0, 1)
+            colors[i] = np.clip(scs_to_rgb(ells_over[0], pis_over[0]), 0, 1)
         return colors
 
     # Resample at uniform Fisher distance
@@ -198,7 +198,7 @@ def make_colormap(pi_path, ell_start=0.08, ell_end=0.92, n=256):
             pi = pis_over[idx]
         pi = np.maximum(pi, 1e-12)
         pi /= pi.sum()
-        colors[i] = np.clip(sct_to_rgb(ell, pi), 0, 1)
+        colors[i] = np.clip(scs_to_rgb(ell, pi), 0, 1)
 
     return colors
 
@@ -207,33 +207,33 @@ def make_colormap(pi_path, ell_start=0.08, ell_end=0.92, n=256):
 # PREDEFINED COLORMAPS
 # ============================================================
 
-def sct_thermal(n=256):
+def scs_thermal(n=256):
     """Blue → Red via geodesic. Classic thermal/heat map."""
     v = simplex_vertices(chrom_strength=0.5)
     path = geodesic_path(v['blue'], v['red'], n)
     return make_colormap(path, ell_start=0.05, ell_end=0.92)
 
 
-def sct_cool(n=256):
+def scs_cool(n=256):
     """Blue → Green via geodesic. Cool tones for depth/ocean."""
     v = simplex_vertices(chrom_strength=0.4)
     path = geodesic_path(v['blue'], v['green'], n)
     return make_colormap(path, ell_start=0.05, ell_end=0.90)
 
 
-def sct_terrain(n=256):
+def scs_terrain(n=256):
     """
     Terrain/elevation: deep blue → teal → green → brown → white.
 
     Semantic code: ocean → coast → lowland → highland → snow/peak.
     Wide arc, Fisher-uniform, 0 parameters.
     """
-    from sct_core import rgb_to_sct
-    _, _, pi_ocean = rgb_to_sct(np.array([0.12, 0.20, 0.55]))
-    _, _, pi_coast = rgb_to_sct(np.array([0.20, 0.50, 0.55]))
-    _, _, pi_low   = rgb_to_sct(np.array([0.35, 0.60, 0.25]))
-    _, _, pi_high  = rgb_to_sct(np.array([0.60, 0.42, 0.25]))
-    _, _, pi_snow  = rgb_to_sct(np.array([0.88, 0.86, 0.84]))
+    from sct_core import rgb_to_scs
+    _, _, pi_ocean = rgb_to_scs(np.array([0.12, 0.20, 0.55]))
+    _, _, pi_coast = rgb_to_scs(np.array([0.20, 0.50, 0.55]))
+    _, _, pi_low   = rgb_to_scs(np.array([0.35, 0.60, 0.25]))
+    _, _, pi_high  = rgb_to_scs(np.array([0.60, 0.42, 0.25]))
+    _, _, pi_snow  = rgb_to_scs(np.array([0.88, 0.86, 0.84]))
 
     seg = n // 4
     segs = [
@@ -246,14 +246,14 @@ def sct_terrain(n=256):
     return make_colormap(path, ell_start=0.04, ell_end=0.93)
 
 
-def sct_warm(n=256):
+def scs_warm(n=256):
     """Green → Red via geodesic. Warm tones for intensity/activation."""
     v = simplex_vertices(chrom_strength=0.4)
     path = geodesic_path(v['green'], v['red'], n)
     return make_colormap(path, ell_start=0.08, ell_end=0.90)
 
 
-def sct_full(n=256):
+def scs_full(n=256):
     """Blue → Green → Red (two arcs). Full-spectrum scientific colormap."""
     v = simplex_vertices(chrom_strength=0.4)
     half = n // 2
@@ -263,7 +263,7 @@ def sct_full(n=256):
     return make_colormap(path, ell_start=0.05, ell_end=0.92)
 
 
-def sct_spectrum(n=256):
+def scs_spectrum(n=256):
     """
     Full-spectrum colormap: dark purple → blue → cyan → green → yellow.
 
@@ -271,13 +271,13 @@ def sct_spectrum(n=256):
     landmarks, Fisher-reparameterized, 0 parameters.
     Traverses 4 waypoints on Δ² for rich color variation.
     """
-    from sct_core import rgb_to_sct
+    from sct_core import rgb_to_scs
     # 4 waypoints: purple → blue → cyan/teal → green → yellow
-    _, _, pi_purple = rgb_to_sct(np.array([0.35, 0.15, 0.55]))
-    _, _, pi_blue   = rgb_to_sct(np.array([0.20, 0.40, 0.70]))
-    _, _, pi_teal   = rgb_to_sct(np.array([0.20, 0.60, 0.55]))
-    _, _, pi_green  = rgb_to_sct(np.array([0.35, 0.65, 0.25]))
-    _, _, pi_yellow = rgb_to_sct(np.array([0.80, 0.75, 0.25]))
+    _, _, pi_purple = rgb_to_scs(np.array([0.35, 0.15, 0.55]))
+    _, _, pi_blue   = rgb_to_scs(np.array([0.20, 0.40, 0.70]))
+    _, _, pi_teal   = rgb_to_scs(np.array([0.20, 0.60, 0.55]))
+    _, _, pi_green  = rgb_to_scs(np.array([0.35, 0.65, 0.25]))
+    _, _, pi_yellow = rgb_to_scs(np.array([0.80, 0.75, 0.25]))
 
     # Chain geodesics through waypoints
     seg = n // 4
@@ -291,18 +291,18 @@ def sct_spectrum(n=256):
     return make_colormap(path, ell_start=0.05, ell_end=0.92)
 
 
-def sct_magma(n=256):
+def scs_magma(n=256):
     """
     Dark → hot colormap: black → purple → orange → pale yellow.
 
     PT equivalent of inferno/magma: dark-to-bright with warm tones,
     Fisher-reparameterized, 0 parameters.
     """
-    from sct_core import rgb_to_sct
-    _, _, pi_dark   = rgb_to_sct(np.array([0.15, 0.10, 0.25]))
-    _, _, pi_purple = rgb_to_sct(np.array([0.45, 0.15, 0.50]))
-    _, _, pi_orange = rgb_to_sct(np.array([0.75, 0.40, 0.20]))
-    _, _, pi_pale   = rgb_to_sct(np.array([0.90, 0.85, 0.65]))
+    from sct_core import rgb_to_scs
+    _, _, pi_dark   = rgb_to_scs(np.array([0.15, 0.10, 0.25]))
+    _, _, pi_purple = rgb_to_scs(np.array([0.45, 0.15, 0.50]))
+    _, _, pi_orange = rgb_to_scs(np.array([0.75, 0.40, 0.20]))
+    _, _, pi_pale   = rgb_to_scs(np.array([0.90, 0.85, 0.65]))
 
     seg = n // 3
     segs = [
@@ -314,19 +314,19 @@ def sct_magma(n=256):
     return make_colormap(path, ell_start=0.02, ell_end=0.93)
 
 
-def sct_turbo(n=256):
+def scs_turbo(n=256):
     """
     Full rainbow: blue → cyan → green → yellow → red.
 
     PT equivalent of turbo/jet but Fisher-uniform: no false contours,
     no dead zones, wide chromatic arc for maximum readability.
     """
-    from sct_core import rgb_to_sct
-    _, _, pi_blue   = rgb_to_sct(np.array([0.20, 0.30, 0.75]))
-    _, _, pi_cyan   = rgb_to_sct(np.array([0.20, 0.65, 0.65]))
-    _, _, pi_green  = rgb_to_sct(np.array([0.30, 0.70, 0.25]))
-    _, _, pi_yellow = rgb_to_sct(np.array([0.80, 0.75, 0.20]))
-    _, _, pi_red    = rgb_to_sct(np.array([0.80, 0.25, 0.20]))
+    from sct_core import rgb_to_scs
+    _, _, pi_blue   = rgb_to_scs(np.array([0.20, 0.30, 0.75]))
+    _, _, pi_cyan   = rgb_to_scs(np.array([0.20, 0.65, 0.65]))
+    _, _, pi_green  = rgb_to_scs(np.array([0.30, 0.70, 0.25]))
+    _, _, pi_yellow = rgb_to_scs(np.array([0.80, 0.75, 0.20]))
+    _, _, pi_red    = rgb_to_scs(np.array([0.80, 0.25, 0.20]))
 
     seg = n // 4
     segs = [
@@ -339,7 +339,7 @@ def sct_turbo(n=256):
     return make_colormap(path, ell_start=0.08, ell_end=0.88)
 
 
-def sct_diverging(n=256):
+def scs_diverging(n=256):
     """Blue ← Neutral → Red. Diverging colormap for anomalies."""
     v = simplex_vertices()
     neutral = np.array([1/3, 1/3, 1/3])
@@ -355,7 +355,7 @@ def sct_diverging(n=256):
     return np.vstack([cmap1, cmap2])
 
 
-def sct_medical(n=256):
+def scs_medical(n=256):
     """
     Medical imaging colormap: high luminance range, subtle chromaticity.
 
@@ -366,25 +366,25 @@ def sct_medical(n=256):
 
     Designed for: MRI, CT, ultrasound, X-ray.
     """
-    from sct_core import rgb_to_sct
+    from sct_core import rgb_to_scs
     # Near-neutral endpoints with subtle blue→warm shift
-    _, _, pi_dark = rgb_to_sct(np.array([0.25, 0.28, 0.38]))   # dark blue-gray
-    _, _, pi_bright = rgb_to_sct(np.array([0.90, 0.82, 0.72]))  # warm white
+    _, _, pi_dark = rgb_to_scs(np.array([0.25, 0.28, 0.38]))   # dark blue-gray
+    _, _, pi_bright = rgb_to_scs(np.array([0.90, 0.82, 0.72]))  # warm white
     path = geodesic_path(pi_dark, pi_bright, n)
     return make_colormap(path, ell_start=0.03, ell_end=0.95)
 
 
-def sct_seismic(n=256):
+def scs_seismic(n=256):
     """
     Geophysics colormap: diverging with high contrast.
 
     Blue (negative) → white (zero) → red (positive).
-    Wider chromaticity than sct_diverging, designed for
+    Wider chromaticity than scs_diverging, designed for
     seismic amplitude, gravity anomalies, temperature departures.
     """
-    from sct_core import rgb_to_sct
-    _, _, pi_cold = rgb_to_sct(np.array([0.15, 0.30, 0.80]))
-    _, _, pi_hot = rgb_to_sct(np.array([0.80, 0.20, 0.15]))
+    from sct_core import rgb_to_scs
+    _, _, pi_cold = rgb_to_scs(np.array([0.15, 0.30, 0.80]))
+    _, _, pi_hot = rgb_to_scs(np.array([0.80, 0.20, 0.15]))
     neutral = np.array([1/3, 1/3, 1/3])
     half = n // 2
     path1 = geodesic_path(pi_cold, neutral, half)
@@ -394,7 +394,7 @@ def sct_seismic(n=256):
     return np.vstack([cmap1, cmap2])
 
 
-def sct_vegetation(n=256):
+def scs_vegetation(n=256):
     """
     Vegetation/NDVI colormap: red-brown → orange → yellow → green → dark green.
 
@@ -407,12 +407,12 @@ def sct_vegetation(n=256):
 
     Fisher-uniform geodesic, 0 parameters.
     """
-    from sct_core import rgb_to_sct
-    _, _, pi_stress = rgb_to_sct(np.array([0.70, 0.25, 0.15]))   # red-brown (stress)
-    _, _, pi_sparse = rgb_to_sct(np.array([0.75, 0.55, 0.20]))   # orange (sparse)
-    _, _, pi_trans  = rgb_to_sct(np.array([0.80, 0.78, 0.25]))   # yellow (transition)
-    _, _, pi_veg    = rgb_to_sct(np.array([0.35, 0.65, 0.20]))   # green (healthy)
-    _, _, pi_dense  = rgb_to_sct(np.array([0.10, 0.45, 0.15]))   # dark green (canopy)
+    from sct_core import rgb_to_scs
+    _, _, pi_stress = rgb_to_scs(np.array([0.70, 0.25, 0.15]))   # red-brown (stress)
+    _, _, pi_sparse = rgb_to_scs(np.array([0.75, 0.55, 0.20]))   # orange (sparse)
+    _, _, pi_trans  = rgb_to_scs(np.array([0.80, 0.78, 0.25]))   # yellow (transition)
+    _, _, pi_veg    = rgb_to_scs(np.array([0.35, 0.65, 0.20]))   # green (healthy)
+    _, _, pi_dense  = rgb_to_scs(np.array([0.10, 0.45, 0.15]))   # dark green (canopy)
 
     seg = n // 4
     segs = [
@@ -437,9 +437,9 @@ def fisher_distance(rgb1, rgb2):
     d_chrom: Bhattacharyya on Δ² with γ_p weighting (chromaticity)
     Weights 3/4 and 1/4 from N/(N+1) formula.
     """
-    from sct_core import rgb_to_sct
-    ell1, S1, pi1 = rgb_to_sct(rgb1)
-    ell2, S2, pi2 = rgb_to_sct(rgb2)
+    from sct_core import rgb_to_scs
+    ell1, S1, pi1 = rgb_to_scs(rgb1)
+    ell2, S2, pi2 = rgb_to_scs(rgb2)
 
     # Chromatic: Bhattacharyya distance on simplex
     xi1 = np.sqrt(np.maximum(pi1, 1e-12))
@@ -495,23 +495,23 @@ def measure_uniformity(cmap_rgb):
 # ============================================================
 
 def plot_colormaps():
-    """Generate comparison figure: SCT colormaps vs standard ones."""
+    """Generate comparison figure: SCS colormaps vs standard ones."""
     import matplotlib.pyplot as plt
     import matplotlib.colors as mcolors
 
-    cmaps_sct = {
-        'sct_spectrum': sct_spectrum(),
-        'sct_turbo': sct_turbo(),
-        'sct_magma': sct_magma(),
-        'sct_terrain': sct_terrain(),
-        'sct_vegetation': sct_vegetation(),
-        'sct_medical': sct_medical(),
-        'sct_diverging': sct_diverging(),
-        'sct_seismic': sct_seismic(),
-        'sct_thermal': sct_thermal(),
-        'sct_cool': sct_cool(),
-        'sct_warm': sct_warm(),
-        'sct_full': sct_full(),
+    cmaps_scs = {
+        'scs_spectrum': scs_spectrum(),
+        'scs_turbo': scs_turbo(),
+        'scs_magma': scs_magma(),
+        'scs_terrain': scs_terrain(),
+        'scs_vegetation': scs_vegetation(),
+        'scs_medical': scs_medical(),
+        'scs_diverging': scs_diverging(),
+        'scs_seismic': scs_seismic(),
+        'scs_thermal': scs_thermal(),
+        'scs_cool': scs_cool(),
+        'scs_warm': scs_warm(),
+        'scs_full': scs_full(),
     }
 
     cmaps_std = {
@@ -526,15 +526,15 @@ def plot_colormaps():
         'jet': plt.cm.jet,
     }
 
-    n_total = len(cmaps_sct) + 1 + len(cmaps_std)  # +1 for separator
+    n_total = len(cmaps_scs) + 1 + len(cmaps_std)  # +1 for separator
     fig, axes = plt.subplots(n_total, 1, figsize=(14, n_total * 0.6 + 2))
-    fig.suptitle('SCT Colormaps (0 params, Fisher-geodesic) vs Standard',
+    fig.suptitle('SCS Colormaps (0 params, Fisher-geodesic) vs Standard',
                  fontsize=14, fontweight='bold', y=0.98)
 
     gradient = np.linspace(0, 1, 256).reshape(1, -1)
 
     row = 0
-    for name, cmap in cmaps_sct.items():
+    for name, cmap in cmaps_scs.items():
         ax = axes[row]
         lsc = mcolors.ListedColormap(cmap)
         ax.imshow(gradient, aspect='auto', cmap=lsc)
@@ -566,7 +566,7 @@ def plot_colormaps():
 
 
 def demo_scientific_data():
-    """Apply SCT colormaps to real scientific datasets."""
+    """Apply SCS colormaps to real scientific datasets."""
     import matplotlib.pyplot as plt
     import matplotlib.colors as mcolors
 
@@ -578,31 +578,31 @@ def demo_scientific_data():
     sst = np.load(os.path.join(data_dir, 'sst_pacific_noaa.npy'))
     ndvi = np.load(os.path.join(data_dir, 'ndvi_forest.npy'))
 
-    sct_maps = {
-        'sct_thermal': mcolors.ListedColormap(sct_thermal()),
-        'sct_cool': mcolors.ListedColormap(sct_cool()),
-        'sct_warm': mcolors.ListedColormap(sct_warm()),
-        'sct_diverging': mcolors.ListedColormap(sct_diverging()),
-        'sct_medical': mcolors.ListedColormap(sct_medical()),
-        'sct_seismic': mcolors.ListedColormap(sct_seismic()),
-        'sct_vegetation': mcolors.ListedColormap(sct_vegetation()),
+    scs_maps = {
+        'scs_thermal': mcolors.ListedColormap(scs_thermal()),
+        'scs_cool': mcolors.ListedColormap(scs_cool()),
+        'scs_warm': mcolors.ListedColormap(scs_warm()),
+        'scs_diverging': mcolors.ListedColormap(scs_diverging()),
+        'scs_medical': mcolors.ListedColormap(scs_medical()),
+        'scs_seismic': mcolors.ListedColormap(scs_seismic()),
+        'scs_vegetation': mcolors.ListedColormap(scs_vegetation()),
     }
 
     fig, axes = plt.subplots(2, 4, figsize=(20, 9))
-    fig.suptitle('SCT Colormaps on Real Scientific Data — 0 parameters, Fisher-geodesic',
+    fig.suptitle('SCS Colormaps on Real Scientific Data — 0 parameters, Fisher-geodesic',
                  fontsize=13, fontweight='bold')
 
-    sct_maps['sct_spectrum'] = mcolors.ListedColormap(sct_spectrum())
-    sct_maps['sct_magma'] = mcolors.ListedColormap(sct_magma())
-    sct_maps['sct_turbo'] = mcolors.ListedColormap(sct_turbo())
+    scs_maps['scs_spectrum'] = mcolors.ListedColormap(scs_spectrum())
+    scs_maps['scs_magma'] = mcolors.ListedColormap(scs_magma())
+    scs_maps['scs_turbo'] = mcolors.ListedColormap(scs_turbo())
 
-    sct_maps['sct_terrain'] = mcolors.ListedColormap(sct_terrain())
+    scs_maps['scs_terrain'] = mcolors.ListedColormap(scs_terrain())
 
     datasets = [
-        (elevation, 'Elevation (sct_terrain)', 'sct_terrain', None),
-        (brain, 'Brain MRI (sct_medical)', 'sct_medical', None),
-        (sst, 'Sea Temp. (sct_turbo)', 'sct_turbo', None),
-        (ndvi, 'NDVI (sct_vegetation)', 'sct_vegetation', None),
+        (elevation, 'Elevation (scs_terrain)', 'scs_terrain', None),
+        (brain, 'Brain MRI (scs_medical)', 'scs_medical', None),
+        (sst, 'Sea Temp. (scs_turbo)', 'scs_turbo', None),
+        (ndvi, 'NDVI (scs_vegetation)', 'scs_vegetation', None),
         (elevation, 'Elevation (terrain)', 'terrain', None),
         (brain, 'Brain MRI (bone)', 'bone', None),
         (sst, 'Sea Temp. (turbo)', 'turbo', None),
@@ -611,7 +611,7 @@ def demo_scientific_data():
 
     for i, (data, title, cmap_name, vrange) in enumerate(datasets):
         ax = axes[i // 4][i % 4]
-        cm = sct_maps[cmap_name] if cmap_name in sct_maps else plt.get_cmap(cmap_name)
+        cm = scs_maps[cmap_name] if cmap_name in scs_maps else plt.get_cmap(cmap_name)
         kwargs = {'cmap': cm, 'aspect': 'equal'}
         if vrange:
             kwargs['vmin'], kwargs['vmax'] = vrange
@@ -621,7 +621,7 @@ def demo_scientific_data():
         ax.set_yticks([])
         plt.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
 
-    axes[0][0].set_ylabel('SCT\n(Fisher-geodesic)', fontsize=11, fontweight='bold')
+    axes[0][0].set_ylabel('SCS\n(Fisher-geodesic)', fontsize=11, fontweight='bold')
     axes[1][0].set_ylabel('Standard', fontsize=11, fontweight='bold')
 
     plt.tight_layout(rect=[0, 0, 1, 0.95])
@@ -641,22 +641,22 @@ def print_uniformity_table():
     print(f"  {'Colormap':<20} {'CV_total':>9} {'CV_lum':>8} {'CV_chrom':>9} {'Dead%':>6}  {'Note'}")
     print("-" * 90)
 
-    sct_maps = {
-        'sct_thermal': sct_thermal(),
-        'sct_cool': sct_cool(),
-        'sct_warm': sct_warm(),
-        'sct_full': sct_full(),
-        'sct_diverging': sct_diverging(),
-        'sct_medical': sct_medical(),
-        'sct_seismic': sct_seismic(),
-        'sct_vegetation': sct_vegetation(),
-        'sct_spectrum': sct_spectrum(),
-        'sct_magma': sct_magma(),
-        'sct_turbo': sct_turbo(),
-        'sct_terrain': sct_terrain(),
+    scs_maps = {
+        'scs_thermal': scs_thermal(),
+        'scs_cool': scs_cool(),
+        'scs_warm': scs_warm(),
+        'scs_full': scs_full(),
+        'scs_diverging': scs_diverging(),
+        'scs_medical': scs_medical(),
+        'scs_seismic': scs_seismic(),
+        'scs_vegetation': scs_vegetation(),
+        'scs_spectrum': scs_spectrum(),
+        'scs_magma': scs_magma(),
+        'scs_turbo': scs_turbo(),
+        'scs_terrain': scs_terrain(),
     }
 
-    for name, cmap in sct_maps.items():
+    for name, cmap in scs_maps.items():
         m = measure_uniformity(cmap)
         print(f"  {name:<20} {m['cv_total']:9.4f} {m['cv_lum']:8.4f} {m['cv_chrom']:9.4f} {m['dead_zone']*100:5.1f}%  geodesic, 0 params")
 
@@ -683,7 +683,7 @@ def print_uniformity_table():
 # ============================================================
 
 if __name__ == '__main__':
-    print("SCT Colormap — Simplex Color Transform Scientific Visualization")
+    print("SCS Colormap — Simplex Color Transform Scientific Visualization")
     print()
 
     print_uniformity_table()

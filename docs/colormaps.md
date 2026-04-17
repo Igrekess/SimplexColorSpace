@@ -2,7 +2,7 @@
 
 ## How they work
 
-Each SCT colormap is a geodesic path on the simplex delta-2 with coupled
+Each SCS colormap is a geodesic path on the simplex delta-2 with coupled
 luminance ramp. The construction has two steps:
 
 1. **Chromaticity path**: multi-waypoint geodesic on delta-2, reparameterized
@@ -27,38 +27,38 @@ This ensures uniform perceptual steps along the entire colormap.
 
 | Name | Colors | Use case |
 |------|--------|----------|
-| `sct_spectrum` | purple -> blue -> cyan -> green -> yellow | General scientific (PT viridis) |
-| `sct_turbo` | blue -> cyan -> green -> yellow -> red | Full rainbow, no false contours |
-| `sct_magma` | black -> purple -> orange -> pale yellow | Dark-to-bright intensity |
-| `sct_terrain` | deep blue -> teal -> green -> brown -> white | Elevation, bathymetry |
-| `sct_vegetation` | red-brown -> orange -> yellow -> green -> dark green | NDVI, biomass, forest cover |
-| `sct_medical` | dark blue-gray -> warm white | MRI, CT, X-ray (high lum range) |
-| `sct_thermal` | blue -> red | Heat maps |
-| `sct_cool` | blue -> green | Ocean depth |
-| `sct_warm` | green -> red | Activation, intensity |
-| `sct_full` | blue -> green -> red | Full spectrum |
+| `scs_spectrum` | purple -> blue -> cyan -> green -> yellow | General scientific (PT viridis) |
+| `scs_turbo` | blue -> cyan -> green -> yellow -> red | Full rainbow, no false contours |
+| `scs_magma` | black -> purple -> orange -> pale yellow | Dark-to-bright intensity |
+| `scs_terrain` | deep blue -> teal -> green -> brown -> white | Elevation, bathymetry |
+| `scs_vegetation` | red-brown -> orange -> yellow -> green -> dark green | NDVI, biomass, forest cover |
+| `scs_medical` | dark blue-gray -> warm white | MRI, CT, X-ray (high lum range) |
+| `scs_thermal` | blue -> red | Heat maps |
+| `scs_cool` | blue -> green | Ocean depth |
+| `scs_warm` | green -> red | Activation, intensity |
+| `scs_full` | blue -> green -> red | Full spectrum |
 
 ### Diverging
 
 | Name | Colors | Use case |
 |------|--------|----------|
-| `sct_diverging` | blue <- neutral -> red | Anomalies, T-statistics |
-| `sct_seismic` | strong blue <- white -> strong red | Seismic, gravity anomalies |
+| `scs_diverging` | blue <- neutral -> red | Anomalies, T-statistics |
+| `scs_seismic` | strong blue <- white -> strong red | Seismic, gravity anomalies |
 
 ## Usage with matplotlib
 
 ```python
-from sct.colormaps import register_matplotlib
+from scs.colormaps import register_matplotlib
 register_matplotlib()
 
 import matplotlib.pyplot as plt
 
 # Use by name
-plt.imshow(data, cmap='sct_spectrum')
+plt.imshow(data, cmap='scs_spectrum')
 
 # Or get the array directly
-from sct.colormaps import sct_vegetation
-cmap_array = sct_vegetation(256)  # (256, 3) float sRGB
+from scs.colormaps import scs_vegetation
+cmap_array = scs_vegetation(256)  # (256, 3) float sRGB
 ```
 
 ## Comparison with standard colormaps
@@ -68,24 +68,24 @@ successive Fisher distances. Lower = more uniform.
 
 | Colormap | CV total | Dead zones | Parameters |
 |----------|----------|------------|------------|
-| sct_diverging | 0.063 | 0.4% | 0 |
-| sct_vegetation | 0.101 | 0% | 0 |
-| sct_spectrum | 0.102 | 0% | 0 |
-| sct_medical | 0.145 | 0% | 0 |
-| sct_seismic | 0.175 | 0% | 0 |
-| sct_turbo | 0.198 | 0% | 0 |
-| sct_terrain | 0.216 | 0.4% | 0 |
-| sct_magma | 0.230 | 0% | 0 |
+| scs_diverging | 0.063 | 0.4% | 0 |
+| scs_vegetation | 0.101 | 0% | 0 |
+| scs_spectrum | 0.102 | 0% | 0 |
+| scs_medical | 0.145 | 0% | 0 |
+| scs_seismic | 0.175 | 0% | 0 |
+| scs_turbo | 0.198 | 0% | 0 |
+| scs_terrain | 0.216 | 0.4% | 0 |
+| scs_magma | 0.230 | 0% | 0 |
 | viridis | 0.286 | 0% | fitted |
 | turbo | 0.292 | 1.6% | empirical |
 | inferno | 0.634 | 2.4% | fitted |
 | jet | 0.661 | 1.6% | empirical |
 
-9 out of 12 SCT colormaps beat viridis in Fisher uniformity.
+9 out of 12 SCS colormaps beat viridis in Fisher uniformity.
 
-## When to use SCT colormaps vs standard ones
+## When to use SCS colormaps vs standard ones
 
-**Use SCT** when:
+**Use SCS** when:
 - You need a certificate of uniformity (diagnostic medical imaging)
 - You need gamut portability (same colormap on sRGB and P3 displays)
 - You need the GFT conservation guarantee (no dead zones)

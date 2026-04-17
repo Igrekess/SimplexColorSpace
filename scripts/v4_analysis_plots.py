@@ -5,10 +5,10 @@ V4 Neural Analysis — Visualization & PT Hypothesis Tests
 
 Creates publication-quality figures for the PT_COLOR article showing:
 1. V4 BOLD response as a function of DKL hue angle
-2. Correlation with Fisher distance on SCT simplex
+2. Correlation with Fisher distance on SCS simplex
 3. Contrast response function (CRF) by hue
 4. γ_p ratio test: does V4 show the 0.808:0.696:0.595 pattern?
-5. Polar plot: V4 tuning curve vs SCT prediction
+5. Polar plot: V4 tuning curve vs SCS prediction
 """
 
 import os
@@ -53,9 +53,9 @@ def load_data():
                 'bold': float(row['bold_v4_mean']),
                 'bold_sem': float(row['bold_v4_std']),
                 'n': int(row['n_runs']),
-                'pi3': float(row['sct_pi3']),
-                'pi5': float(row['sct_pi5']),
-                'pi7': float(row['sct_pi7']),
+                'pi3': float(row['scs_pi3']),
+                'pi5': float(row['scs_pi5']),
+                'pi7': float(row['scs_pi7']),
                 'fisher': float(row['fisher_distance']),
             })
     return data
@@ -134,7 +134,7 @@ def fig2_bold_vs_fisher(data):
                 fontsize=12, va='top', ha='left',
                 bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
 
-    ax.set_xlabel('Fisher distance from achromatic (SCT)', fontsize=11)
+    ax.set_xlabel('Fisher distance from achromatic (SCS)', fontsize=11)
     ax.set_ylabel('BOLD V4 (% signal change)', fontsize=11)
     ax.set_title('All conditions', fontsize=12)
     ax.legend(title='Contrast', fontsize=9)
@@ -176,7 +176,7 @@ def fig2_bold_vs_fisher(data):
                 fontsize=12, va='top', ha='left',
                 bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
 
-    ax.set_xlabel('Mean Fisher distance (SCT)', fontsize=11)
+    ax.set_xlabel('Mean Fisher distance (SCS)', fontsize=11)
     ax.set_ylabel('Mean BOLD V4 (% signal change)', fontsize=11)
     ax.set_title('Per-hue average', fontsize=12)
     ax.axhline(0, color='gray', linestyle=':', alpha=0.5)
@@ -302,7 +302,7 @@ def fig4_gamma_ratio_test(data):
 
 def fig5_simplex_map(data):
     """
-    Figure 5: The 8 DKL hues mapped onto the SCT simplex Δ².
+    Figure 5: The 8 DKL hues mapped onto the SCS simplex Δ².
     Shows where each stimulus falls on the γ-weighted probability simplex.
     """
     fig, ax = plt.subplots(figsize=(8, 7))
@@ -348,7 +348,7 @@ def fig5_simplex_map(data):
     ax.set_xlim(-0.15, 1.15)
     ax.set_ylim(-0.1, 1.0)
     ax.set_aspect('equal')
-    ax.set_title('DKL hues on SCT simplex Δ² (size ∝ |BOLD|)', fontsize=13)
+    ax.set_title('DKL hues on SCS simplex Δ² (size ∝ |BOLD|)', fontsize=13)
     ax.axis('off')
 
     plt.tight_layout()

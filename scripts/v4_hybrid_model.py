@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-V4 Hybrid Model — SCPT + Neural Opponent Channels on COMBVD
+V4 Hybrid Model — SCS + Neural Opponent Channels on COMBVD
 =============================================================
 
 Builds a multivariate model using:
-  1. SCPT geometric features (d_lum, d_chrom) — from PT, 0 params
+  1. SCS geometric features (d_lum, d_chrom) — from PT, 0 params
   2. V4 neural channel features — from Conway macaque fMRI data
-  3. Tests whether V4 opponent channels improve SCPT prediction
+  3. Tests whether V4 opponent channels improve SCS prediction
 
 The V4 channels are:
   - ΔBOLD_LM: L-M opponent difference (γ₃ channel in PT)
@@ -24,7 +24,7 @@ import numpy as np
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SCRIPT_DIR)
 
-from scpt import to_scpt, delta_e, _lms_to_simplex, _xyz_to_lms, GAMMAS, W_LUM, W_CHROM
+from scs import to_scs, delta_e, _lms_to_simplex, _xyz_to_lms, GAMMAS, W_LUM, W_CHROM
 
 OUTPUT_DIR = os.path.join(SCRIPT_DIR, "datasets")
 
@@ -64,8 +64,8 @@ def build_features(pairs):
     Build feature matrix for all pairs.
 
     Features:
-      f0: d_lum (SCPT Fisher on Bernoulli) — luminance
-      f1: d_chrom (SCPT Bhattacharyya on Δ²) — chromaticity
+      f0: d_lum (SCS Fisher on Bernoulli) — luminance
+      f1: d_chrom (SCS Bhattacharyya on Δ²) — chromaticity
       f2: |Δ(L-M)| — opponent L-M channel difference
       f3: |ΔS| — opponent S channel difference
       f4: |ΔLum| — luminance channel difference
@@ -77,9 +77,9 @@ def build_features(pairs):
     for p in pairs:
         xyz1, xyz2 = p['xyz1'], p['xyz2']
 
-        # SCPT features
-        c1 = to_scpt(xyz1)
-        c2 = to_scpt(xyz2)
+        # SCS features
+        c1 = to_scs(xyz1)
+        c2 = to_scs(xyz2)
         ell1 = np.clip(xyz1[1], 1e-6, 1 - 1e-6)
         ell2 = np.clip(xyz2[1], 1e-6, 1 - 1e-6)
         d_lum = 2 * abs(np.arcsin(np.sqrt(ell1)) - np.arcsin(np.sqrt(ell2)))
@@ -165,20 +165,20 @@ def main():
     X, y = build_features(pairs)
     print(f"  Features: {X.shape[1]} × {X.shape[0]} pairs")
 
-    feature_names = ['d_lum(SCPT)', 'd_chrom(SCPT)',
+    feature_names = ['d_lum(SCS)', 'd_chrom(SCS)',
                      '|Δ(L-M)|(γ₃)', '|ΔS|(γ₇)', '|ΔLum|(p=2)',
                      'd_lab(CIELAB)']
 
     # Define models
     models = {
         'CIELAB (reference)':      [5],           # d_lab only
-        'SCPT pure (0 params)':    [0, 1],        # d_lum + d_chrom
-        'SCPT + opponent LM':      [0, 1, 2],     # + L-M channel
-        'SCPT + opponent S':       [0, 1, 3],     # + S channel
-        'SCPT + opponent Lum':     [0, 1, 4],     # + neural luminance
-        'SCPT + all opponent':     [0, 1, 2, 3, 4],  # all neural
+        'SCS pure (0 params)':    [0, 1],        # d_lum + d_chrom
+        'SCS + opponent LM':      [0, 1, 2],     # + L-M channel
+        'SCS + opponent S':       [0, 1, 3],     # + S channel
+        'SCS + opponent Lum':     [0, 1, 4],     # + neural luminance
+        'SCS + all opponent':     [0, 1, 2, 3, 4],  # all neural
         'Opponent channels only':  [2, 3, 4],     # neural only
-        'SCPT + CIELAB':           [0, 1, 5],     # geometric + metric
+        'SCS + CIELAB':           [0, 1, 5],     # geometric + metric
     }
 
     print("\n  === 5-FOLD CROSS-VALIDATED RESULTS ===")
@@ -194,7 +194,7 @@ def main():
         print(f"  {name:<30} {n_params:>10} {r:>8.3f} {n_params:>8}")
 
     # Add reference values
-    print(f"  {'SCPT+CAM02 (prior)':<30} {'3+2':>10} {'0.824':>8} {'5':>8}")
+    print(f"  {'SCS+CAM02 (prior)':<30} {'3+2':>10} {'0.824':>8} {'5':>8}")
     print(f"  {'CIEDE2000 (reference)':<30} {'5':>10} {'0.878':>8} {'5':>8}")
 
     # Feature importance analysis
@@ -238,7 +238,7 @@ def main():
         for name, r in results.items():
             n_feat = len(models[name])
             writer.writerow([name, f'{r:.4f}', n_feat, n_feat])
-        writer.writerow(['SCPT+CAM02', '0.8240', 5, 5])
+        writer.writerow(['SCS+CAM02', '0.8240', 5, 5])
         writer.writerow(['CIEDE2000', '0.8780', 5, 5])
         writer.writerow([])
         writer.writerow(['# Feature weights (standardized β, full model)'])

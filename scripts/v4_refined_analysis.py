@@ -18,16 +18,16 @@ import glob
 import numpy as np
 from collections import defaultdict
 
-# Add parent dir for sct import
+# Add parent dir for scs import
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SCRIPT_DIR)
 
-from sct import to_sct, delta_e, GAMMAS, W_LUM, W_CHROM
+from scs import to_scs, delta_e, GAMMAS, W_LUM, W_CHROM
 
 # OpenNeuro dataset ds005521 — download with:
 #   pip install openneuro-py
 #   openneuro download --dataset ds005521 --target-dir data/ds005521
-DATA_DIR = os.environ.get("SCT_V4_DATA", os.path.join(SCRIPT_DIR, "data", "ds005521"))
+DATA_DIR = os.environ.get("SCS_V4_DATA", os.path.join(SCRIPT_DIR, "data", "ds005521"))
 OUTPUT_DIR = os.path.join(SCRIPT_DIR, "datasets")
 
 TR = 2.0
@@ -208,14 +208,14 @@ def build_neural_features_for_combvd():
 
     Strategy: instead of mapping each COMBVD color to a DKL stimulus
     (which would require inverse color transforms), we use the V4 response
-    to BUILD a neural weighting of the SCT channels.
+    to BUILD a neural weighting of the SCS channels.
 
     The V4 data tells us:
       - The relative sensitivity of V4 to each chromatic direction
       - How contrast modulates V4 response
       - The opponent channel weights
 
-    We use these to RE-WEIGHT the SCT color difference formula.
+    We use these to RE-WEIGHT the SCS color difference formula.
     """
     # Load V4 response data
     v4_path = os.path.join(OUTPUT_DIR, "v4_bold_response.csv")
@@ -264,9 +264,9 @@ def build_neural_features_for_combvd():
 
 def test_on_combvd(neural_weights):
     """
-    Test SCT+V4_neural on COMBVD 3813 pairs.
+    Test SCS+V4_neural on COMBVD 3813 pairs.
 
-    Approach: use neural weights to modify the SCT distance formula.
+    Approach: use neural weights to modify the SCS distance formula.
     Instead of uniform weighting on the simplex, use V4-informed weights.
     """
     combvd_path = os.path.join(OUTPUT_DIR, "COMBVD_3813.csv")
@@ -295,22 +295,22 @@ def test_on_combvd(neural_weights):
     print(f"\n  Testing on COMBVD: {len(pairs)} pairs")
 
     # Compute different ΔE models
-    de_sct = []       # Pure SCT
-    de_neural = []     # SCT with neural weights
+    de_scs = []       # Pure SCS
+    de_neural = []     # SCS with neural weights
     de_lab = []        # CIELAB ΔE
     dv_human = []      # Human DV
 
     for p in pairs:
         xyz1, xyz2, dv = p['xyz1'], p['xyz2'], p['DV']
 
-        # 1. Pure SCT
+        # 1. Pure SCS
         de_s = delta_e(xyz1, xyz2)
-        de_sct.append(de_s)
+        de_scs.append(de_s)
 
-        # 2. Neural-weighted SCT
+        # 2. Neural-weighted SCS
         # Modify weights: w_lum and w_chrom based on V4 neural data
-        c1 = to_sct(xyz1)
-        c2 = to_sct(xyz2)
+        c1 = to_scs(xyz1)
+        c2 = to_scs(xyz2)
 
         # Fisher luminance distance
         ell1 = np.clip(xyz1[1], 1e-6, 1 - 1e-6)
@@ -336,20 +336,20 @@ def test_on_combvd(neural_weights):
         dv_human.append(dv)
 
     # Correlations
-    de_sct = np.array(de_sct)
+    de_scs = np.array(de_scs)
     de_neural = np.array(de_neural)
     de_lab = np.array(de_lab)
     dv_human = np.array(dv_human)
 
-    r_sct = np.corrcoef(de_sct, dv_human)[0, 1]
+    r_scs = np.corrcoef(de_scs, dv_human)[0, 1]
     r_neural = np.corrcoef(de_neural, dv_human)[0, 1]
     r_lab = np.corrcoef(de_lab, dv_human)[0, 1]
 
     print(f"\n  === COMBVD RESULTS ===")
     print(f"  CIELAB:        r = {r_lab:.3f}")
-    print(f"  SCT pure:     r = {r_sct:.3f}")
-    print(f"  SCT+V4_neural: r = {r_neural:.3f}")
-    print(f"  SCT+CAM02:    r = 0.824 (from prior analysis)")
+    print(f"  SCS pure:     r = {r_scs:.3f}")
+    print(f"  SCS+V4_neural: r = {r_neural:.3f}")
+    print(f"  SCS+CAM02:    r = 0.824 (from prior analysis)")
     print(f"  CIEDE2000:     r = 0.878 (reference)")
 
     # Save results
@@ -358,15 +358,15 @@ def test_on_combvd(neural_weights):
         writer = csv.writer(f)
         writer.writerow(['model', 'r_pearson', 'n_pairs', 'n_params'])
         writer.writerow(['CIELAB', f'{r_lab:.4f}', len(pairs), 3])
-        writer.writerow(['SCT_pure', f'{r_sct:.4f}', len(pairs), 0])
-        writer.writerow(['SCT_V4_neural', f'{r_neural:.4f}', len(pairs), 0])
-        writer.writerow(['SCT_CAM02', '0.8240', len(pairs), '3+2'])
+        writer.writerow(['SCS_pure', f'{r_scs:.4f}', len(pairs), 0])
+        writer.writerow(['SCS_V4_neural', f'{r_neural:.4f}', len(pairs), 0])
+        writer.writerow(['SCS_CAM02', '0.8240', len(pairs), '3+2'])
         writer.writerow(['CIEDE2000', '0.8780', len(pairs), 5])
 
     print(f"\n  Saved: {results_path}")
 
     return {
-        'r_sct': r_sct,
+        'r_scs': r_scs,
         'r_neural': r_neural,
         'r_lab': r_lab,
         'weights': neural_weights,

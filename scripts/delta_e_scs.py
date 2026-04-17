@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
-ΔE_SCPT — Color Difference Formula from Persistence Theory
-============================================================
+ΔE_SCS — Color Difference Formula from Persistence Theory
+===========================================================
 
-Computes the geodesic distance between two colors on the SCPT
+Computes the geodesic distance between two colors on the SCS
 chromatic simplex with the combined Fubini-Study + bifurcation metric.
 
 This is the PT replacement for CIELAB ΔE*ab and CIEDE2000 ΔE₀₀.
 
 Usage:
-    from delta_e_scpt import delta_e, xyz_to_scpt
+    from delta_e_scs import delta_e, xyz_to_scs
 
     d = delta_e(xyz1, xyz2)  # color difference (0 = identical)
 
@@ -18,12 +18,12 @@ Usage:
 
 The formula is a geodesic approximation on the Fisher-Fubini-Study
 manifold: for nearby colors, ΔE² ≈ g_ij · Δπ_i · Δπ_j where g_ij
-is the combined SCPT metric tensor.
+is the combined SCS metric tensor.
 
 Zero adjustable parameters. Everything from s = 1/2 at μ* = 15.
 
 References:
-    - PT_COLOR.tex, Section 3 (SCPT metric)
+    - PT_COLOR.tex, Section 3 (SCS metric)
     - Čencov (1982), Fisher metric uniqueness
     - MacAdam (1942), discrimination ellipses
 
@@ -38,7 +38,7 @@ import numpy as np
 import os, sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from scpt_companion import (gamma_p, sin2_theta, delta_p, fisher_metric,
+from scs_companion import (gamma_p, sin2_theta, delta_p, fisher_metric,
                              MU_STAR, Q_REL, Q_THERM, PRIMES)
 
 # ============================================================
@@ -74,13 +74,13 @@ def xyz_to_lms(xyz, matrix=None):
 
 
 def lms_to_simplex(lms):
-    """Convert LMS to SCPT simplex coordinates (π₃, π₅, π₇)."""
+    """Convert LMS to SCS simplex coordinates (π₃, π₅, π₇)."""
     wlms = GAMMAS * np.maximum(lms, 1e-10)
     return wlms / wlms.sum()
 
 
 def xy_to_simplex(x, y, matrix=None):
-    """Convert CIE chromaticity (x, y) to SCPT simplex."""
+    """Convert CIE chromaticity (x, y) to SCS simplex."""
     if y < 1e-10:
         return np.array([1/3, 1/3, 1/3])
     X = x / y
@@ -89,9 +89,9 @@ def xy_to_simplex(x, y, matrix=None):
     return lms_to_simplex(xyz_to_lms([X, Y, Z], matrix))
 
 
-def xyz_to_scpt(xyz):
+def xyz_to_scs(xyz):
     """
-    Convert XYZ to SCPT coordinates: (ℓ, S, θ).
+    Convert XYZ to SCS coordinates: (ℓ, S, θ).
 
     ℓ = luminance level (from Y)
     S = saturation = D_KL(π || u)
@@ -116,12 +116,12 @@ def xyz_to_scpt(xyz):
 
 
 # ============================================================
-# THE SCPT METRIC TENSOR
+# THE SCS METRIC TENSOR
 # ============================================================
 
-def scpt_metric(pi):
+def scs_metric(pi):
     """
-    Combined SCPT metric at simplex point π.
+    Combined SCS metric at simplex point π.
 
     Three layers, all derived from s = 1/2 at μ* = 15:
     1. Fisher metric weighted by γ_p (Čencov, unique)
@@ -167,24 +167,24 @@ def scpt_metric(pi):
 
 
 # ============================================================
-# COLOR DIFFERENCE: ΔE_SCPT
+# COLOR DIFFERENCE: ΔE_SCS
 # ============================================================
 
 def delta_e(xyz1, xyz2, matrix=None):
     """
-    Compute SCPT color difference between two XYZ colors.
+    Compute SCS color difference between two XYZ colors.
 
-    ΔE²_SCPT = g_ij(π_mid) · Δπ_i · Δπ_j
+    ΔE²_SCS = g_ij(π_mid) · Δπ_i · Δπ_j
 
     where π_mid is the midpoint (for local metric approximation)
-    and g_ij is the combined SCPT metric tensor.
+    and g_ij is the combined SCS metric tensor.
 
     Parameters:
         xyz1, xyz2: CIE XYZ tristimulus values (3-vectors)
         matrix: optional XYZ→LMS conversion matrix
 
     Returns:
-        ΔE_SCPT (float): color difference, 0 = identical
+        ΔE_SCS (float): color difference, 0 = identical
     """
     lms1 = xyz_to_lms(xyz1, matrix)
     lms2 = xyz_to_lms(xyz2, matrix)
@@ -193,7 +193,7 @@ def delta_e(xyz1, xyz2, matrix=None):
 
 def delta_e_lms(lms1, lms2):
     """
-    Compute SCPT color difference between two LMS cone responses.
+    Compute SCS color difference between two LMS cone responses.
     Chromaticity only (no luminance). Bypasses XYZ→LMS conversion.
     """
     pi1 = lms_to_simplex(lms1)
@@ -206,7 +206,7 @@ def delta_e_lms(lms1, lms2):
     dpi = np.array([pi2[0] - pi1[0], pi2[1] - pi1[1]])
 
     # Metric at midpoint
-    G = scpt_metric(pi_mid)
+    G = scs_metric(pi_mid)
 
     # Geodesic distance (quadratic approximation)
     de_sq = dpi @ G @ dpi
@@ -216,12 +216,12 @@ def delta_e_lms(lms1, lms2):
 
 def delta_e_full(xyz1, xyz2, Y_n=1.0, matrix=None):
     """
-    Full SCPT color difference: p=2 (luminance) + {3,5,7} (chromaticity).
+    Full SCS color difference: p=2 (luminance) + {3,5,7} (chromaticity).
 
-    ΔE²_SCPT = dℓ²/(ℓ_mid·(1-ℓ_mid)) + g_ij(π_mid)·Δπ_i·Δπ_j
+    ΔE²_SCS = dℓ²/(ℓ_mid·(1-ℓ_mid)) + g_ij(π_mid)·Δπ_i·Δπ_j
 
     The first term is the Fisher metric on the p=2 binary channel
-    (Bernoulli distribution). The second is the combined SCPT metric
+    (Bernoulli distribution). The second is the combined SCS metric
     on the Δ² chromaticity simplex.
 
     Zero adjustable parameters.
@@ -244,7 +244,7 @@ def delta_e_full(xyz1, xyz2, Y_n=1.0, matrix=None):
     # Chromaticity term: combined metric on Δ²
     pi_mid = (pi1 + pi2) / 2
     dpi = np.array([pi2[0] - pi1[0], pi2[1] - pi1[1]])
-    G = scpt_metric(pi_mid)
+    G = scs_metric(pi_mid)
     chrom_term = max(dpi @ G @ dpi, 0)
 
     return np.sqrt(lum_term + chrom_term)
@@ -307,12 +307,12 @@ def delta_e_lab(L1, a1, b1, L2, a2, b2):
 
 
 def validate_bfd():
-    """Validate SCPT vs CIELAB on BFD sample."""
+    """Validate SCS vs CIELAB on BFD sample."""
     print("=" * 70)
-    print("BFD VALIDATION: ΔE_SCPT vs ΔE*ab (CIELAB)")
+    print("BFD VALIDATION: ΔE_SCS vs ΔE*ab (CIELAB)")
     print("=" * 70)
 
-    scpt_diffs = []
+    scs_diffs = []
     lab_diffs = []
     observed = []
 
@@ -320,15 +320,15 @@ def validate_bfd():
         xyz1 = lab_to_xyz(L1, a1, b1)
         xyz2 = lab_to_xyz(L2, a2, b2)
 
-        de_scpt = delta_e(xyz1, xyz2)
+        de_scs = delta_e(xyz1, xyz2)
         de_lab = delta_e_lab(L1, a1, b1, L2, a2, b2)
 
-        scpt_diffs.append(de_scpt)
+        scs_diffs.append(de_scs)
         lab_diffs.append(de_lab)
         observed.append(dv_obs)
 
     # Normalize both to same scale as observed
-    scpt_arr = np.array(scpt_diffs)
+    scs_arr = np.array(scs_diffs)
     lab_arr = np.array(lab_diffs)
     obs_arr = np.array(observed)
 
@@ -345,31 +345,31 @@ def validate_bfd():
         stress = 100 * np.sqrt(np.sum((observed - fitted)**2) / np.sum(observed**2))
         return r, stress, slope, intercept
 
-    r_scpt, stress_scpt, s_scpt, i_scpt = fit_and_correlate(scpt_arr, obs_arr)
+    r_scs, stress_scs, s_scs, i_scs = fit_and_correlate(scs_arr, obs_arr)
     r_lab, stress_lab, s_lab, i_lab = fit_and_correlate(lab_arr, obs_arr)
 
     print(f"\n{'Metric':>15} {'Params':>7} {'Pearson r':>10} {'STRESS':>8}")
     print("-" * 45)
-    print(f"{'ΔE_SCPT':>15} {'0':>7} {r_scpt:>10.4f} {stress_scpt:>8.1f}")
+    print(f"{'ΔE_SCS':>15} {'0':>7} {r_scs:>10.4f} {stress_scs:>8.1f}")
     print(f"{'ΔE*ab':>15} {'3':>7} {r_lab:>10.4f} {stress_lab:>8.1f}")
 
     print(f"\n(STRESS < 40 = good, < 30 = excellent)")
     print(f"(Pearson r > 0.9 = strong correlation with perception)")
 
-    return r_scpt, stress_scpt, r_lab, stress_lab
+    return r_scs, stress_scs, r_lab, stress_lab
 
 
 if __name__ == '__main__':
-    print("ΔE_SCPT — Color Difference Formula\n")
+    print("ΔE_SCS — Color Difference Formula\n")
 
     # Demo
     white = np.array([0.9505, 1.0, 1.089])
     red = lab_to_xyz(50, 60, 30)
     green = lab_to_xyz(50, -40, 30)
 
-    print(f"ΔE_SCPT(white, red)   = {delta_e(white, red):.3f}")
-    print(f"ΔE_SCPT(white, green) = {delta_e(white, green):.3f}")
-    print(f"ΔE_SCPT(red, green)   = {delta_e(red, green):.3f}")
+    print(f"ΔE_SCS(white, red)   = {delta_e(white, red):.3f}")
+    print(f"ΔE_SCS(white, green) = {delta_e(white, green):.3f}")
+    print(f"ΔE_SCS(red, green)   = {delta_e(red, green):.3f}")
     print()
 
     # BFD validation
