@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SCS — Module 09 - SCS vs OkLab</title>
+<style>
+:root{
+  --bg:#0a0a0a; --surface:#141414; --surface2:#1e1e1e; --border:#2a2a2a;
+  --text:#e0e0e0; --text-dim:#8a8a8a; --gold:#c8a84e; --gold-dim:#8a7234;
+  --blue:#6688bb; --green:#50c870; --red:#e05050; --violet:#a070d0;
+  --radius:12px; --maxw:1180px;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0 16px 42px;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+header,main{max-width:var(--maxw);margin:0 auto}
+header{padding:28px 0 18px;border-bottom:1px solid var(--border)}
+.header-row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+h1{margin:0;font-size:1.95rem;letter-spacing:-0.02em}
+h1 span{color:var(--gold)}
+.tagline{margin:6px 0 0;color:var(--text-dim);line-height:1.5}
+.btn{appearance:none;border:1px solid var(--border);cursor:pointer;background:var(--surface2);
+  color:var(--text);padding:10px 14px;border-radius:10px;font-weight:600}
+.btn:hover,.btn.active{border-color:var(--gold);color:#fff}
+.lang-toggle{display:flex;gap:6px}
+.lang-btn{padding:8px 12px;font-size:.82rem}
+.lang-btn.active{color:var(--gold)}
+.module{margin-top:28px;padding:24px;background:var(--surface);border:1px solid var(--border);border-radius:16px}
+.module-header{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+.module-num{font-size:2rem;font-weight:800;color:var(--gold-dim);opacity:.55;line-height:1}
+.module-desc{margin:0 0 18px;color:var(--text-dim);line-height:1.58}
+.section{margin-top:22px;padding-top:22px;border-top:1px solid var(--border)}
+.section:first-of-type{margin-top:0;padding-top:0;border-top:none}
+.section h3{margin:0 0 6px;font-size:1.1rem;color:#fff;letter-spacing:-0.01em}
+.section-desc{margin:0 0 14px;color:var(--text-dim);line-height:1.55;font-size:.92rem}
+.panel{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px}
+.grid-panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+@media (max-width:900px){.grid-panels{grid-template-columns:1fr}}
+.rail{display:block;width:100%;height:78px;border-radius:8px;image-rendering:pixelated}
+.rail-wrap{margin-bottom:14px}
+.rail-label{display:flex;justify-content:space-between;align-items:baseline;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);margin-bottom:.45rem}
+.rail-label b{color:var(--text);font-weight:600;text-transform:none;letter-spacing:0;font-size:.88rem}
+.rail-mid{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--gold);font-size:.78rem}
+.readout-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.readout{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.readout-label{font-size:.72rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;display:block}
+.readout-value{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.95rem;color:var(--gold);font-variant-numeric:tabular-nums;line-height:1.35}
+.controls{display:flex;gap:16px;flex-wrap:wrap;margin:4px 0 14px;align-items:flex-end}
+.color-block{display:flex;flex-direction:column;gap:6px}
+.color-block label{font-size:.8rem;color:var(--text-dim)}
+.color-block input[type=color]{width:68px;height:40px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);cursor:pointer;padding:2px}
+.color-block .hexval{font-family:ui-monospace,Menlo,monospace;font-size:.76rem;color:var(--gold)}
+.sum-bar-wrap{margin-top:10px}
+.sum-bar{position:relative;height:14px;border-radius:999px;background:var(--surface2);overflow:hidden;border:1px solid var(--border)}
+.sum-bar-s{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#3a5aa0,#6688bb)}
+.sum-bar-l{position:absolute;top:0;bottom:0;background:linear-gradient(90deg,#c8a84e,#e3c478)}
+.sum-bar-legend{display:flex;justify-content:space-between;font-size:.72rem;color:var(--text-dim);margin-top:6px;font-family:ui-monospace,Menlo,monospace}
+canvas.curve{display:block;width:100%;height:340px;border-radius:8px;background:#070707}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font-size:.82rem;color:var(--text-dim)}
+.legend-dot{display:inline-block;width:12px;height:12px;border-radius:999px;margin-right:6px;vertical-align:middle}
+.legend-dot.cielab{background:var(--red)}
+.legend-dot.oklab{background:var(--violet)}
+.legend-dot.scs{background:var(--gold)}
+.key-claim{background:rgba(200,168,78,.08);border-left:3px solid var(--gold);padding:12px 16px;border-radius:10px;margin-top:16px}
+.key-claim strong{color:var(--gold)}
+.key-claim p{margin:0;color:var(--text-dim);line-height:1.6;font-size:.9rem}
+.note{margin-top:12px;color:var(--text-dim);font-size:.88rem;line-height:1.6}
+.note code{font-family:ui-monospace,Menlo,monospace;color:var(--gold);font-size:.85em}
+details.theory-panel{margin-top:1.4rem;border-top:1px solid var(--border);padding-top:.9rem}
+details.theory-panel summary{font-size:.8rem;color:var(--gold-dim);cursor:pointer;text-transform:uppercase;letter-spacing:.08em;list-style:none}
+details.theory-panel summary::before{content:"▸ "}
+details.theory-panel[open] summary::before{content:"▾ "}
+details.theory-panel summary::-webkit-details-marker{display:none}
+.theory-content{margin-top:.8rem;padding:1rem;background:#080808;border-radius:var(--radius);font-size:.85rem;line-height:1.7;color:var(--text-dim)}
+.theory-content code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--gold);font-size:.85em}
+.theory-content strong{color:var(--text)}
+.theory-content p{margin:0 0 .8em}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-row">
+    <div>
+      <h1><span>SCS</span> — <span data-i18n="headerTitle">Module 09 - SCS vs OkLab</span></h1>
+      <p class="tagline" data-i18n="siteTagline">Three lenses on the same question: what a color space encodes, and why.</p>
+    </div>
+    <div class="lang-toggle">
+      <button class="btn lang-btn" id="lang-fr">FR</button>
+      <button class="btn lang-btn" id="lang-en">EN</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="module">
+  <div class="module-header">
+    <span class="module-num">09</span>
+    <h2 data-i18n="title" style="margin:0;font-size:1.25rem;">SCS vs OkLab</h2>
+  </div>
+  <p class="module-desc" data-i18n="desc">
+    OkLab (Björn Ottosson, 2020) is a perceptually-calibrated replacement for CIELAB, now used by CSS Color 4 for <code>color-mix</code>. SCS is derived from Persistence Theory and lives on a probability simplex over the primes {3, 5, 7}. This module compares them along three axes: how they interpolate between two chromaticities, what invariant — if any — they preserve, and how they answer the question "what is luminance?"
+  </p>
+
+  <!-- ============================================================ -->
+  <!-- Section A — interpolation rails                                -->
+  <!-- ============================================================ -->
+  <div class="section">
+    <h3 data-i18n="sAtitle">A — Color interpolation: three paths between two chromaticities</h3>
+    <p class="section-desc" data-i18n="sAdesc">
+      Linear sRGB blending often produces a muddy gray midpoint. OkLab and SCS both avoid this, but via different mechanisms: OkLab linearly interpolates in a perceptually-calibrated space; SCS walks a Fisher–Rao geodesic on the probability simplex (η<sub>p</sub> = √π<sub>p</sub>) with Fisher–Bernoulli interpolation of luminance.
+    </p>
+
+    <div class="controls">
+      <div class="color-block">
+        <label data-i18n="endpointA" for="colorA">Endpoint A</label>
+        <input type="color" id="colorA" value="#fcd12a" />
+        <span class="hexval" id="colorAhex">#fcd12a</span>
+      </div>
+      <div class="color-block">
+        <label data-i18n="endpointB" for="colorB">Endpoint B</label>
+        <input type="color" id="colorB" value="#0a3cc0" />
+        <span class="hexval" id="colorBhex">#0a3cc0</span>
+      </div>
+    </div>
+
+    <div class="rail-wrap">
+      <div class="rail-label"><b data-i18n="railSrgb">Linear sRGB (baseline)</b><span class="rail-mid" id="midSrgb">—</span></div>
+      <canvas id="railSrgb" class="rail"></canvas>
+    </div>
+    <div class="rail-wrap">
+      <div class="rail-label"><b data-i18n="railOklab">OkLab (CSS Color 4 color-mix)</b><span class="rail-mid" id="midOklab">—</span></div>
+      <canvas id="railOklab" class="rail"></canvas>
+    </div>
+    <div class="rail-wrap">
+      <div class="rail-label"><b data-i18n="railScs">SCS simplex geodesic (Fisher–Rao on η = √π)</b><span class="rail-mid" id="midScs">—</span></div>
+      <canvas id="railScs" class="rail"></canvas>
+    </div>
+
+    <p class="note" data-i18n="sAnote">
+      The three rails differ most clearly near t = 0.5. Linear sRGB passes through a desaturated gray because sRGB primaries do not lie on a perceptual axis. OkLab follows a straight line in its (L, a, b) space — perceptually smooth but geometrically arbitrary. SCS follows the great-circle arc on the positive quadrant of the unit sphere (η<sub>p</sub> = √π<sub>p</sub>), which is the Fisher–Rao geodesic on the simplex; luminance is separately interpolated via <code>Y = sin²φ</code>.
+    </p>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- Section B — sum rule S + L = log 3                             -->
+  <!-- ============================================================ -->
+  <div class="section">
+    <h3 data-i18n="sBtitle">B — A conserved quantity SCS has and OkLab doesn't</h3>
+    <p class="section-desc" data-i18n="sBdesc">
+      On any probability simplex with uniform reference, the information-theoretic identity <code>D<sub>KL</sub>(π‖U) + H(π) = log m</code> holds. Specialized to m = 3 chromatic channels, SCS inherits <strong>S + L = log 3</strong> exactly, for every color. OkLab, calibrated against perceptual data rather than derived from an information-theoretic principle, has no analogous identity.
+    </p>
+
+    <div class="controls">
+      <div class="color-block">
+        <label data-i18n="sBcolor" for="colorC">Test color</label>
+        <input type="color" id="colorC" value="#c07050" />
+        <span class="hexval" id="colorChex">#c07050</span>
+      </div>
+    </div>
+
+    <div class="grid-panels">
+      <div class="panel">
+        <span class="rail-label" style="display:block;margin-bottom:10px"><b data-i18n="oklabPanelTitle">OkLab readout</b></span>
+        <div class="readout-grid" style="grid-template-columns:1fr 1fr 1fr">
+          <div class="readout"><span class="readout-label">L</span><div class="readout-value" id="okL">—</div></div>
+          <div class="readout"><span class="readout-label">a</span><div class="readout-value" id="okA">—</div></div>
+          <div class="readout"><span class="readout-label">b</span><div class="readout-value" id="okB">—</div></div>
+        </div>
+        <div class="readout-grid">
+          <div class="readout"><span class="readout-label">C = √(a²+b²)</span><div class="readout-value" id="okC">—</div></div>
+          <div class="readout"><span class="readout-label">h = atan2(b,a)</span><div class="readout-value" id="okH">—</div></div>
+        </div>
+        <p class="note" data-i18n="oklabPanelNote">No combination of these quantities is conserved across colors. OkLab is calibrated to be perceptually uniform, not to satisfy an information-theoretic identity.</p>
+      </div>
+
+      <div class="panel" style="border-color:var(--gold-dim)">
+        <span class="rail-label" style="display:block;margin-bottom:10px"><b data-i18n="scsPanelTitle">SCS readout</b></span>
+        <div class="readout-grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="readout"><span class="readout-label">π₃</span><div class="readout-value" id="scsP3">—</div></div>
+          <div class="readout"><span class="readout-label">π₅</span><div class="readout-value" id="scsP5">—</div></div>
+          <div class="readout"><span class="readout-label">π₇</span><div class="readout-value" id="scsP7">—</div></div>
+        </div>
+        <div class="readout-grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="readout"><span class="readout-label">S = D<sub>KL</sub>(π‖U)</span><div class="readout-value" id="scsS">—</div></div>
+          <div class="readout"><span class="readout-label">L = H(π)</span><div class="readout-value" id="scsL">—</div></div>
+          <div class="readout"><span class="readout-label">S + L</span><div class="readout-value" id="scsSum">—</div></div>
+        </div>
+        <div class="sum-bar-wrap">
+          <div class="sum-bar">
+            <div class="sum-bar-s" id="sumBarS"></div>
+            <div class="sum-bar-l" id="sumBarL"></div>
+          </div>
+          <div class="sum-bar-legend">
+            <span data-i18n="sumBarLeft">S (saturation)</span>
+            <span>log 3 ≈ 1.0986 nats</span>
+            <span data-i18n="sumBarRight">L (chromatic entropy)</span>
+          </div>
+        </div>
+        <p class="note" data-i18n="scsPanelNote">S + L = log 3 exactly, for every color. The bar is always full: pure-saturated colors push it toward S (blue); achromatic colors push it toward L (gold).</p>
+      </div>
+    </div>
+
+    <div class="key-claim">
+      <p data-i18n-html="sBclaim">
+        <strong>Epistemic point.</strong> This is not a claim that SCS is "better" than OkLab. The identity exists in SCS because the construction lives on a probability simplex with three outcomes {3, 5, 7} derived from Persistence Theory. OkLab was not built around such a simplex, so no analogous identity emerges. The question is what you want your color space to encode: empirical perceptual calibration, or structural information-theoretic invariants.
+      </p>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- Section C — luminance curves                                   -->
+  <!-- ============================================================ -->
+  <div class="section">
+    <h3 data-i18n="sCtitle">C — Three answers to "what is luminance?"</h3>
+    <p class="section-desc" data-i18n="sCdesc">
+      CIELAB, OkLab and SCS each define a scalar perceptual luminance from the linear photometric Y. The shapes differ especially below Y ≈ 0.01, where each metric makes a different structural choice.
+    </p>
+
+    <div class="panel">
+      <span class="rail-label" style="display:block;margin-bottom:10px"><b data-i18n="sCchartLabel">Normalized luminance curves (log x, linear y)</b></span>
+      <canvas id="lumChart" class="curve"></canvas>
+      <div class="legend">
+        <span><span class="legend-dot cielab"></span><span data-i18n="sCcielab">CIELAB L*(Y) / 100 — piecewise (cube root + linear leg below δ³)</span></span>
+        <span><span class="legend-dot oklab"></span><span data-i18n="sCoklab">OkLab L(Y) for achromatic stimulus — fitted cube root of a weighted LMS sum</span></span>
+        <span><span class="legend-dot scs"></span><span data-i18n="sCscs">SCS d<sub>lum</sub>(Y) / π = 2·arcsin(√Y) / π — Fisher–Rao on the Bernoulli family</span></span>
+      </div>
+    </div>
+
+    <p class="note" data-i18n-html="sCnote">
+      The three curves all reach 0 at Y = 0 and 1 at Y = 1; what differs is <em>how</em> they cover the interval. OkLab sits above CIELAB and SCS across almost the whole range, because its cube-root grows faster than CIELAB's linear leg (near 0) and than SCS's <code>arcsin(√Y)</code> (in the mid-range). SCS is the <em>lowest</em> curve in the mid-range, which means it dedicates less of its [0, 1] budget to midtones and more to both extremes — the signature of the Fisher–Rao geodesic <code>2·arcsin(√Y)/π</code> on the Bernoulli family, whose sensitivity <code>1/√(Y(1−Y))</code> diverges at <em>both</em> Y → 0 and Y → 1. CIELAB is the only curve with a visible kink (at Y = δ³ ≈ 0.00886), the discontinuity between its linear leg and its cube root. None of the three is "better" in an absolute sense: OkLab and CIELAB are calibrated against psychophysical data (different fits, same family); SCS is derived from an information-geometric principle. The practical hybrid <code>ΔE<sub>SCS00</sub></code> (see <code>scripts/delta_e_scs00.py</code>) keeps CIEDE2000 and adds the SCS geodesic as a feature.
+    </p>
+  </div>
+
+  <details class="theory-panel">
+    <summary data-i18n="theory">Theory</summary>
+    <div class="theory-content" data-i18n-html="theoryText">
+      <p><strong>Three sections, three viewpoints.</strong> Section A compares interpolation paths (the CSS <code>color-mix</code> question). Section B surfaces an identity that SCS satisfies structurally and OkLab does not. Section C overlays the three perceptual-luminance curves so the structural differences are visible at a glance.</p>
+      <p><strong>OkLab reference.</strong> Björn Ottosson, "A perceptual color space for image processing", 2020 (<code>bottosson.github.io/posts/oklab</code>). OkLab is a fitted cube-root model on a weighted LMS representation, calibrated against MacAdam ellipses, Munsell and IPT data. It is used by CSS Color 4 for <code>color-mix(in oklab, ...)</code>.</p>
+      <p><strong>SCS is composable with OkLab, not a replacement.</strong> The stated goal of the PT_COLOR construction (see PT_COLOR.tex abstract) is not to displace OkLab in the perceptual-calibration niche it occupies, but to provide a second lens — simplex-based, information-theoretic, with a structurally conserved quantity S + L = log 3.</p>
+      <p><strong>Hybrid metric.</strong> The script <code>scripts/delta_e_scs00.py</code> in the SCS repository implements ΔE<sub>SCS00</sub>, which combines CIEDE2000 with the SCS simplex metric. That is the practical path: keep OkLab (or CIELAB) for what it does well, add SCS for what it does that the others cannot.</p>
+      <p><strong>Interpolation details (Section A).</strong> Endpoints (r<sub>1</sub>, r<sub>2</sub>) are converted to (π, Y) via the SCS pipeline. Luminance: <code>φ = arcsin(√Y)</code>, linearly interpolate φ, take <code>Y<sub>t</sub> = sin²φ<sub>t</sub></code>. Chromaticity: spherical slerp on η<sub>p</sub> = √π<sub>p</sub> with Ω = arccos(Σ η<sub>1,p</sub> η<sub>2,p</sub>). Reconstruct sRGB via <code>piToRgbExact(π<sub>t</sub>, Y<sub>t</sub>)</code>.</p>
+      <p><strong>Sum rule (Section B).</strong> <code>S = Σ π<sub>p</sub> log(m·π<sub>p</sub>)</code>, <code>L = −Σ π<sub>p</sub> log π<sub>p</sub></code>, so <code>S + L = Σ π<sub>p</sub> log m = log m = log 3</code>, regardless of π. This is not SCS-specific — it holds on any probability simplex with uniform reference. What is SCS-specific is that the chromatic simplex is over the primes {3, 5, 7}, derived from Persistence Theory.</p>
+      <p><strong>Luminance curves (Section C).</strong> CIELAB: <code>L* = 116·f(Y) − 16</code> with <code>f(t) = t^(1/3)</code> for <code>t &gt; δ³</code> (δ = 6/29) and linear below. OkLab: for r = g = b = Y, compute the exact Ottosson transform. SCS: <code>d<sub>lum</sub>(Y) = 2·arcsin(√Y)</code>. Normalizations: CIELAB / 100, OkLab as-is (already in [0, 1]), SCS / π.</p>
+    </div>
+  </details>
+</section>
+</main>
+
+<script>
+// This module uses the real SCS pipeline (sRGB → XYZ → LMS/HPE → γ-weighted simplex) and
+// Björn Ottosson's OkLab (2020, https://bottosson.github.io/posts/oklab/) for direct
+// comparison. It is NOT a benchmark showing that one space beats the other — it is a
+// visual and mathematical exposition of where they differ. See PT_COLOR.tex §Coordinates
+// and §CIELAB vs SCS for the SCS side, and bottosson.github.io/posts/oklab for OkLab.
+
+// ================================================================
+// I18N
+// ================================================================
+const I18N = {
+  fr: {
+    headerTitle:"Module 09 - SCS vs OkLab",
+    siteTagline:"Trois regards sur la même question : qu'est-ce qu'un espace couleur encode, et pourquoi.",
+    title:"SCS vs OkLab",
+    desc:"OkLab (Björn Ottosson, 2020) est un remplaçant perceptuellement calibré de CIELAB, désormais utilisé par CSS Color 4 pour <code>color-mix</code>. SCS est dérivé de la Théorie de la Persistance et vit sur un simplexe de probabilités sur les premiers {3, 5, 7}. Ce module les compare selon trois axes : comment ils interpolent entre deux chromaticités, quel invariant — s'il existe — ils préservent, et comment ils répondent à la question « qu'est-ce que la luminance ? »",
+    sAtitle:"A — Interpolation couleur : trois chemins entre deux chromaticités",
+    sAdesc:"Le mélange linéaire sRGB produit souvent un gris bourbeux au milieu. OkLab et SCS l'évitent tous les deux, mais par des mécanismes différents : OkLab interpole linéairement dans un espace perceptuellement calibré ; SCS suit une géodésique de Fisher–Rao sur le simplexe des probabilités (η<sub>p</sub> = √π<sub>p</sub>) avec une interpolation de Fisher–Bernoulli pour la luminance.",
+    endpointA:"Couleur A",
+    endpointB:"Couleur B",
+    railSrgb:"sRGB linéaire (référence)",
+    railOklab:"OkLab (CSS Color 4 color-mix)",
+    railScs:"Géodésique simplexe SCS (Fisher–Rao sur η = √π)",
+    sAnote:"Les trois rails diffèrent le plus clairement autour de t = 0,5. Le sRGB linéaire passe par un gris désaturé parce que les primaires sRGB ne se trouvent pas sur un axe perceptuel. OkLab suit une droite dans son espace (L, a, b) — lisse perceptuellement mais géométriquement arbitraire. SCS suit l'arc de grand cercle sur le quadrant positif de la sphère unité (η<sub>p</sub> = √π<sub>p</sub>), qui est la géodésique de Fisher–Rao sur le simplexe ; la luminance est interpolée séparément via <code>Y = sin²φ</code>.",
+    sBtitle:"B — Une quantité conservée que le SCS possède et qu'OkLab n'a pas",
+    sBdesc:"Sur tout simplexe de probabilités avec référence uniforme, l'identité information-théorique <code>D<sub>KL</sub>(π‖U) + H(π) = log m</code> est vérifiée. Spécialisée à m = 3 canaux chromatiques, le SCS hérite de <strong>S + L = log 3</strong> exactement, pour toute couleur. OkLab, calibré sur des données perceptuelles plutôt que dérivé d'un principe information-théorique, n'a pas d'identité analogue.",
+    sBcolor:"Couleur test",
+    oklabPanelTitle:"Lecture OkLab",
+    oklabPanelNote:"Aucune combinaison de ces grandeurs n'est conservée entre couleurs. OkLab est calibré pour être perceptuellement uniforme, non pour satisfaire une identité information-théorique.",
+    scsPanelTitle:"Lecture SCS",
+    scsPanelNote:"S + L = log 3 exactement, pour chaque couleur. La barre est toujours pleine : les couleurs pures saturées la poussent vers S (bleu) ; les couleurs achromatiques vers L (or).",
+    sumBarLeft:"S (saturation)",
+    sumBarRight:"L (entropie chromatique)",
+    sBclaim:"<strong>Point épistémique.</strong> Ce n'est pas une affirmation que SCS est « meilleur » qu'OkLab. L'identité existe en SCS parce que la construction vit sur un simplexe de probabilités à trois issues {3, 5, 7} dérivées de la Théorie de la Persistance. OkLab n'a pas été construit autour d'un tel simplexe, donc aucune identité analogue n'émerge. La question est ce que l'on souhaite encoder dans son espace couleur : une calibration perceptuelle empirique, ou des invariants information-théoriques structurels.",
+    sCtitle:"C — Trois réponses à « qu'est-ce que la luminance ? »",
+    sCdesc:"CIELAB, OkLab et SCS définissent chacun une luminance perceptuelle scalaire à partir du Y photométrique linéaire. Les formes diffèrent surtout en dessous de Y ≈ 0,01, où chaque métrique fait un choix structurel différent.",
+    sCchartLabel:"Courbes de luminance normalisées (x log, y linéaire)",
+    sCcielab:"CIELAB L*(Y) / 100 — par morceaux (racine cubique + jambe linéaire sous δ³)",
+    sCoklab:"OkLab L(Y) pour stimulus achromatique — racine cubique ajustée d'une somme LMS pondérée",
+    sCscs:"SCS d<sub>lum</sub>(Y) / π = 2·arcsin(√Y) / π — Fisher–Rao sur la famille de Bernoulli",
+    sCnote:"Les trois courbes atteignent 0 à Y = 0 et 1 à Y = 1 ; ce qui diffère, c'est <em>la façon</em> dont elles couvrent l'intervalle. OkLab est au-dessus de CIELAB et SCS sur presque toute la plage, parce que sa racine cubique croît plus vite que la jambe linéaire de CIELAB (près de 0) et que <code>arcsin(√Y)</code> du SCS (dans le mid-range). SCS est la courbe la <em>plus basse</em> dans le mid-range, ce qui signifie qu'il dédie moins de son budget [0, 1] aux midtones et plus aux deux extrémités — la signature de la géodésique de Fisher–Rao <code>2·arcsin(√Y)/π</code> sur la famille de Bernoulli, dont la sensibilité <code>1/√(Y(1−Y))</code> diverge à la fois en Y → 0 et en Y → 1. CIELAB est la seule courbe avec un coude visible (à Y = δ³ ≈ 0,00886), la transition entre sa jambe linéaire et sa racine cubique. Aucune des trois n'est « meilleure » dans l'absolu : OkLab et CIELAB sont calibrées sur des données psychophysiques (des ajustements différents, même famille) ; SCS est dérivée d'un principe de géométrie de l'information. L'hybride pratique <code>ΔE<sub>SCS00</sub></code> (voir <code>scripts/delta_e_scs00.py</code>) garde CIEDE2000 et ajoute la géodésique SCS comme feature.",
+    theory:"Théorie",
+    theoryText:"<p><strong>Trois sections, trois points de vue.</strong> La section A compare les chemins d'interpolation (la question CSS <code>color-mix</code>). La section B fait émerger une identité que le SCS satisfait structurellement et qu'OkLab n'a pas. La section C superpose les trois courbes de luminance perceptuelle pour rendre les différences structurelles visibles en un coup d'œil.</p><p><strong>Référence OkLab.</strong> Björn Ottosson, « A perceptual color space for image processing », 2020 (<code>bottosson.github.io/posts/oklab</code>). OkLab est un modèle à racine cubique ajusté sur une représentation LMS pondérée, calibré sur les ellipses de MacAdam, Munsell et IPT. Il est utilisé par CSS Color 4 pour <code>color-mix(in oklab, ...)</code>.</p><p><strong>SCS est composable avec OkLab, pas un remplacement.</strong> L'objectif annoncé de la construction PT_COLOR (voir résumé de PT_COLOR.tex) n'est pas de déplacer OkLab dans le créneau de calibration perceptuelle qu'il occupe, mais de fournir une seconde lentille — fondée sur le simplexe, information-théorique, avec une quantité structurellement conservée S + L = log 3.</p><p><strong>Métrique hybride.</strong> Le script <code>scripts/delta_e_scs00.py</code> du dépôt SCS implémente ΔE<sub>SCS00</sub>, qui combine CIEDE2000 avec la métrique simplexe SCS. C'est la voie pratique : garder OkLab (ou CIELAB) pour ce qu'il fait bien, ajouter SCS pour ce qu'il fait que les autres ne peuvent pas.</p><p><strong>Détails d'interpolation (section A).</strong> Les extrémités (r<sub>1</sub>, r<sub>2</sub>) sont converties en (π, Y) via le pipeline SCS. Luminance : <code>φ = arcsin(√Y)</code>, interpolation linéaire de φ, puis <code>Y<sub>t</sub> = sin²φ<sub>t</sub></code>. Chromaticité : slerp sphérique sur η<sub>p</sub> = √π<sub>p</sub> avec Ω = arccos(Σ η<sub>1,p</sub> η<sub>2,p</sub>). Reconstruction sRGB via <code>piToRgbExact(π<sub>t</sub>, Y<sub>t</sub>)</code>.</p><p><strong>Règle de somme (section B).</strong> <code>S = Σ π<sub>p</sub> log(m·π<sub>p</sub>)</code>, <code>L = −Σ π<sub>p</sub> log π<sub>p</sub></code>, donc <code>S + L = Σ π<sub>p</sub> log m = log m = log 3</code>, indépendamment de π. Ceci n'est pas spécifique au SCS — c'est vrai sur tout simplexe de probabilités avec référence uniforme. Ce qui est spécifique au SCS, c'est que le simplexe chromatique est sur les premiers {3, 5, 7}, dérivés de la Théorie de la Persistance.</p><p><strong>Courbes de luminance (section C).</strong> CIELAB : <code>L* = 116·f(Y) − 16</code> avec <code>f(t) = t^(1/3)</code> pour <code>t &gt; δ³</code> (δ = 6/29) et linéaire en dessous. OkLab : pour r = g = b = Y, calcul exact de la transformation d'Ottosson. SCS : <code>d<sub>lum</sub>(Y) = 2·arcsin(√Y)</code>. Normalisations : CIELAB / 100, OkLab tel quel (déjà dans [0, 1]), SCS / π.</p>"
+  },
+  en: {
+    headerTitle:"Module 09 - SCS vs OkLab",
+    siteTagline:"Three lenses on the same question: what a color space encodes, and why.",
+    title:"SCS vs OkLab",
+    desc:"OkLab (Björn Ottosson, 2020) is a perceptually-calibrated replacement for CIELAB, now used by CSS Color 4 for <code>color-mix</code>. SCS is derived from Persistence Theory and lives on a probability simplex over the primes {3, 5, 7}. This module compares them along three axes: how they interpolate between two chromaticities, what invariant — if any — they preserve, and how they answer the question \"what is luminance?\"",
+    sAtitle:"A — Color interpolation: three paths between two chromaticities",
+    sAdesc:"Linear sRGB blending often produces a muddy gray midpoint. OkLab and SCS both avoid this, but via different mechanisms: OkLab linearly interpolates in a perceptually-calibrated space; SCS walks a Fisher–Rao geodesic on the probability simplex (η<sub>p</sub> = √π<sub>p</sub>) with Fisher–Bernoulli interpolation of luminance.",
+    endpointA:"Endpoint A",
+    endpointB:"Endpoint B",
+    railSrgb:"Linear sRGB (baseline)",
+    railOklab:"OkLab (CSS Color 4 color-mix)",
+    railScs:"SCS simplex geodesic (Fisher–Rao on η = √π)",
+    sAnote:"The three rails differ most clearly near t = 0.5. Linear sRGB passes through a desaturated gray because sRGB primaries do not lie on a perceptual axis. OkLab follows a straight line in its (L, a, b) space — perceptually smooth but geometrically arbitrary. SCS follows the great-circle arc on the positive quadrant of the unit sphere (η<sub>p</sub> = √π<sub>p</sub>), which is the Fisher–Rao geodesic on the simplex; luminance is separately interpolated via <code>Y = sin²φ</code>.",
+    sBtitle:"B — A conserved quantity SCS has and OkLab doesn't",
+    sBdesc:"On any probability simplex with uniform reference, the information-theoretic identity <code>D<sub>KL</sub>(π‖U) + H(π) = log m</code> holds. Specialized to m = 3 chromatic channels, SCS inherits <strong>S + L = log 3</strong> exactly, for every color. OkLab, calibrated against perceptual data rather than derived from an information-theoretic principle, has no analogous identity.",
+    sBcolor:"Test color",
+    oklabPanelTitle:"OkLab readout",
+    oklabPanelNote:"No combination of these quantities is conserved across colors. OkLab is calibrated to be perceptually uniform, not to satisfy an information-theoretic identity.",
+    scsPanelTitle:"SCS readout",
+    scsPanelNote:"S + L = log 3 exactly, for every color. The bar is always full: pure-saturated colors push it toward S (blue); achromatic colors push it toward L (gold).",
+    sumBarLeft:"S (saturation)",
+    sumBarRight:"L (chromatic entropy)",
+    sBclaim:"<strong>Epistemic point.</strong> This is not a claim that SCS is \"better\" than OkLab. The identity exists in SCS because the construction lives on a probability simplex with three outcomes {3, 5, 7} derived from Persistence Theory. OkLab was not built around such a simplex, so no analogous identity emerges. The question is what you want your color space to encode: empirical perceptual calibration, or structural information-theoretic invariants.",
+    sCtitle:"C — Three answers to \"what is luminance?\"",
+    sCdesc:"CIELAB, OkLab and SCS each define a scalar perceptual luminance from the linear photometric Y. The shapes differ especially below Y ≈ 0.01, where each metric makes a different structural choice.",
+    sCchartLabel:"Normalized luminance curves (log x, linear y)",
+    sCcielab:"CIELAB L*(Y) / 100 — piecewise (cube root + linear leg below δ³)",
+    sCoklab:"OkLab L(Y) for achromatic stimulus — fitted cube root of a weighted LMS sum",
+    sCscs:"SCS d<sub>lum</sub>(Y) / π = 2·arcsin(√Y) / π — Fisher–Rao on the Bernoulli family",
+    sCnote:"The three curves all reach 0 at Y = 0 and 1 at Y = 1; what differs is <em>how</em> they cover the interval. OkLab sits above CIELAB and SCS across almost the whole range, because its cube-root grows faster than CIELAB's linear leg (near 0) and than SCS's <code>arcsin(√Y)</code> (in the mid-range). SCS is the <em>lowest</em> curve in the mid-range, which means it dedicates less of its [0, 1] budget to midtones and more to both extremes — the signature of the Fisher–Rao geodesic <code>2·arcsin(√Y)/π</code> on the Bernoulli family, whose sensitivity <code>1/√(Y(1−Y))</code> diverges at <em>both</em> Y → 0 and Y → 1. CIELAB is the only curve with a visible kink (at Y = δ³ ≈ 0.00886), the discontinuity between its linear leg and its cube root. None of the three is \"better\" in an absolute sense: OkLab and CIELAB are calibrated against psychophysical data (different fits, same family); SCS is derived from an information-geometric principle. The practical hybrid <code>ΔE<sub>SCS00</sub></code> (see <code>scripts/delta_e_scs00.py</code>) keeps CIEDE2000 and adds the SCS geodesic as a feature.",
+    theory:"Theory",
+    theoryText:"<p><strong>Three sections, three viewpoints.</strong> Section A compares interpolation paths (the CSS <code>color-mix</code> question). Section B surfaces an identity that SCS satisfies structurally and OkLab does not. Section C overlays the three perceptual-luminance curves so the structural differences are visible at a glance.</p><p><strong>OkLab reference.</strong> Björn Ottosson, \"A perceptual color space for image processing\", 2020 (<code>bottosson.github.io/posts/oklab</code>). OkLab is a fitted cube-root model on a weighted LMS representation, calibrated against MacAdam ellipses, Munsell and IPT data. It is used by CSS Color 4 for <code>color-mix(in oklab, ...)</code>.</p><p><strong>SCS is composable with OkLab, not a replacement.</strong> The stated goal of the PT_COLOR construction (see PT_COLOR.tex abstract) is not to displace OkLab in the perceptual-calibration niche it occupies, but to provide a second lens — simplex-based, information-theoretic, with a structurally conserved quantity S + L = log 3.</p><p><strong>Hybrid metric.</strong> The script <code>scripts/delta_e_scs00.py</code> in the SCS repository implements ΔE<sub>SCS00</sub>, which combines CIEDE2000 with the SCS simplex metric. That is the practical path: keep OkLab (or CIELAB) for what it does well, add SCS for what it does that the others cannot.</p><p><strong>Interpolation details (Section A).</strong> Endpoints (r<sub>1</sub>, r<sub>2</sub>) are converted to (π, Y) via the SCS pipeline. Luminance: <code>φ = arcsin(√Y)</code>, linearly interpolate φ, take <code>Y<sub>t</sub> = sin²φ<sub>t</sub></code>. Chromaticity: spherical slerp on η<sub>p</sub> = √π<sub>p</sub> with Ω = arccos(Σ η<sub>1,p</sub> η<sub>2,p</sub>). Reconstruct sRGB via <code>piToRgbExact(π<sub>t</sub>, Y<sub>t</sub>)</code>.</p><p><strong>Sum rule (Section B).</strong> <code>S = Σ π<sub>p</sub> log(m·π<sub>p</sub>)</code>, <code>L = −Σ π<sub>p</sub> log π<sub>p</sub></code>, so <code>S + L = Σ π<sub>p</sub> log m = log m = log 3</code>, regardless of π. This is not SCS-specific — it holds on any probability simplex with uniform reference. What is SCS-specific is that the chromatic simplex is over the primes {3, 5, 7}, derived from Persistence Theory.</p><p><strong>Luminance curves (Section C).</strong> CIELAB: <code>L* = 116·f(Y) − 16</code> with <code>f(t) = t^(1/3)</code> for <code>t &gt; δ³</code> (δ = 6/29) and linear below. OkLab: for r = g = b = Y, compute the exact Ottosson transform. SCS: <code>d<sub>lum</sub>(Y) = 2·arcsin(√Y)</code>. Normalizations: CIELAB / 100, OkLab as-is (already in [0, 1]), SCS / π.</p>"
+  }
+};
+
+// ================================================================
+// Language switching
+// ================================================================
+function detectLang(){
+  const saved = localStorage.getItem('module09_lang');
+  if(saved === 'fr' || saved === 'en') return saved;
+  return (navigator.language || '').toLowerCase().startsWith('fr') ? 'fr' : 'en';
+}
+let currentLang = detectLang();
+function applyLanguage(lang){
+  currentLang = lang;
+  localStorage.setItem('module09_lang', lang);
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.getAttribute('data-i18n');
+    if(I18N[lang][k] !== undefined) el.innerHTML = I18N[lang][k];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const k = el.getAttribute('data-i18n-html');
+    if(I18N[lang][k] !== undefined) el.innerHTML = I18N[lang][k];
+  });
+  document.getElementById('lang-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+  render();
+}
+document.getElementById('lang-fr').addEventListener('click', () => applyLanguage('fr'));
+document.getElementById('lang-en').addEventListener('click', () => applyLanguage('en'));
+
+// ================================================================
+// SCS pipeline — canonical, copied from module03
+// ================================================================
+const MU_STAR = 15;
+const Q_REL = 1 - 2 / MU_STAR;
+const PRIMES = [3, 5, 7];
+function delta_p(p, q = Q_REL) { return (1 - Math.pow(q, p)) / p; }
+function gamma_p(p, mu = MU_STAR) {
+  const q = 1 - 2 / mu, d = delta_p(p, q);
+  return 4 * p * Math.pow(q, p - 1) * (1 - d) / (mu * (1 - Math.pow(q, p)) * (2 - d));
+}
+const GAMMAS = PRIMES.map(p => gamma_p(p));
+
+const M_SRGB_XYZ = [
+  [0.4124564, 0.3575761, 0.1804375],
+  [0.2126729, 0.7151522, 0.0721750],
+  [0.0193339, 0.1191920, 0.9503041]
+];
+const M_XYZ_SRGB = [
+  [ 3.2404542, -1.5371385, -0.4985314],
+  [-0.9692660,  1.8760108,  0.0415560],
+  [ 0.0556434, -0.2040259,  1.0572252]
+];
+const M_HPE = [
+  [ 0.38971, 0.68898, -0.07868],
+  [-0.22981, 1.18340,  0.04641],
+  [ 0.00000, 0.00000,  1.00000]
+];
+const M_HPE_INV = [
+  [ 1.91025, -1.11218, 0.20195],
+  [ 0.37097,  0.62911, 0.00000],
+  [ 0.00000,  0.00000, 1.00000]
+];
+
+function mv3(m, v) {
+  return [
+    m[0][0]*v[0] + m[0][1]*v[1] + m[0][2]*v[2],
+    m[1][0]*v[0] + m[1][1]*v[1] + m[1][2]*v[2],
+    m[2][0]*v[0] + m[2][1]*v[1] + m[2][2]*v[2]
+  ];
+}
+function clamp01(x){ return Math.min(1, Math.max(0, x)); }
+function srgbToLinear(c) {
+  return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+}
+function linearToSrgb(c) {
+  c = Math.max(0, Math.min(1, c));
+  return c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055;
+}
+function rgbToXyz(rgb) {
+  const lin = rgb.map(srgbToLinear);
+  return mv3(M_SRGB_XYZ, lin);
+}
+function xyzToRgb(xyz) {
+  const lin = mv3(M_XYZ_SRGB, xyz);
+  return lin.map(linearToSrgb);
+}
+function xyzToLms(xyz) {
+  return mv3(M_HPE, xyz).map(v => Math.max(v, 1e-12));
+}
+function lmsToXyz(lms) {
+  return mv3(M_HPE_INV, lms);
+}
+function lmsToSimplex(lms) {
+  const w = GAMMAS.map((g, i) => g * Math.max(lms[i], 1e-12));
+  const s = w[0] + w[1] + w[2];
+  return w.map(v => v / s);
+}
+function piToRgbExact(pi, targetY) {
+  const lmsR = [pi[0] / GAMMAS[0], pi[1] / GAMMAS[1], pi[2] / GAMMAS[2]];
+  const s = lmsR[0] + lmsR[1] + lmsR[2];
+  const lmsN = lmsR.map(v => v / s);
+  const xyzN = lmsToXyz(lmsN);
+  if (Math.abs(xyzN[1]) < 1e-12) return [0.5, 0.5, 0.5];
+  const scale = targetY / xyzN[1];
+  return xyzToRgb(xyzN.map(v => v * scale));
+}
+
+// Derived SCS quantities
+function rgbToPiY(rgb) {
+  const xyz = rgbToXyz(rgb);
+  const lms = xyzToLms(xyz);
+  const pi = lmsToSimplex(lms);
+  return { pi, Y: clamp01(xyz[1]) };
+}
+function simplexKL(pi) {
+  // D_KL(pi || U) with U = (1/3, 1/3, 1/3)
+  const m = pi.length;
+  let s = 0;
+  for(const p of pi){
+    if(p > 1e-12) s += p * Math.log(m * p);
+  }
+  return s;
+}
+function simplexEntropy(pi) {
+  let h = 0;
+  for(const p of pi){
+    if(p > 1e-12) h += -p * Math.log(p);
+  }
+  return h;
+}
+
+// ================================================================
+// OkLab pipeline (Björn Ottosson 2020)
+// https://bottosson.github.io/posts/oklab/
+// ================================================================
+function linearRgbToOklab([r, g, b]) {
+  const l = 0.4122214708*r + 0.5363325363*g + 0.0514459929*b;
+  const m = 0.2119034982*r + 0.6806995451*g + 0.1073969566*b;
+  const s = 0.0883024619*r + 0.2817188376*g + 0.6299787005*b;
+  const lp = Math.cbrt(l), mp = Math.cbrt(m), sp = Math.cbrt(s);
+  return [
+    0.2104542553*lp + 0.7936177850*mp - 0.0040720468*sp,
+    1.9779984951*lp - 2.4285922050*mp + 0.4505937099*sp,
+    0.0259040371*lp + 0.7827717662*mp - 0.8086757660*sp
+  ];
+}
+function oklabToLinearRgb([L, a, b]) {
+  const lp = L + 0.3963377774*a + 0.2158037573*b;
+  const mp = L - 0.1055613458*a - 0.0638541728*b;
+  const sp = L - 0.0894841775*a - 1.2914855480*b;
+  const l = lp*lp*lp, m = mp*mp*mp, s = sp*sp*sp;
+  return [
+    4.0767416621*l - 3.3077115913*m + 0.2309699292*s,
+   -1.2684380046*l + 2.6097574011*m - 0.3413193965*s,
+   -0.0041960863*l - 0.7034186147*m + 1.7076147010*s
+  ];
+}
+function rgbToOklab(rgb) {
+  return linearRgbToOklab(rgb.map(srgbToLinear));
+}
+function oklabToRgb(lab) {
+  return oklabToLinearRgb(lab).map(linearToSrgb);
+}
+
+// ================================================================
+// CIELAB luminance leg (for Section C only)
+// ================================================================
+const DELTA = 6/29, DELTA3 = DELTA*DELTA*DELTA;
+function cielabF(t) { return t > DELTA3 ? Math.cbrt(t) : t/(3*DELTA*DELTA) + 4/29; }
+function Yto_Lstar(Y) { return 116*cielabF(Y) - 16; }
+
+// ================================================================
+// Hex utilities
+// ================================================================
+function hexToRgb(hex) {
+  hex = hex.replace('#','');
+  return [
+    parseInt(hex.slice(0,2),16)/255,
+    parseInt(hex.slice(2,4),16)/255,
+    parseInt(hex.slice(4,6),16)/255
+  ];
+}
+function rgbToHex(rgb) {
+  const [r,g,b] = rgb.map(v => Math.round(clamp01(v)*255));
+  return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+}
+function rgbToCss(rgb) {
+  const [r,g,b] = rgb.map(v => Math.round(clamp01(v)*255));
+  return `rgb(${r},${g},${b})`;
+}
+
+// ================================================================
+// Section A — interpolation
+// ================================================================
+const N_RAIL = 32;
+
+// Linear sRGB interpolation (classical baseline)
+function lerpSrgbLinear(rgb1, rgb2, t) {
+  const l1 = rgb1.map(srgbToLinear);
+  const l2 = rgb2.map(srgbToLinear);
+  const mix = l1.map((v,i) => (1-t)*v + t*l2[i]);
+  return mix.map(linearToSrgb);
+}
+
+// OkLab interpolation (CSS Color 4 color-mix semantics)
+function lerpOklab(rgb1, rgb2, t) {
+  const lab1 = rgbToOklab(rgb1);
+  const lab2 = rgbToOklab(rgb2);
+  const labT = [
+    (1-t)*lab1[0] + t*lab2[0],
+    (1-t)*lab1[1] + t*lab2[1],
+    (1-t)*lab1[2] + t*lab2[2]
+  ];
+  return oklabToRgb(labT);
+}
+
+// SCS interpolation: slerp on η = √π, Fisher–Bernoulli on luminance
+function lerpScs(rgb1, rgb2, t) {
+  const s1 = rgbToPiY(rgb1);
+  const s2 = rgbToPiY(rgb2);
+  // luminance via Fisher–Bernoulli: φ = arcsin(√Y), lerp in φ
+  const phi1 = Math.asin(Math.sqrt(clamp01(s1.Y)));
+  const phi2 = Math.asin(Math.sqrt(clamp01(s2.Y)));
+  const phiT = (1-t)*phi1 + t*phi2;
+  const Yt = Math.sin(phiT) * Math.sin(phiT);
+  // chromaticity: slerp on η = √π
+  const eta1 = s1.pi.map(Math.sqrt);
+  const eta2 = s2.pi.map(Math.sqrt);
+  let dot = 0;
+  for(let i=0;i<3;i++) dot += eta1[i]*eta2[i];
+  dot = Math.max(-1, Math.min(1, dot));
+  const omega = Math.acos(dot);
+  let etaT;
+  if(Math.abs(omega) < 1e-8) {
+    etaT = eta1.slice();
+  } else {
+    const s_om = Math.sin(omega);
+    const a = Math.sin((1-t)*omega) / s_om;
+    const b = Math.sin(t*omega) / s_om;
+    etaT = eta1.map((v,i) => a*v + b*eta2[i]);
+  }
+  // back to π via η² then normalize
+  let piT = etaT.map(v => v*v);
+  const sum = piT[0]+piT[1]+piT[2];
+  piT = piT.map(v => v/sum);
+  return piToRgbExact(piT, Math.max(Yt, 1e-6));
+}
+
+function drawRail(canvasId, rgb1, rgb2, lerpFn) {
+  const cv = document.getElementById(canvasId);
+  const ctx = cv.getContext('2d');
+  const W = cv.clientWidth, H = cv.clientHeight;
+  const dpr = window.devicePixelRatio || 1;
+  if(cv.width !== W*dpr || cv.height !== H*dpr){
+    cv.width = W*dpr; cv.height = H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  ctx.clearRect(0,0,W,H);
+  const w = W / N_RAIL;
+  for(let i=0;i<N_RAIL;i++){
+    const t = i/(N_RAIL-1);
+    const rgb = lerpFn(rgb1, rgb2, t);
+    ctx.fillStyle = rgbToCss(rgb);
+    ctx.fillRect(i*w, 0, Math.ceil(w)+1, H);
+  }
+  // midpoint marker
+  const midX = W/2;
+  ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4,3]);
+  ctx.beginPath(); ctx.moveTo(midX, 0); ctx.lineTo(midX, H); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function renderRails() {
+  const rgbA = hexToRgb(document.getElementById('colorA').value);
+  const rgbB = hexToRgb(document.getElementById('colorB').value);
+  document.getElementById('colorAhex').textContent = document.getElementById('colorA').value;
+  document.getElementById('colorBhex').textContent = document.getElementById('colorB').value;
+
+  drawRail('railSrgb', rgbA, rgbB, lerpSrgbLinear);
+  drawRail('railOklab', rgbA, rgbB, lerpOklab);
+  drawRail('railScs',  rgbA, rgbB, lerpScs);
+
+  const midS = lerpSrgbLinear(rgbA, rgbB, 0.5);
+  const midO = lerpOklab(rgbA, rgbB, 0.5);
+  const midC = lerpScs(rgbA, rgbB, 0.5);
+  document.getElementById('midSrgb').textContent = 't=0.5  ' + rgbToHex(midS);
+  document.getElementById('midOklab').textContent = 't=0.5  ' + rgbToHex(midO);
+  document.getElementById('midScs').textContent = 't=0.5  ' + rgbToHex(midC);
+}
+
+// ================================================================
+// Section B — sum rule readout
+// ================================================================
+function renderReadouts() {
+  const hex = document.getElementById('colorC').value;
+  document.getElementById('colorChex').textContent = hex;
+  const rgb = hexToRgb(hex);
+  // OkLab
+  const [L,a,b] = rgbToOklab(rgb);
+  const C = Math.sqrt(a*a + b*b);
+  let h = Math.atan2(b, a) * 180 / Math.PI;
+  if(h < 0) h += 360;
+  document.getElementById('okL').textContent = L.toFixed(4);
+  document.getElementById('okA').textContent = (a>=0?'+':'') + a.toFixed(4);
+  document.getElementById('okB').textContent = (b>=0?'+':'') + b.toFixed(4);
+  document.getElementById('okC').textContent = C.toFixed(4);
+  document.getElementById('okH').textContent = h.toFixed(1) + '°';
+
+  // SCS
+  const { pi, Y } = rgbToPiY(rgb);
+  const S = simplexKL(pi);
+  const Lent = simplexEntropy(pi);
+  const sumSL = S + Lent;
+  document.getElementById('scsP3').textContent = pi[0].toFixed(4);
+  document.getElementById('scsP5').textContent = pi[1].toFixed(4);
+  document.getElementById('scsP7').textContent = pi[2].toFixed(4);
+  document.getElementById('scsS').textContent = S.toFixed(4) + ' nats';
+  document.getElementById('scsL').textContent = Lent.toFixed(4) + ' nats';
+  document.getElementById('scsSum').textContent = sumSL.toFixed(4) + ' nats';
+
+  // sum bar: S on the left, L on the right, total = log 3
+  const total = Math.log(3);
+  const fracS = sumSL > 1e-12 ? S / total : 0;
+  const fracL = sumSL > 1e-12 ? Lent / total : 0;
+  const sPct = Math.max(0, Math.min(100, fracS * 100));
+  const lPct = Math.max(0, Math.min(100, fracL * 100));
+  const sBar = document.getElementById('sumBarS');
+  const lBar = document.getElementById('sumBarL');
+  sBar.style.width = sPct + '%';
+  lBar.style.left = sPct + '%';
+  lBar.style.width = lPct + '%';
+}
+
+// ================================================================
+// Section C — luminance curves
+// ================================================================
+function oklabLofY(Y) {
+  // achromatic stimulus: linear r = g = b = Y
+  const lab = linearRgbToOklab([Y, Y, Y]);
+  return lab[0];
+}
+function scsLumOfY(Y) {
+  // d_lum(Y) as a scalar: 2·arcsin(√Y), normalized by π so it lives in [0,1]
+  return 2 * Math.asin(Math.sqrt(clamp01(Y)));
+}
+
+function drawLumChart() {
+  const cv = document.getElementById('lumChart');
+  const ctx = cv.getContext('2d');
+  const W = cv.clientWidth, H = cv.clientHeight;
+  const dpr = window.devicePixelRatio || 1;
+  if(cv.width !== W*dpr || cv.height !== H*dpr){
+    cv.width = W*dpr; cv.height = H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  ctx.clearRect(0,0,W,H);
+
+  const pad = { l: 58, r: 18, t: 16, b: 40 };
+  const plotW = W - pad.l - pad.r;
+  const plotH = H - pad.t - pad.b;
+
+  // x-axis: Y log scale from 1e-6 to 1
+  const xMin = 1e-6, xMax = 1;
+  const xLog = y => (Math.log10(Math.max(y, xMin)) - Math.log10(xMin)) / (Math.log10(xMax) - Math.log10(xMin));
+  // y-axis: normalized luminance in [0, 1]
+  const yMap = v => 1 - v; // flip: 0 at bottom, 1 at top
+
+  // plot background
+  ctx.fillStyle = '#0b0b0b';
+  ctx.fillRect(pad.l, pad.t, plotW, plotH);
+
+  // grid
+  ctx.strokeStyle = '#1b1b1b';
+  ctx.lineWidth = 1;
+  const xDecades = [1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1];
+  for(const xv of xDecades) {
+    const px = pad.l + xLog(xv) * plotW;
+    ctx.beginPath(); ctx.moveTo(px, pad.t); ctx.lineTo(px, pad.t + plotH); ctx.stroke();
+  }
+  for(let g = 0; g <= 5; g++) {
+    const py = pad.t + (g/5) * plotH;
+    ctx.beginPath(); ctx.moveTo(pad.l, py); ctx.lineTo(pad.l + plotW, py); ctx.stroke();
+  }
+
+  // axis labels
+  ctx.fillStyle = '#666';
+  ctx.font = '10px ui-monospace,Menlo,monospace';
+  ctx.textAlign = 'center';
+  for(const xv of xDecades) {
+    const px = pad.l + xLog(xv) * plotW;
+    const label = xv >= 1 ? 'Y=1' : (xv >= 1e-2 ? `Y=${(xv*100).toFixed(xv>=0.1?0:1)}%` : `Y=${xv.toExponential(0)}`);
+    ctx.fillText(label, px, pad.t + plotH + 14);
+  }
+  ctx.textAlign = 'right';
+  for(let g = 0; g <= 5; g++) {
+    const v = g/5;
+    const py = pad.t + (1-v) * plotH;
+    ctx.fillText(v.toFixed(1), pad.l - 6, py + 3);
+  }
+  ctx.textAlign = 'left';
+  ctx.fillText('normalized luminance', pad.l + 8, pad.t + 12);
+
+  // CIELAB kink marker
+  const kinkX = pad.l + xLog(DELTA3) * plotW;
+  ctx.strokeStyle = '#3a2020';
+  ctx.setLineDash([3, 3]);
+  ctx.beginPath(); ctx.moveTo(kinkX, pad.t); ctx.lineTo(kinkX, pad.t + plotH); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#884040';
+  ctx.fillText('δ³ ≈ 0.00886 (CIELAB kink)', kinkX + 4, pad.t + 28);
+
+  // build three curves
+  const N = 512;
+  const pts = { cielab: [], oklab: [], scs: [] };
+  for(let i = 0; i < N; i++) {
+    const Y = xMin * Math.pow(xMax / xMin, i / (N - 1));
+    pts.cielab.push([Y, Yto_Lstar(Y) / 100]);
+    pts.oklab.push([Y, oklabLofY(Y)]);
+    pts.scs.push([Y, scsLumOfY(Y) / Math.PI]);
+  }
+  const drawCurve = (arr, color) => {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    arr.forEach(([x, v], i) => {
+      const px = pad.l + xLog(x) * plotW;
+      const py = pad.t + yMap(Math.max(0, Math.min(1, v))) * plotH;
+      if(i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    });
+    ctx.stroke();
+  };
+  drawCurve(pts.cielab, '#e05050');
+  drawCurve(pts.oklab,  '#a070d0');
+  drawCurve(pts.scs,    '#c8a84e');
+}
+
+// ================================================================
+// Master render
+// ================================================================
+function render() {
+  renderRails();
+  renderReadouts();
+  drawLumChart();
+}
+
+// ================================================================
+// Bindings
+// ================================================================
+['colorA', 'colorB', 'colorC'].forEach(id => {
+  document.getElementById(id).addEventListener('input', render);
+});
+window.addEventListener('resize', render);
+
+applyLanguage(currentLang);
+</script>
+</body>
+</html>

@@ -308,18 +308,17 @@ function hexToRgb(hex){
   const n = parseInt(s,16);
   return [(n>>16&255)/255,(n>>8&255)/255,(n&255)/255];
 }
-function hueAngleFromRgb(rgb){
-  const [r,g,b]=rgb;
-  const max=Math.max(r,g,b), min=Math.min(r,g,b), d=max-min;
-  if(d===0) return 0;
-  let h=0;
-  switch(max){
-    case r: h=((g-b)/d)%6; break;
-    case g: h=(b-r)/d+2; break;
-    default: h=(r-g)/d+4; break;
-  }
-  h *= 60;
-  if(h<0) h += 360;
+// SCS barycentric hue angle on the simplex (matches PT_COLOR.tex §Hue circle):
+//   θ = atan2(√3·(π₅ − π₇), 2·π₃ − π₅ − π₇)  mapped to [0°, 360°).
+// This is the native SCS hue, NOT the HSL hue — equal to the HSL hue on pure
+// primaries but diverges in between because it lives on the probability simplex
+// parametrized by the three active primes {3, 5, 7}.
+function hueAngleFromPi(pi){
+  const x = 2*pi[0] - pi[1] - pi[2];
+  const y = Math.sqrt(3) * (pi[1] - pi[2]);
+  if (Math.abs(x) < 1e-12 && Math.abs(y) < 1e-12) return 0;
+  let h = Math.atan2(y, x) * 180 / Math.PI;
+  if (h < 0) h += 360;
   return h;
 }
 function relSatToAlpha(relSat, pDir){
@@ -359,7 +358,7 @@ function buildModel(){
   const S = kl(p,U);
   const L = entropy(p);
   const budget = S + L;
-  const theta = hueAngleFromRgb(rgb);
+  const theta = hueAngleFromPi(p);
   const relSatExact = alphaMax <= 1e-12 ? 0 : alpha / alphaMax;
 
   return { ellRel, pDir, p, lumMax, targetLum, rgb, S, L, budget, theta, relSatExact };

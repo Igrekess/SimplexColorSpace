@@ -91,7 +91,7 @@ details.theory-panel summary::-webkit-details-marker{display:none}
     <span class="module-num">04</span>
     <h2 data-i18n="title" style="margin:0;font-size:1.25rem;">Equilibrium</h2>
   </div>
-  <p class="module-desc" data-i18n="desc">This module applies a global SCS-inspired rebalance. Negative values move the image toward a more luminous / softer budget. Positive values move it toward a denser / more saturated budget.</p>
+  <p class="module-desc" data-i18n="desc">This module applies a global SCS rebalance: each pixel moves along two decorrelated axes — its simplex saturation α (radial distance to the uniform point U) and its linear luminance Y. Negative values move the image toward a more luminous / softer budget. Positive values move it toward a denser / more saturated budget.</p>
 
   <div class="grid-3">
     <div class="panel">
@@ -188,7 +188,7 @@ const I18N = {
     headerTitle:"Module 04 - Equilibrium",
     siteTagline:"Chargez une image, estimez son budget global luminance/saturation, puis déplacez-la le long d’un axe Equilibrium.",
     title:"Equilibrium",
-    desc:"Ce module applique un rééquilibrage global inspiré du SCS. Les valeurs négatives déplacent l’image vers un budget plus lumineux / plus doux. Les valeurs positives la déplacent vers un budget plus dense / plus saturé.",
+    desc:"Ce module applique un rééquilibrage SCS global : chaque pixel se déplace sur deux axes décorrélés — sa saturation simplexe α (distance radiale à l'uniforme U) et sa luminance linéaire Y. Les valeurs négatives déplacent l'image vers un budget plus lumineux / moins saturé. Les valeurs positives vers un budget plus dense / plus saturé.",
     controls:"Contrôles",
     demoImages:"Images démo / perso",
     demoNote:"Les 3 portraits de démo sont générés par IA.",
@@ -212,15 +212,17 @@ const I18N = {
     targetSat:"Saturation cible",
     graphNote:"La diagonale est l’axe Equilibrium utilisé dans ce prototype. Le point original et le point corrigé montrent comment l’image se déplace dans le plan du budget global.",
     theory:"Theory",
-    theoryText:`<p>Ce prototype suppose qu’une image peut être résumée par un point global dans un <strong>plan de budget luminance / saturation</strong>.</p>
-      <p>Au lieu d’éditer séparément la luminance et la saturation, le module déplace ce point le long d’un unique axe <strong>Equilibrium</strong>. Les valeurs négatives orientent l’image vers un rendu plus ouvert et plus lumineux ; les valeurs positives vers un rendu plus dense et plus chromatique.</p>
-      `
+    theoryText:`<p>Le cœur de l'argument SCS : la <strong>saturation</strong> et la <strong>luminance</strong> sont géométriquement indépendantes sur le simplexe. Chaque pixel sRGB est projeté via le pipeline <code>sRGB → linéaire → XYZ → LMS (HPE) → π γ-pondéré</code>. Deux quantités sont alors accessibles :</p>
+      <ul><li><code>α = ||π − U|| / ||π_bord − U||</code> : distance radiale à l'uniforme <code>U = (1/3, 1/3, 1/3)</code>, normalisée au bord du simplexe. α = 0 au gris neutre, α = 1 sur la frontière (couleur saturée sur la direction choisie).</li>
+      <li><code>Y</code> : la luminance linéaire sRGB (<code>0.2126 R + 0.7152 G + 0.0722 B</code>).</li></ul>
+      <p>Le slider Equilibrium applique simultanément deux facteurs : un <code>satFactor</code> qui remet à l'échelle α (en gardant la direction chromatique intacte, seule la distance au gris change) et un <code>lumFactor</code> qui remet à l'échelle Y. Les deux sont opposés en signe : positif → α augmente, Y diminue ; négatif → α diminue, Y augmente. Les masques de protection (peau, hautes lumières, ombres, neutres) freinent le mouvement dans les zones sensibles.</p>
+      <p>Le pixel final est reconstruit via <code>piToRgbExact(π', Y')</code>, qui résout la contrainte d'avoir simultanément la direction π' et la luminance Y' sur la sortie sRGB (avec un clip gamut si besoin).</p>`
   },
   en: {
     headerTitle:"Module 04 - Equilibrium",
     siteTagline:"Load an image, estimate its global luminance/saturation budget, and move it along an Equilibrium axis.",
     title:"Equilibrium",
-    desc:"This module applies a global SCS-inspired rebalance. Negative values move the image toward a more luminous / softer budget. Positive values move it toward a denser / more saturated budget.",
+    desc:"This module applies a global SCS rebalance: each pixel moves along two decorrelated axes — its simplex saturation α (radial distance to the uniform point U) and its linear luminance Y. Negative values move the image toward a more luminous / softer budget. Positive values move it toward a denser / more saturated budget.",
     controls:"Controls",
     demoImages:"Demo / personal image",
     demoNote:"The 3 demo portraits are AI-generated.",
@@ -244,9 +246,11 @@ const I18N = {
     targetSat:"Target saturation",
     graphNote:"The diagonal line is the Equilibrium axis used in this prototype. The original point and the corrected point show how the image moves in the global budget plane.",
     theory:"Theory",
-    theoryText:`<p>This prototype assumes that an image can be summarized by a global point in a <strong>luminance / saturation budget plane</strong>.</p>
-      <p>Instead of editing luminance and saturation independently, the module moves that point along a single <strong>Equilibrium</strong> axis. Negative values bias the image toward a more open, luminous rendering; positive values bias it toward a denser, more chromatic rendering.</p>
-      `
+    theoryText:`<p>The core SCS argument: <strong>saturation</strong> and <strong>luminance</strong> are geometrically independent on the simplex. Each sRGB pixel is projected via the pipeline <code>sRGB → linear → XYZ → LMS (HPE) → γ-weighted π</code>. Two quantities are then accessible:</p>
+      <ul><li><code>α = ||π − U|| / ||π_boundary − U||</code>: radial distance to the uniform <code>U = (1/3, 1/3, 1/3)</code>, normalized to the simplex boundary. α = 0 at neutral gray, α = 1 at the boundary (fully saturated color on the chosen direction).</li>
+      <li><code>Y</code>: the linear sRGB luminance (<code>0.2126 R + 0.7152 G + 0.0722 B</code>).</li></ul>
+      <p>The Equilibrium slider applies two factors simultaneously: a <code>satFactor</code> rescaling α (keeping the chromatic direction π/|π| intact — only the distance from gray changes) and a <code>lumFactor</code> rescaling Y. The two have opposite signs: positive → α up, Y down; negative → α down, Y up. Protection masks (skin, highlights, shadows, neutrals) damp the move in sensitive regions.</p>
+      <p>The final pixel is reconstructed via <code>piToRgbExact(π', Y')</code>, which solves for sRGB output having both the new direction π' and the new luminance Y' (with gamut clipping if needed).</p>`
   }
 };
 

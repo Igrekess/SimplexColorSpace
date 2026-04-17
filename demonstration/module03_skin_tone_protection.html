@@ -197,7 +197,7 @@ const I18N = {
     siteTitle: "Protection géodésique des teintes chair",
     siteTagline: "Protection géodésique des teintes chair — 0% = original/original",
     title: "Protection des tons chair",
-    desc: "Augmenter la saturation est courant en retouche photo. HSL traite tous les pixels de la même façon — les tons chair virent à l'orange. Le SCS ajuste le long de la géodésique du simplexe : les couleurs deviennent plus vives tout en préservant la direction de teinte.",
+    desc: "Augmenter la saturation est courant en retouche photo. HSL traite tous les pixels de la même façon — les tons chair virent à l'orange. Le SCS ajuste chaque pixel le long de son rayon radial sur le simplexe γ-pondéré (de U vers la direction π du pixel), luminance Y linéaire préservée : les couleurs deviennent plus vives tout en gardant leur direction chromatique.",
     imageLabel: "Image :",
     demoNote: "Les 3 portraits de démo sont générés par IA.",
     uploadLabel: "Charger sa propre image :",
@@ -207,16 +207,16 @@ const I18N = {
     hslTitle: "HSL (boost uniforme)",
     hslNote: "À 0% : image originale. Ensuite, multiplication uniforme de S.",
     original: "Original",
-    scsTitle: "SCS (boost géodésique)",
+    scsTitle: "SCS (boost radial sur le simplexe)",
     scsNote: "À 0% : image originale. Ensuite seulement, boost le long du rayon du simplexe à luminance Y constante.",
-    theory: "La différence entre les deux approches est la suivante. En HSL, le boost de saturation agit de façon uniforme sur tous les pixels. Les tons chair, qui sont déjà des couleurs chaudes et proches de l’orange, dérivent donc rapidement vers des rouges-oranges artificiels.<br><br>En SCS, chaque pixel est séparé en deux parties : sa luminance <code>Y</code>, qui mesure la clarté, et sa structure chromatique <code>π</code>, qui indique sa position sur le simplexe des couleurs. Le boost ne pousse pas la couleur n’importe comment : il la fait avancer dans sa propre direction chromatique, tout en gardant la luminance constante. C’est cela que l’on appelle ici un boost géodésique.<br><br>Les tons chair occupent une région bien définie du simplexe, centrée autour d’une teinte chaude. Le module applique donc une protection continue dans cette zone : plus un pixel ressemble à une peau naturelle, plus le boost est freiné. Le but est simple : rendre l’image plus vive sans casser la carnation."
+    theory: "La différence entre les deux approches est la suivante. En HSL, le boost de saturation agit de façon uniforme sur tous les pixels. Les tons chair, qui sont déjà des couleurs chaudes et proches de l’orange, dérivent donc rapidement vers des rouges-oranges artificiels.<br><br>En SCS, chaque pixel est séparé en deux parties : sa luminance <code>Y</code>, qui mesure la clarté, et sa structure chromatique <code>π</code> sur le simplexe γ-pondéré. Le boost déplace <code>π</code> <em>radialement</em> à partir du gris neutre <code>U = (1/3, 1/3, 1/3)</code> vers la direction chromatique du pixel : <code>π' = U + α·(π − U)</code>, avec α contrôlé par le slider. La luminance <code>Y</code> reste inchangée. Ce n'est pas une géodésique de Fisher au sens strict (qui serait un slerp sur <code>√π</code>, cf. module 09) ; c'est un mouvement radial sur le simplexe, suffisant pour démontrer la séparation luminance / chromaticité.<br><br>Les tons chair occupent une région bien définie du simplexe, centrée autour d’une teinte chaude. Le module applique donc une protection continue dans cette zone : plus un pixel ressemble à une peau naturelle, plus le boost est freiné. Le but est simple : rendre l’image plus vive sans casser la carnation."
   },
   en: {
     headerPrefix: "",
     siteTitle: "Skin tone protection",
     siteTagline: "Geodesic skin-tone protection — 0% = original/original",
     title: "Skin-tone protection",
-    desc: "Increasing saturation is common in photo retouching. HSL treats all pixels the same way — skin tones drift toward orange. SCS adjusts along the simplex geodesic: colors become more vivid while preserving hue direction.",
+    desc: "Increasing saturation is common in photo retouching. HSL treats all pixels the same way — skin tones drift toward orange. SCS moves each pixel along its radial ray on the γ-weighted simplex (from U toward the pixel's chromatic direction π) at constant linear Y: colors become more vivid while preserving their chromatic direction.",
     imageLabel: "Image:",
     demoNote: "The 3 demo portraits are AI-generated.",
     uploadLabel: "Load your own image:",
@@ -226,9 +226,9 @@ const I18N = {
     hslTitle: "HSL (uniform boost)",
     hslNote: "At 0%: original image. Then, uniform multiplication of S.",
     original: "Original",
-    scsTitle: "SCS (geodesic boost)",
+    scsTitle: "SCS (radial simplex boost)",
     scsNote: "At 0%: original image. Only then, boost along the simplex ray with constant Y luminance.",
-    theory: "The difference between the two approaches is the following. In HSL, the saturation boost is applied uniformly to all pixels. Skin tones are already warm colors, close to orange, so they drift quickly toward artificial orange-red hues.<br><br>In SCS, each pixel is separated into two parts: its luminance <code>Y</code>, which measures brightness, and its chromatic structure <code>π</code>, which gives its position on the color simplex. The boost does not push the color arbitrarily: it moves it forward in its own chromatic direction while keeping luminance constant. This is what a geodesic boost means here.<br><br>Skin tones occupy a well-defined region of the simplex, centered around a warm hue. The module therefore applies a continuous protection mask in that region: the more a pixel resembles a natural skin tone, the more the boost is damped. The goal is simple: make the image more vivid without breaking the complexion."
+    theory: "The difference between the two approaches is the following. In HSL, the saturation boost is applied uniformly to all pixels. Skin tones are already warm colors, close to orange, so they drift quickly toward artificial orange-red hues.<br><br>In SCS, each pixel is separated into two parts: its luminance <code>Y</code> (brightness) and its chromatic structure <code>π</code> on the γ-weighted simplex. The boost moves <code>π</code> <em>radially</em> from the neutral gray <code>U = (1/3, 1/3, 1/3)</code> toward the pixel's chromatic direction: <code>π' = U + α·(π − U)</code>, with α controlled by the slider. Linear luminance <code>Y</code> is preserved. This is not a Fisher geodesic in the strict sense (a true geodesic would be a slerp on <code>√π</code>, see module 09); it is a radial simplex move, sufficient to demonstrate the luminance / chromaticity decoupling.<br><br>Skin tones occupy a well-defined region of the simplex, centered around a warm hue. The module therefore applies a continuous protection mask in that region: the more a pixel resembles a natural skin tone, the more the boost is damped. The goal is simple: make the image more vivid without breaking the complexion."
   }
 };
 

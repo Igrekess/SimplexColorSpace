@@ -93,7 +93,7 @@ print(f"ΔE_SCS = {d:.4f}")
 
 # XYZ → SCS coordinates
 c = to_scs([0.95, 1.0, 1.09])
-print(f"ℓ={c.ell:.2f}  S={c.S:.3f} bits  θ={c.hue:.0f}°")
+print(f"ℓ={c.ell:.2f}  S={c.S:.3f} nats  θ={c.hue:.0f}°")
 print(f"π = ({c.pi[0]:.3f}, {c.pi[1]:.3f}, {c.pi[2]:.3f})")
 
 # Fisher–Bernoulli luminance geodesic (used in ΔE_SCS00)
@@ -110,14 +110,16 @@ print(f"S + L = {total:.6f} (err = {err:.1e})")
 
 ### API summary
 
+All information-theoretic quantities (`S`, `L`, `gft_check`) are in **nats** (natural log), matching the paper's convention. `S + L = log 3 ≈ 1.0986`.
+
 | Function | Purpose |
 |----------|---------|
 | `delta_e(xyz1, xyz2)` | SCS color difference (pure geodesic, 0 parameters) |
 | `delta_e_lab(L1,a1,b1, L2,a2,b2)` | Same, from CIELAB inputs |
 | `to_scs(xyz)` | XYZ → `SCSColor(ell, S, hue, pi)` |
 | `fisher_luminance(Y1, Y2)` | Fisher–Bernoulli geodesic `d_lum` |
-| `saturation(pi)` | Kullback–Leibler divergence from uniform |
-| `luminance_entropy(pi)` | Shannon entropy `H(π)` |
+| `saturation(pi)` | Kullback–Leibler divergence from uniform, in nats |
+| `luminance_entropy(pi)` | Shannon entropy `H(π)`, in nats |
 | `gft_check(pi)` | Verify `S + L = log 3` |
 
 ### Constants (all derived from `s = 1/2` at `μ* = 15`)
@@ -153,6 +155,26 @@ All scripts live in `scripts/`. Run from anywhere; they resolve data paths from 
 | `v4_analysis_plots.py` | V4 figures | — |
 | `scs_ciede2000_analysis.py` | SCS vs CIEDE2000 comparative analysis | — |
 | `exploratory/` | Scratch R&D: `model20_deep_analysis`, `push_beyond_ciede2000`, `pt_matrix` | Not load-bearing |
+
+---
+
+## Interactive demos
+
+Nine self-contained HTML modules (bilingual FR/EN, dark theme, no build step needed) are in [`demonstration/`](demonstration/). Open [`demo.html`](demonstration/demo.html) as an index, or try them online: [live demo index](https://igrekess.github.io/SieveColorSpace/demonstration/demo.html).
+
+| # | Module | What it shows |
+|---|--------|---------------|
+| 01 | [Read a Color in SCS](demonstration/module01_read_a_color_in_scs.html) | Interactive ℓRGB ↔ polar (ℓ, S, θ) readout on the chromatic simplex |
+| 02 | [The Sunset Example](demonstration/module02_the_sunset_example.html) | HSL vs SCS on a high-contrast scene + local budget cards with exact S + L = log 3 |
+| 03 | [Skin Tone Protection](demonstration/module03_skin_tone_protection.html) | HSL saturation boost vs SCS radial-simplex boost with skin-corridor protection |
+| 04 | [Equilibrium](demonstration/module04_equilibrium.html) | Decorrelated α / Y axes: a single slider moves saturation one way, luminance the other |
+| 05 | [Highlight Color Preservation](demonstration/module05_highlight_color_preservation.html) | SCS preserves π exactly and reduces only Y; classical HSL desaturates toward white |
+| 06 | [Color Cast Separation](demonstration/module06_color_cast_separation.html) | SCS shifts π toward U on the simplex at constant Y; classical RGB subtraction alters Y |
+| 07 | [Black & White from SCS](demonstration/module07_black_and_white_from_scs.html) | S·cos(θ) tonal offset on top of Y: warm hues brighten, cool darken (orange-filter analogue) |
+| 08 | [SCS vs CIELAB — dark region](demonstration/module08_scs_vs_cielab_dark_region.html) | Dark-region ladder, sensitivity curves, and the r = 0.625 vs 0.558 benchmark on COMBVD |
+| 09 | [SCS vs OkLab](demonstration/module09_scs_vs_oklab.html) | Interpolation rails + sum rule S + L = log 3 + overlaid CIELAB / OkLab / SCS luminance curves |
+
+Each module uses the canonical SCS pipeline (sRGB → XYZ → LMS via HPE → γ-weighted simplex) — the math in the demos matches the paper, not HSL heuristics. The `View Source` of any module shows the same `MU_STAR`, `GAMMAS`, `M_HPE`, `lmsToSimplex`, `piToRgbExact` functions as the Python SDK.
 
 ---
 

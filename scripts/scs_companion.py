@@ -44,8 +44,8 @@ TEXTS = {
         'prime_labels': {3: 'p=3 (red)', 5: 'p=5 (green)', 7: 'p=7 (blue)'},
         'fig1_title': 'Chromatic simplex $\\Delta^2$ \u2014 SCS System',
         'fig2_title': 'Chromatic conservation law (GFT)',
-        'fig2_xlabel': 'Saturation  $S = D_{KL}(\\pi \\| u)$  [bits]',
-        'fig2_ylabel': 'Luminance  $L = H(\\pi)$  [bits]',
+        'fig2_xlabel': 'Saturation  $S = D_{KL}(\\pi \\| u)$  [nats]',
+        'fig2_ylabel': 'Luminance  $L = H(\\pi)$  [nats]',
         'fig2_white': 'White\n(center)',
         'fig2_pure_red': 'Pure red\n(vertex)',
         'fig3_title': 'Fisher ellipses on $\\Delta^2$ \u2014 MacAdam analogue',
@@ -76,8 +76,8 @@ TEXTS = {
         'prime_labels': {3: 'p=3 (rouge)', 5: 'p=5 (vert)', 7: 'p=7 (bleu)'},
         'fig1_title': 'Simplexe chromatique $\\Delta^2$ \u2014 Syst\u00e8me SCS',
         'fig2_title': 'Loi de conservation chromatique (GFT)',
-        'fig2_xlabel': 'Saturation  $S = D_{KL}(\\pi \\| u)$  [bits]',
-        'fig2_ylabel': 'Luminance  $L = H(\\pi)$  [bits]',
+        'fig2_xlabel': 'Saturation  $S = D_{KL}(\\pi \\| u)$  [nats]',
+        'fig2_ylabel': 'Luminance  $L = H(\\pi)$  [nats]',
         'fig2_white': 'Blanc\n(centre)',
         'fig2_pure_red': 'Rouge pur\n(sommet)',
         'fig3_title': 'Ellipses de Fisher sur $\\Delta^2$ \u2014 analogue de MacAdam',
@@ -136,17 +136,17 @@ def gamma_p(p, mu=MU_STAR, q=None):
 
 
 def dkl_color(pi):
-    """D_KL(pi || uniform) — saturation  [GFT, D02]"""
+    """D_KL(pi || uniform) — saturation in nats (natural log). [sum rule, D02]"""
     pi = np.asarray(pi, dtype=float)
     pi = pi[pi > 0]  # avoid log(0)
-    return np.sum(pi * np.log2(3 * pi))
+    return np.sum(pi * np.log(3 * pi))
 
 
 def entropy_color(pi):
-    """H(pi) — perceptual luminance  [GFT, D02]"""
+    """H(pi) — chromatic entropy in nats (natural log). [sum rule, D02]"""
     pi = np.asarray(pi, dtype=float)
     pi = pi[pi > 0]
-    return -np.sum(pi * np.log2(pi))
+    return -np.sum(pi * np.log(pi))
 
 
 def fisher_metric(pi, gamma):
@@ -223,9 +223,9 @@ def verify_all():
     print(f"  Hierarchy gamma_3 > gamma_5 > gamma_7: {'PASS' if check else 'FAIL'}")
     all_pass &= check
 
-    # 6. GFT conservation: D_KL + H = log2(3)
-    print(f"\n--- GFT Conservation: S + L = log2(3) ---")
-    log2_3 = np.log2(3)
+    # 6. Sum rule: D_KL + H = log 3 (natural log, nats)
+    print(f"\n--- Sum rule: S + L = log 3 (nats) ---")
+    log3 = np.log(3)
     test_points = [
         ("White", [1/3, 1/3, 1/3]),
         ("Pure red", [0.999, 0.0005, 0.0005]),
@@ -237,7 +237,7 @@ def verify_all():
         S = dkl_color(pi)
         L = entropy_color(pi)
         total = S + L
-        err = abs(total - log2_3)
+        err = abs(total - log3)
         print(f"  {name:12s}: S={S:.4f} + L={L:.4f} = {total:.6f}  (err={err:.2e})  "
               f"{'PASS' if err < 1e-10 else 'FAIL'}")
         all_pass &= (err < 1e-10)
@@ -417,8 +417,8 @@ def fig_conservation():
     sk = log2_3/np.sqrt(2)
     ax.axvline(x=sk, color='#CC6600', linestyle='--', alpha=0.5, linewidth=1.5)
 
-    ax.set_xlabel('Saturation  $S = D_{KL}(\\pi \\| u)$  [bits]', fontsize=12)
-    ax.set_ylabel('Luminance  $L = H(\\pi)$  [bits]', fontsize=12)
+    ax.set_xlabel('Saturation  $S = D_{KL}(\\pi \\| u)$  [nats]', fontsize=12)
+    ax.set_ylabel('Luminance  $L = H(\\pi)$  [nats]', fontsize=12)
     ax.set_title('Loi de conservation chromatique (GFT)', fontsize=14)
     ax.set_xlim(-0.05, log2_3 + 0.1)
     ax.set_ylim(-0.05, log2_3 + 0.1)

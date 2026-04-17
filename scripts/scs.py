@@ -19,7 +19,8 @@ Theory summary:
     - Metric: Fisher (Čencov unique) weighted by γ_p at μ*=15.
     - Distance: Bhattacharyya geodesic on Δ² + Fisher on Bernoulli(ℓ).
     - Balance: w_lum = 3/4, w_chrom = 1/4  (N_active/(N_active+1), T7).
-    - Conservation: D_KL + H = log₂(3)  (GFT, algebraic identity).
+    - Sum rule: D_KL(π||U) + H(π) = log 3  (natural log, nats; generic
+      identity on any probability simplex with uniform reference).
 
 Reference: PT_COLOR.tex (Senez, 2026).
 """
@@ -115,8 +116,8 @@ def to_scs(xyz, Y_ref=1.0, matrix=None):
 
     ell = np.clip(xyz[1] / Y_ref, 0, 1)
 
-    # Saturation: D_KL(π || uniform)
-    S = float(np.sum(pi[pi > 0] * np.log2(3 * pi[pi > 0])))
+    # Saturation: D_KL(π || uniform), in nats (natural log)
+    S = float(np.sum(pi[pi > 0] * np.log(3 * pi[pi > 0])))
 
     # Hue: angular coordinate on the simplex
     hue = np.degrees(np.arctan2(
@@ -190,25 +191,26 @@ def delta_e_lab(L1, a1, b1, L2, a2, b2,
 # ============================================================
 
 def saturation(pi):
-    """D_KL(π || uniform) — saturation. [GFT, D02]"""
+    """D_KL(π || uniform) — saturation, in nats (natural log). [sum rule, D02]"""
     pi = np.asarray(pi, dtype=float)
-    return float(np.sum(pi[pi > 0] * np.log2(3 * pi[pi > 0])))
+    return float(np.sum(pi[pi > 0] * np.log(3 * pi[pi > 0])))
 
 
 def luminance_entropy(pi):
-    """H(π) — perceptual luminance entropy. [GFT, D02]"""
+    """H(π) — chromatic entropy, in nats (natural log). [sum rule, D02]"""
     pi = np.asarray(pi, dtype=float)
-    return float(-np.sum(pi[pi > 0] * np.log2(pi[pi > 0])))
+    return float(-np.sum(pi[pi > 0] * np.log(pi[pi > 0])))
 
 
 def gft_check(pi):
     """
-    Verify GFT: S + L = log₂(3).
+    Verify the SCS sum rule: S + L = log 3 (natural log, in nats).
+    This is a generic identity on any probability simplex with uniform reference.
     Returns (S, L, S+L, error).
     """
     S = saturation(pi)
     L = luminance_entropy(pi)
-    budget = np.log2(3)
+    budget = np.log(3)
     return S, L, S + L, abs(S + L - budget)
 
 

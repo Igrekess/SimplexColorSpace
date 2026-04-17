@@ -78,7 +78,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--gold)}
   <section class="hero">
     <div class="eyebrow" data-i18n="heroEyebrow">Navigation</div>
     <p data-i18n="heroText">
-      Use this page as a simple entry point. The eight modules are local HTML demos. The saturation study opens the public study page hosted online.
+      Use this page as a simple entry point. The nine modules are local HTML demos. The saturation study opens the public study page hosted online.
     </p>
   </section>
 
@@ -205,6 +205,21 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--gold)}
         </div>
       </article>
 
+      <article class="card">
+        <div class="card-top">
+          <div>
+            <div class="badge">09</div>
+          </div>
+          <h2 data-i18n="m9Title">SCS vs OkLab</h2>
+        </div>
+        <p data-i18n="m9Desc">
+          Three comparisons with OkLab (the modern perceptual space of CSS Color 4): interpolation rails, the S + L = log 3 sum rule that SCS has and OkLab doesn't, and the CIELAB / OkLab / SCS luminance curves overlaid.
+        </p>
+        <div class="links">
+          <a class="btn" href="module09_scs_vs_oklab.html" data-i18n="openModule">Open module</a>
+        </div>
+      </article>
+
       <article class="card study" style="grid-column:1 / -1">
         <div class="card-top">
           <div>
@@ -222,7 +237,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--gold)}
     </div>
 
     <p class="footer-note" data-i18n-html="footerNote">
-      Expected local filenames: <code>module01_read_a_color_in_scs.html</code>, <code>module02_the_sunset_example.html</code>, <code>module03_skin_tone_protection.html</code>, <code>module04_equilibrium.html</code>, <code>module05_highlight_color_preservation.html</code>, <code>module06_color_cast_separation.html</code>, <code>module07_black_and_white_from_scs.html</code>, <code>module08_scs_vs_cielab_dark_region.html</code>.
+      Expected local filenames: <code>module01_read_a_color_in_scs.html</code>, <code>module02_the_sunset_example.html</code>, <code>module03_skin_tone_protection.html</code>, <code>module04_equilibrium.html</code>, <code>module05_highlight_color_preservation.html</code>, <code>module06_color_cast_separation.html</code>, <code>module07_black_and_white_from_scs.html</code>, <code>module08_scs_vs_cielab_dark_region.html</code>, <code>module09_scs_vs_oklab.html</code>.
     </p>
   </section>
 </main>
@@ -233,7 +248,7 @@ const I18N = {
     headerTitle: "Demo Index",
     tagline: "Cette page rassemble les modules de démonstration SCS et l’étude publique de saturation en un seul endroit.",
     heroEyebrow: "Navigation",
-    heroText: "Utilisez cette page comme point d’entrée simple. Les huit modules sont des démos HTML locales. L’étude de saturation ouvre la page publique de l’étude, hébergée en ligne.",
+    heroText: "Utilisez cette page comme point d’entrée simple. Les neuf modules sont des démos HTML locales. L’étude de saturation ouvre la page publique de l’étude, hébergée en ligne.",
     m1Title: "Read a Color in SCS",
     m1Desc: "Lecture interactive d’une couleur en termes de mode ℓRGB / simplexe, avec contrôles de luminance, direction chromatique et saturation.",
     m2Title: "The Sunset Example",
@@ -250,17 +265,19 @@ const I18N = {
     m7Desc: "Compare une conversion noir et blanc classique à une version inspirée du SCS qui traduit la structure chromatique en séparation tonale supplémentaire.",
     m8Title: "SCS vs CIELAB — région sombre",
     m8Desc: "Démonstration visuelle et mathématique du pourquoi le SCS sépare le détail des ombres que CIELAB comprime — échelle sombre, courbes de sensibilité, et la référence r = 0,625 vs 0,558 sur COMBVD.",
+    m9Title: "SCS vs OkLab",
+    m9Desc: "Trois comparaisons avec OkLab (l'espace perceptuel moderne de CSS Color 4) : rails d'interpolation, la règle de somme S + L = log 3 que SCS possède et qu'OkLab n'a pas, et les courbes de luminance CIELAB / OkLab / SCS superposées.",
     studyTitle: "Saturation Study",
     studyDesc: "Ouvre l’étude en ligne pour participer à l’expérience sur la saturation et accéder à l’interface dédiée.",
     openModule: "Ouvrir le module",
     participateStudy: "Participer à l’étude",
-    footerNote: "Noms de fichiers locaux attendus : <code>module01_read_a_color_in_scs.html</code>, <code>module02_the_sunset_example.html</code>, <code>module03_skin_tone_protection.html</code>, <code>module04_equilibrium.html</code>, <code>module05_highlight_color_preservation.html</code>, <code>module06_color_cast_separation.html</code>, <code>module07_black_and_white_from_scs.html</code>, <code>module08_scs_vs_cielab_dark_region.html</code>."
+    footerNote: "Noms de fichiers locaux attendus : <code>module01_read_a_color_in_scs.html</code>, <code>module02_the_sunset_example.html</code>, <code>module03_skin_tone_protection.html</code>, <code>module04_equilibrium.html</code>, <code>module05_highlight_color_preservation.html</code>, <code>module06_color_cast_separation.html</code>, <code>module07_black_and_white_from_scs.html</code>, <code>module08_scs_vs_cielab_dark_region.html</code>, <code>module09_scs_vs_oklab.html</code>."
   },
   en: {
     headerTitle: "Demo Index",
     tagline: "This page gathers the SCS demonstration modules and the public saturation study in one place.",
     heroEyebrow: "Navigation",
-    heroText: "Use this page as a simple entry point. The eight modules are local HTML demos. The saturation study opens the public study page hosted online.",
+    heroText: "Use this page as a simple entry point. The nine modules are local HTML demos. The saturation study opens the public study page hosted online.",
     m1Title: "Read a Color in SCS",
     m1Desc: "Interactive reading of a color in ℓRGB / simplex terms, with luminance, chromatic direction, and saturation controls.",
     m2Title: "The Sunset Example",
@@ -277,11 +294,13 @@ const I18N = {
     m7Desc: "Compare a classical black-and-white conversion with an SCS-inspired version that translates chromatic structure into additional tonal separation.",
     m8Title: "SCS vs CIELAB — dark region",
     m8Desc: "Visual and mathematical demonstration of why SCS separates shadow detail that CIELAB compresses — dark-region ladder, sensitivity curves, and the r = 0.625 vs 0.558 benchmark on COMBVD.",
+    m9Title: "SCS vs OkLab",
+    m9Desc: "Three comparisons with OkLab (the modern perceptual space of CSS Color 4): interpolation rails, the S + L = log 3 sum rule that SCS has and OkLab doesn't, and the CIELAB / OkLab / SCS luminance curves overlaid.",
     studyTitle: "Saturation Study",
     studyDesc: "Open the online study to participate in the saturation experiment and access the dedicated study interface.",
     openModule: "Open module",
     participateStudy: "Participate in the study",
-    footerNote: "Expected local filenames: <code>module01_read_a_color_in_scs.html</code>, <code>module02_the_sunset_example.html</code>, <code>module03_skin_tone_protection.html</code>, <code>module04_equilibrium.html</code>, <code>module05_highlight_color_preservation.html</code>, <code>module06_color_cast_separation.html</code>, <code>module07_black_and_white_from_scs.html</code>, <code>module08_scs_vs_cielab_dark_region.html</code>."
+    footerNote: "Expected local filenames: <code>module01_read_a_color_in_scs.html</code>, <code>module02_the_sunset_example.html</code>, <code>module03_skin_tone_protection.html</code>, <code>module04_equilibrium.html</code>, <code>module05_highlight_color_preservation.html</code>, <code>module06_color_cast_separation.html</code>, <code>module07_black_and_white_from_scs.html</code>, <code>module08_scs_vs_cielab_dark_region.html</code>, <code>module09_scs_vs_oklab.html</code>."
   }
 };
 
